@@ -9,7 +9,6 @@ import {
   GraduationCap,
   Palette,
   Lightbulb,
-  Quote,
 } from "lucide-react";
 import { SupportCTA } from "@/components/shared/support-cta";
 
@@ -51,10 +50,26 @@ const SOCIAL_ICONS = {
 };
 
 const SOCIAL_LINKS = [
-  { href: "https://github.com/", label: "GitHub", icon: SOCIAL_ICONS.github },
-  { href: "https://linkedin.com/", label: "LinkedIn", icon: SOCIAL_ICONS.linkedin },
-  { href: "https://x.com/", label: "X (Twitter)", icon: SOCIAL_ICONS.twitter },
-  { href: "https://example.com/", label: "Portfolio", icon: SOCIAL_ICONS.portfolio },
+  {
+    href: "https://github.com/RohitPulamarasetty",
+    label: "GitHub",
+    icon: SOCIAL_ICONS.github,
+  },
+  {
+    href: "https://www.linkedin.com/in/rohit-kumar-pulamarasetty/",
+    label: "LinkedIn",
+    icon: SOCIAL_ICONS.linkedin,
+  },
+  {
+    href: "https://x.com/RPulamarasetty",
+    label: "X (Twitter)",
+    icon: SOCIAL_ICONS.twitter,
+  },
+  {
+    href: "https://github.com/RohitPulamarasetty/Findora",
+    label: "Repository",
+    icon: SOCIAL_ICONS.portfolio,
+  },
 ];
 
 export default function AboutPage() {
@@ -123,10 +138,13 @@ export default function AboutPage() {
               </span>
               .
             </h1>
-            <p className="mx-auto mt-5 max-w-[54ch] text-[14.5px] leading-relaxed text-white/55 sm:text-[15.5px]">
-              Findora is a modern platform focused on building useful tools and products for
-              students and developers. It started with a simple campus problem — and the belief that
-              everyday software for students can feel just as polished as anything else you use.
+            <p className="mx-auto mt-5 max-w-[58ch] text-[14.5px] leading-relaxed text-white/55 sm:text-[15.5px]">
+              Findora is a modern campus platform built to make everyday student problems feel
+              solved — not endured. It began as a focused fix for the messy way lost and found items
+              move through hostels, mess halls, and group chats, and grew into a small product suite
+              designed with the same care students expect from the apps they use every day. The goal
+              is simple: practical, beautifully crafted software that students actually want to
+              open.
             </p>
           </div>
         </section>
@@ -143,11 +161,16 @@ export default function AboutPage() {
                 {/* Profile avatar with gradient ring */}
                 <div className="relative shrink-0">
                   <div className="absolute -inset-1.5 rounded-full bg-gradient-to-br from-blue-500 via-violet-500 to-cyan-400 opacity-70 blur-md" />
-                  <div className="relative h-[88px] w-[88px] rounded-full bg-gradient-to-br from-blue-500 via-violet-600 to-cyan-500 p-[2px]">
-                    <div className="flex h-full w-full items-center justify-center rounded-full bg-[#0c0c14]">
-                      <span className="bg-gradient-to-br from-blue-300 to-violet-300 bg-clip-text text-[26px] font-bold tracking-tight text-transparent">
-                        RP
-                      </span>
+                  <div className="relative h-[96px] w-[96px] rounded-full bg-gradient-to-br from-blue-500 via-violet-600 to-cyan-500 p-[2px]">
+                    <div className="relative h-full w-full overflow-hidden rounded-full bg-[#0c0c14]">
+                      <Image
+                        src="/images/rohit.jpg"
+                        alt="Rohit Pulamarasetty"
+                        fill
+                        sizes="96px"
+                        className="object-cover"
+                        priority
+                      />
                     </div>
                   </div>
                 </div>
@@ -163,10 +186,14 @@ export default function AboutPage() {
                     <GraduationCap size={13} className="text-white/45" />
                     Engineering Student at IIT Madras
                   </p>
-                  <p className="mt-4 max-w-[52ch] text-[13.5px] leading-relaxed text-white/60">
-                    Rohit builds small, useful products with a focus on UI/UX, design detail, and
-                    solving real student problems. Findora is part of an ongoing interest in making
-                    campus life — communication, recovery, coordination — feel a little more modern.
+                  <p className="mt-4 max-w-[54ch] text-[13.5px] leading-relaxed text-white/60">
+                    I&apos;m a student, builder, and developer drawn to the intersection of
+                    products, quantitative thinking, and machine learning. I like shipping small
+                    systems that solve a real problem cleanly — the kind that come from noticing
+                    something annoying in everyday campus life and asking whether modern tooling
+                    could just make it better. Findora is one of those projects: a serious take on a
+                    simple problem, with the design polish and craft I&apos;d want from any product
+                    I actually use.
                   </p>
 
                   {/* Interest chips */}
@@ -258,33 +285,6 @@ export default function AboutPage() {
                   </p>
                 </div>
               ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── Special thanks ──────────────────────────────────── */}
-        <section className="relative px-4 pb-16 sm:px-6 sm:pb-20">
-          <div className="mx-auto max-w-2xl">
-            <div className="relative overflow-hidden rounded-3xl border border-white/[0.08] bg-gradient-to-br from-rose-500/[0.06] via-white/[0.025] to-violet-500/[0.06] p-6 backdrop-blur-md sm:p-8">
-              <div className="pointer-events-none absolute -left-10 -top-10 h-40 w-40 rounded-full bg-rose-400/10 blur-[60px]" />
-              <div className="pointer-events-none absolute -bottom-10 -right-10 h-40 w-40 rounded-full bg-violet-400/10 blur-[60px]" />
-              <div className="relative flex items-start gap-4">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/[0.1] bg-gradient-to-br from-rose-500/20 to-violet-500/20 text-rose-200">
-                  <Quote size={15} />
-                </div>
-                <div>
-                  <div className="mb-1 text-[10.5px] font-semibold uppercase tracking-[0.15em] text-white/45">
-                    Special thanks
-                  </div>
-                  <p className="text-[14px] font-medium leading-relaxed text-white/85 sm:text-[15px]">
-                    Special thanks to{" "}
-                    <span className="bg-gradient-to-br from-rose-300 to-violet-300 bg-clip-text font-semibold text-transparent">
-                      Zaira
-                    </span>{" "}
-                    for helping and supporting the development of Findora.
-                  </p>
-                </div>
-              </div>
             </div>
           </div>
         </section>

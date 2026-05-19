@@ -9,8 +9,9 @@ export const metadata: Metadata = {
   description: "Get in touch with the Findora team or report an issue.",
 };
 
-const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL || "hello@findora.app";
-const GITHUB_REPO = process.env.NEXT_PUBLIC_GITHUB_REPO || "https://github.com/";
+const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL || "rohitpulamarasetty@gmail.com";
+const GITHUB_REPO =
+  process.env.NEXT_PUBLIC_GITHUB_REPO || "https://github.com/RohitPulamarasetty/Findora";
 
 const CHANNELS = [
   {

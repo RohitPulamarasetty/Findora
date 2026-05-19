@@ -245,6 +245,36 @@ export interface Database {
         };
         Relationships: [];
       };
+      payments: {
+        Row: {
+          id: string;
+          razorpay_payment_id: string;
+          razorpay_order_id: string;
+          amount: number;
+          currency: string;
+          donor_name: string | null;
+          donor_email: string | null;
+          status: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          razorpay_payment_id: string;
+          razorpay_order_id: string;
+          amount: number;
+          currency?: string;
+          donor_name?: string | null;
+          donor_email?: string | null;
+          status?: string;
+          created_at?: string;
+        };
+        Update: {
+          donor_name?: string | null;
+          donor_email?: string | null;
+          status?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;

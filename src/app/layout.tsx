@@ -30,10 +30,26 @@ export const metadata: Metadata = {
   description:
     "The campus lost and found platform. Report lost items, discover found items, and connect with fellow students to recover what matters.",
   keywords: ["lost and found", "campus", "IITM", "student"],
-  authors: [{ name: "Findora" }],
+  authors: [{ name: "Rohit Pulamarasetty", url: "https://github.com/RohitPulamarasetty" }],
+  creator: "Rohit Pulamarasetty",
+  publisher: "Findora",
   robots: {
     index: true,
     follow: true,
+  },
+  openGraph: {
+    type: "website",
+    title: "Findora — Campus Lost & Found",
+    description:
+      "The campus lost and found platform. Report lost items, discover found items, and connect with fellow students to recover what matters.",
+    siteName: "Findora",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Findora — Campus Lost & Found",
+    description:
+      "Report lost items, discover found items, and connect with fellow students to recover what matters.",
+    creator: "@RPulamarasetty",
   },
   icons: {
     icon: [

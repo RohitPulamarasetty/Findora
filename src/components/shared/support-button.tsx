@@ -89,44 +89,36 @@ const SCRIPT_TIMEOUT_MS = 12_000;
 
 function loadCheckoutScript(): Promise<boolean> {
   if (typeof window === "undefined") return Promise.resolve(false);
-  if (window.Razorpay) {
-    console.debug("[Razorpay] window.Razorpay already present");
-    return Promise.resolve(true);
-  }
+  if (window.Razorpay) return Promise.resolve(true);
 
   return new Promise((resolve) => {
     let settled = false;
-    const finish = (ok: boolean, reason: string) => {
+    const finish = (ok: boolean) => {
       if (settled) return;
       settled = true;
-      console.debug(`[Razorpay] script load ${ok ? "✓" : "✗"} — ${reason}`);
       resolve(ok);
     };
 
     const existing = document.querySelector<HTMLScriptElement>(`script[src="${SCRIPT_SRC}"]`);
     if (existing) {
-      // Either it loaded already or is still loading
       if (window.Razorpay) {
-        finish(true, "existing script + Razorpay present");
+        finish(true);
         return;
       }
-      existing.addEventListener("load", () => finish(!!window.Razorpay, "existing script loaded"));
-      existing.addEventListener("error", () => finish(false, "existing script errored"));
-      window.setTimeout(
-        () => finish(!!window.Razorpay, "existing script timeout"),
-        SCRIPT_TIMEOUT_MS
-      );
+      existing.addEventListener("load", () => finish(!!window.Razorpay));
+      existing.addEventListener("error", () => finish(false));
+      window.setTimeout(() => finish(!!window.Razorpay), SCRIPT_TIMEOUT_MS);
       return;
     }
 
     const script = document.createElement("script");
     script.src = SCRIPT_SRC;
     script.async = true;
-    script.onload = () => finish(!!window.Razorpay, "onload");
-    script.onerror = () => finish(false, "onerror");
+    script.onload = () => finish(!!window.Razorpay);
+    script.onerror = () => finish(false);
     document.body.appendChild(script);
 
-    window.setTimeout(() => finish(!!window.Razorpay, "load timeout"), SCRIPT_TIMEOUT_MS);
+    window.setTimeout(() => finish(!!window.Razorpay), SCRIPT_TIMEOUT_MS);
   });
 }
 
@@ -156,21 +148,6 @@ export function SupportButton({
   // dialog first, wait for the next animation frame, then open Razorpay.
   const pendingOptionsRef = useRef<RazorpayOptions | null>(null);
 
-  // One-time env-var sanity log (dev visibility).
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID) {
-      console.warn(
-        "[Razorpay] NEXT_PUBLIC_RAZORPAY_KEY_ID is missing — checkout will be disabled."
-      );
-    } else {
-      console.debug(
-        "[Razorpay] NEXT_PUBLIC_RAZORPAY_KEY_ID =",
-        process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID.slice(0, 12) + "…"
-      );
-    }
-  }, []);
-
   // Preload the Razorpay script when the dialog opens to reduce delay.
   useEffect(() => {
     if (open) void loadCheckoutScript();
@@ -192,29 +169,16 @@ export function SupportButton({
    *  Dialog has closed so Radix releases its body lock + overlay. */
   const launchRazorpay = useCallback((options: RazorpayOptions) => {
     if (typeof window === "undefined" || !window.Razorpay) {
-      console.error("[Razorpay] launchRazorpay called but window.Razorpay is undefined");
       toast.error("Failed to initialize Razorpay checkout.");
       setIsProcessing(false);
       return;
     }
 
     try {
-      console.debug("[Razorpay] instantiating with order", options.order_id);
       const rzp = new window.Razorpay(options);
 
       rzp.on("payment.failed", (resp) => {
         const e = resp.error ?? {};
-        console.warn("[Razorpay] payment.failed", {
-          code: e.code,
-          description: e.description,
-          source: e.source,
-          step: e.step,
-          reason: e.reason,
-          method: e.metadata?.order_id ? "order:" + e.metadata.order_id : undefined,
-          full: resp,
-        });
-
-        // Human-readable hint for the most common test-mode failure.
         const desc = e.description || "";
         const isInternational =
           /international/i.test(desc) || /international/i.test(e.reason || "");
@@ -226,10 +190,8 @@ export function SupportButton({
         setIsProcessing(false);
       });
 
-      console.debug("[Razorpay] calling rzp.open()");
       rzp.open();
-    } catch (err) {
-      console.error("[Razorpay] init/open threw", err);
+    } catch {
       toast.error("Failed to initialize Razorpay checkout.");
       setIsProcessing(false);
     }
@@ -241,7 +203,6 @@ export function SupportButton({
       return;
     }
     if (!RAZORPAY_KEY_ID) {
-      console.error("[Razorpay] RAZORPAY_KEY_ID is empty");
       toast.error("Payments are not configured. Please try again later.");
       return;
     }
@@ -253,14 +214,12 @@ export function SupportButton({
       //    don't leave the user staring at a closed dialog and nothing.
       const ok = await loadCheckoutScript();
       if (!ok || !window.Razorpay) {
-        console.error("[Razorpay] SDK failed to load");
         toast.error("Could not load the payment SDK. Check your connection and try again.");
         setIsProcessing(false);
         return;
       }
 
       // 2) Create order on the server
-      console.debug("[Razorpay] POST /api/payments/create-order amount=", finalAmount);
       const orderRes = await fetch("/api/payments/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -273,7 +232,6 @@ export function SupportButton({
 
       if (!orderRes.ok) {
         const data = (await orderRes.json().catch(() => ({}))) as { error?: string };
-        console.error("[Razorpay] create-order failed", orderRes.status, data);
         toast.error(data.error || "Could not start payment. Please try again.");
         setIsProcessing(false);
         return;
@@ -284,10 +242,8 @@ export function SupportButton({
         amount?: number;
         currency?: string;
       };
-      console.debug("[Razorpay] create-order response", order);
 
       if (!order.order_id || typeof order.amount !== "number" || !order.currency) {
-        console.error("[Razorpay] create-order returned malformed payload", order);
         toast.error("Failed to initialize Razorpay checkout.");
         setIsProcessing(false);
         return;
@@ -327,12 +283,10 @@ export function SupportButton({
         },
         modal: {
           ondismiss: () => {
-            console.debug("[Razorpay] modal dismissed");
             setIsProcessing(false);
           },
         },
         handler: async (response) => {
-          console.debug("[Razorpay] handler success", response);
           try {
             const verifyRes = await fetch("/api/payments/verify", {
               method: "POST",
@@ -341,13 +295,11 @@ export function SupportButton({
             });
             if (!verifyRes.ok) {
               const data = (await verifyRes.json().catch(() => ({}))) as { error?: string };
-              console.error("[Razorpay] verify failed", verifyRes.status, data);
               toast.error(data.error || "Payment could not be verified.");
               return;
             }
             toast.success("Thank you for supporting Findora!");
-          } catch (err) {
-            console.error("[Razorpay] verify threw", err);
+          } catch {
             toast.error("Payment verification failed. Please contact support if charged.");
           } finally {
             setIsProcessing(false);
@@ -361,14 +313,12 @@ export function SupportButton({
       setOpen(false);
       window.setTimeout(() => {
         if (pendingOptionsRef.current) {
-          console.debug("[Razorpay] safety-timer launching checkout");
           const opts = pendingOptionsRef.current;
           pendingOptionsRef.current = null;
           launchRazorpay(opts);
         }
       }, 400);
-    } catch (err) {
-      console.error("[Razorpay] handlePay threw", err);
+    } catch {
       toast.error("Failed to initialize Razorpay checkout.");
       setIsProcessing(false);
     }
