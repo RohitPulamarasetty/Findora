@@ -1,0 +1,8 @@
+# Supabase local development configuration
+# Run: supabase init (M1.2)
+[api]
+enabled = true
+port = 54321
+
+[db]
+port = 54322

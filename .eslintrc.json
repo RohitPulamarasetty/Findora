@@ -1,3 +1,36 @@
 {
-  "extends": ["next/core-web-vitals", "next/typescript"]
+  "extends": ["next/core-web-vitals", "next/typescript", "prettier"],
+  "plugins": ["prettier"],
+  "rules": {
+    "prettier/prettier": "error",
+
+    // TypeScript — enforce explicit typing at boundaries
+    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/consistent-type-imports": ["error", { "prefer": "type-imports" }],
+
+    // React — not needed in Next.js App Router (React is auto-imported)
+    "react/react-in-jsx-scope": "off",
+
+    // Next.js Image — enforce next/image over <img>
+    "@next/next/no-img-element": "error",
+
+    // General code quality
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "prefer-const": "error",
+    "no-var": "error",
+
+    // Components must use named exports (COMPONENTS.md §8)
+    // Note: pages/layouts are exempt (Next.js requires default export)
+    "import/prefer-default-export": "off"
+  },
+  "overrides": [
+    {
+      "files": ["src/components/ui/**/*.tsx"],
+      "rules": {
+        "@typescript-eslint/consistent-type-imports": "off"
+      }
+    }
+  ],
+  "ignorePatterns": ["node_modules/", ".next/", "out/", "public/"]
 }
