@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Providers } from "./providers";
 import {
   siteConfig,
@@ -154,6 +156,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         className={` ${plusJakartaSans.variable} ${jetbrainsMono.variable} font-body antialiased`}
       >
         <Providers>{children}</Providers>
+        {/* ── Vercel telemetry ──────────────────────────────────────────────
+            Both are zero-cost no-ops outside Vercel deployments (the bundled
+            script self-disables when window.location.host doesn't match a
+            Vercel-hosted origin), so they're safe to keep in local dev.
+            Placed outside <Providers> — they don't need theme or query
+            context, and rendering them as siblings avoids any risk of
+            them re-running on provider state changes. */}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

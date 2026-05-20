@@ -153,11 +153,20 @@ export default async function RootPage() {
           </div>
         </nav>
 
-        {/* ── Hero ────────────────────────────────────────────────── */}
-        <section className="relative px-4 pb-16 pt-28 sm:px-6 sm:pb-24 sm:pt-32">
-          <div className="relative mx-auto max-w-3xl text-center">
+        {/* ── Hero ──────────────────────────────────────────────────
+            Desktop-only enhancements live entirely behind `lg:` / `xl:`
+            modifiers. Mobile + tablet markup is untouched. */}
+        <section className="relative px-4 pb-16 pt-28 sm:px-6 sm:pb-24 sm:pt-32 lg:pb-28 lg:pt-40 xl:pb-32 xl:pt-44">
+          <div className="relative mx-auto max-w-3xl text-center lg:max-w-4xl xl:max-w-5xl">
+            {/* Soft localized glow behind the headline (desktop only) — adds
+                cinematic depth without competing with the page-level aurora. */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute left-1/2 top-[28%] hidden h-[320px] w-[78%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.18)_0%,rgba(59,130,246,0.10)_40%,transparent_70%)] blur-2xl lg:block"
+            />
+
             {/* Eyebrow badge */}
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.04] px-3 py-1 text-[11px] font-medium text-white/70 backdrop-blur-md">
+            <div className="relative mb-6 inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.04] px-3 py-1 text-[11px] font-medium text-white/70 backdrop-blur-md lg:mb-8 lg:gap-2.5 lg:px-3.5 lg:py-1.5 lg:text-[12px]">
               <span className="relative flex h-1.5 w-1.5">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
@@ -165,7 +174,7 @@ export default async function RootPage() {
               <span className="tracking-wide">IITM DS Campus Platform</span>
             </div>
 
-            <h1 className="mx-auto max-w-[18ch] text-[34px] font-bold leading-[1.08] tracking-[-0.03em] sm:text-[44px] sm:leading-[1.05] md:text-[54px]">
+            <h1 className="relative mx-auto max-w-[18ch] text-[34px] font-bold leading-[1.08] tracking-[-0.03em] sm:text-[44px] sm:leading-[1.05] md:text-[54px] lg:max-w-[20ch] lg:text-[68px] lg:leading-[1.02] lg:tracking-[-0.035em] xl:text-[78px]">
               Find what&apos;s{" "}
               <span className="bg-gradient-to-br from-blue-300 via-blue-400 to-violet-400 bg-clip-text text-transparent">
                 lost
@@ -178,53 +187,56 @@ export default async function RootPage() {
               .
             </h1>
 
-            <p className="mx-auto mt-5 max-w-[44ch] text-[14.5px] leading-relaxed text-white/55 sm:mt-6 sm:text-[15.5px]">
+            <p className="relative mx-auto mt-5 max-w-[44ch] text-[14.5px] leading-relaxed text-white/55 sm:mt-6 sm:text-[15.5px] lg:mt-8 lg:max-w-[52ch] lg:text-[17.5px] lg:leading-[1.6] xl:text-[18.5px]">
               A secure, centralized platform replacing scattered WhatsApp groups and notice boards —
               verified with your IITM DS identity.
             </p>
 
             {/* CTAs */}
-            <div className="mt-8 flex flex-col items-center justify-center gap-2.5 sm:flex-row sm:gap-3">
+            <div className="relative mt-8 flex flex-col items-center justify-center gap-2.5 sm:flex-row sm:gap-3 lg:mt-11 lg:gap-4">
               <Link
                 href="/login"
-                className="group relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl px-6 py-3 text-[13.5px] font-semibold text-white shadow-[0_8px_24px_rgba(59,130,246,0.35),inset_0_1px_0_rgba(255,255,255,0.2)] transition-all hover:-translate-y-px hover:shadow-[0_12px_32px_rgba(59,130,246,0.5),inset_0_1px_0_rgba(255,255,255,0.25)] sm:w-auto"
+                className="group relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl px-6 py-3 text-[13.5px] font-semibold text-white shadow-[0_8px_24px_rgba(59,130,246,0.35),inset_0_1px_0_rgba(255,255,255,0.2)] transition-all hover:-translate-y-px hover:shadow-[0_12px_32px_rgba(59,130,246,0.5),inset_0_1px_0_rgba(255,255,255,0.25)] sm:w-auto lg:gap-2.5 lg:rounded-2xl lg:px-8 lg:py-4 lg:text-[15px] lg:shadow-[0_10px_30px_rgba(59,130,246,0.4),inset_0_1px_0_rgba(255,255,255,0.22)] lg:hover:-translate-y-0.5 lg:hover:shadow-[0_18px_40px_rgba(59,130,246,0.55),inset_0_1px_0_rgba(255,255,255,0.28)]"
               >
                 <span className="absolute inset-0 bg-gradient-to-br from-blue-500 via-blue-600 to-violet-600" />
                 <span className="absolute inset-0 bg-gradient-to-t from-transparent to-white/10" />
                 <span className="relative">Sign in with Google</span>
                 <ArrowRight
                   size={15}
-                  className="relative transition-transform group-hover:translate-x-0.5"
+                  className="relative transition-transform group-hover:translate-x-0.5 lg:h-4 lg:w-4"
                 />
               </Link>
               <Link
                 href="/login"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/[0.1] bg-white/[0.03] px-6 py-3 text-[13.5px] font-semibold text-white/80 backdrop-blur-md transition-all hover:border-white/[0.18] hover:bg-white/[0.06] hover:text-white sm:w-auto"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/[0.1] bg-white/[0.03] px-6 py-3 text-[13.5px] font-semibold text-white/80 backdrop-blur-md transition-all hover:border-white/[0.18] hover:bg-white/[0.06] hover:text-white sm:w-auto lg:rounded-2xl lg:px-8 lg:py-4 lg:text-[15px] lg:hover:-translate-y-0.5"
               >
                 Browse the platform
               </Link>
             </div>
 
-            <p className="mt-5 text-[11.5px] text-white/35">
+            <p className="relative mt-5 text-[11.5px] text-white/35 lg:mt-7 lg:text-[12.5px]">
               Exclusive to <span className="font-medium text-white/55">@ds.study.iitm.ac.in</span>{" "}
               accounts
             </p>
           </div>
 
           {/* Stats */}
-          <div className="relative mx-auto mt-14 max-w-2xl sm:mt-20">
-            <div className="absolute -inset-x-4 -top-6 h-[200px] bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,rgba(59,130,246,0.18),transparent_70%)]" />
-            <div className="relative grid grid-cols-3 gap-px overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.04] backdrop-blur-md">
+          <div className="relative mx-auto mt-14 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-3xl xl:max-w-4xl">
+            <div className="absolute -inset-x-4 -top-6 h-[200px] bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,rgba(59,130,246,0.18),transparent_70%)] lg:h-[260px]" />
+            <div className="relative grid grid-cols-3 gap-px overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.04] backdrop-blur-md lg:rounded-3xl">
               {[
                 { value: "<48h", label: "Avg. recovery time" },
                 { value: "80%+", label: "Resolution rate" },
                 { value: "100%", label: "Verified users" },
               ].map((stat, i) => (
-                <div key={i} className="bg-[#08080c]/80 px-4 py-5 text-center sm:py-6">
-                  <div className="bg-gradient-to-b from-white to-white/70 bg-clip-text text-[19px] font-bold tracking-tight text-transparent sm:text-[22px]">
+                <div
+                  key={i}
+                  className="bg-[#08080c]/80 px-4 py-5 text-center sm:py-6 lg:px-6 lg:py-9 xl:py-11"
+                >
+                  <div className="bg-gradient-to-b from-white to-white/70 bg-clip-text text-[19px] font-bold tracking-tight text-transparent sm:text-[22px] lg:text-[30px] xl:text-[34px]">
                     {stat.value}
                   </div>
-                  <div className="mt-1 text-[10.5px] tracking-wide text-white/45 sm:text-[11px]">
+                  <div className="mt-1 text-[10.5px] tracking-wide text-white/45 sm:text-[11px] lg:mt-2 lg:text-[12.5px]">
                     {stat.label}
                   </div>
                 </div>
