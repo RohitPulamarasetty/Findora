@@ -8,9 +8,15 @@ import { buildMetadata, JsonLd, breadcrumbSchema } from "@/lib/seo";
 export const metadata: Metadata = buildMetadata({
   title: "Contact & Support",
   description:
-    "Reach the Findora team — general enquiries, bug reports, abuse, and safety concerns. Built for verified IITM DS students with a focus on trust and accountability.",
+    "Reach the Findora team — general enquiries, bug reports, abuse and safety concerns about the campus lost & found platform. Built for verified IITM DS students.",
   path: "/contact",
-  keywords: ["Findora contact", "Findora support", "report abuse Findora", "Findora bug report"],
+  keywords: [
+    "Findora contact",
+    "Findora support",
+    "report abuse Findora",
+    "Findora bug report",
+    "campus lost and found contact",
+  ],
 });
 
 const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL || "rohitpulamarasetty@gmail.com";

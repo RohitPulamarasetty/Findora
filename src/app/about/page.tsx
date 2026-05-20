@@ -14,11 +14,16 @@ import { SupportCTA } from "@/components/shared/support-cta";
 import { buildMetadata, JsonLd, breadcrumbSchema } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
-  title: "About Findora — Campus Utility Platform",
+  title: "About Findora — The Trusted Campus Lost & Found Platform",
   description:
-    "Findora is a private campus network built for IITM DS students. Learn about our mission to build trusted, verified peer-to-peer tools for college communities.",
+    "The story behind Findora — a trusted lost & found platform for verified IITM DS students, built to replace scattered WhatsApp groups and notice boards with one secure recovery system.",
   path: "/about",
-  keywords: ["about Findora", "Findora story", "campus utility platform"],
+  keywords: [
+    "about Findora",
+    "Findora story",
+    "campus lost and found platform",
+    "lost and found IITM",
+  ],
 });
 
 const SOCIAL_ICONS = {

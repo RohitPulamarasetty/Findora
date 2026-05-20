@@ -6,9 +6,9 @@ import { buildMetadata, JsonLd, breadcrumbSchema } from "@/lib/seo";
 export const metadata: Metadata = buildMetadata({
   title: "Privacy Policy",
   description:
-    "How Findora collects, uses, and protects your data. Privacy-first architecture for verified IITM DS students — minimal collection, no third-party trackers.",
+    "How Findora collects, uses, and protects your data on the campus lost & found platform. Privacy-first architecture for verified IITM DS students — minimal collection, no third-party trackers.",
   path: "/privacy",
-  keywords: ["Findora privacy", "student data privacy", "campus network privacy policy"],
+  keywords: ["Findora privacy", "student data privacy", "campus lost and found privacy policy"],
 });
 
 const SECTIONS = [

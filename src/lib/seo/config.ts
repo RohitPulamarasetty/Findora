@@ -3,7 +3,7 @@
  *
  * Single source of truth for: production URL, brand strings, social handles,
  * default descriptions, OG image paths, contact info. Used by metadata helpers,
- * JSON-LD schema generators, robots.ts, sitemap.ts, opengraph-image.tsx.
+ * JSON-LD schema generators, robots.ts, sitemap.ts.
  *
  * Set NEXT_PUBLIC_APP_URL in production (Vercel env) to your real domain
  * (e.g. https://findora.app). Without it, OG image URLs and canonicals fall
@@ -20,32 +20,34 @@ const RAW_APP_URL = process.env.NEXT_PUBLIC_APP_URL || FALLBACK_URL;
 
 export const siteConfig = {
   // ── Identity ────────────────────────────────────────────────────────
+  // Findora's core identity is a TRUST-FIRST CAMPUS LOST & FOUND PLATFORM.
+  // All public-facing strings lead with that positioning. "Community" is
+  // secondary context, never the headline.
   name: "Findora",
   shortName: "Findora",
-  fullName: "Findora — Campus Community Network",
-  tagline: "Trusted campus network for verified students",
+  fullName: "Findora — Campus Lost & Found",
+  tagline: "Find what's lost. Return what's found.",
 
   // ── URLs ────────────────────────────────────────────────────────────
   url: normalizeUrl(RAW_APP_URL),
 
   // ── Descriptions ────────────────────────────────────────────────────
   description:
-    "Findora is a private, verified campus network for IITM DS students — connect with peers, recover lost items, and access trusted community tools built for your college ecosystem.",
-  shortDescription:
-    "Private, verified campus network for IITM DS students. Trust, utility, and peer-to-peer connection.",
+    "Find what's lost. Return what's found. The trusted campus lost & found platform for verified IITM DS students — a secure replacement for scattered WhatsApp groups and notice boards.",
+  shortDescription: "The trusted campus lost & found platform for verified IITM DS students.",
 
   // ── Keywords (used selectively; modern SEO mostly ignores) ──────────
   keywords: [
     "Findora",
-    "Findora campus network",
-    "Findora IITM",
-    "Findora IIT Madras",
-    "campus community app",
-    "student utility platform",
     "campus lost and found",
-    "IITM DS student platform",
-    "verified student network",
-    "peer-to-peer campus app",
+    "lost and found platform",
+    "IITM lost and found",
+    "IIT Madras lost and found",
+    "student lost and found app",
+    "campus recovery platform",
+    "verified student platform",
+    "Findora IITM",
+    "campus utility app",
   ],
 
   // ── Branding ────────────────────────────────────────────────────────
@@ -77,11 +79,15 @@ export const siteConfig = {
   },
 
   // ── OG image paths (resolved against metadataBase) ──────────────────
+  // Static OG asset shipped at /public/og_img.png. Served by the Vercel CDN
+  // with long-lived caching — no runtime cost. Aspect ratio is ~1.9:1
+  // which matches the OG 1.91:1 spec, so social platforms render it
+  // without cropping the headline or trust signals.
   ogImage: {
-    path: "/opengraph-image", // dynamic next/og route, resolves to /opengraph-image.png
-    width: 1200,
-    height: 630,
-    alt: "Findora — Campus Community Network for IITM DS Students",
+    path: "/og_img.png",
+    width: 1731,
+    height: 909,
+    alt: "Findora — Find what's lost. Return what's found. The trusted campus lost & found platform for IITM DS students.",
   },
 
   // ── Verification (set in env when ready) ────────────────────────────

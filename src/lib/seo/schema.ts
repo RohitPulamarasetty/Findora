@@ -63,15 +63,28 @@ export function webApplicationSchema() {
     "@type": "WebApplication",
     "@id": `${siteConfig.url}#webapp`,
     name: siteConfig.name,
+    alternateName: "Findora Lost & Found",
     url: siteConfig.url,
     description: siteConfig.description,
-    applicationCategory: "SocialNetworkingApplication",
+    // Utilities is the closest schema.org category for a lost & found tool;
+    // Lifestyle is included as a secondary hint for richer SERP placement.
+    applicationCategory: "UtilitiesApplication",
+    applicationSubCategory: "Lost and Found",
     operatingSystem: "Web Browser",
     browserRequirements: "Requires modern browser with JavaScript",
     audience: {
       "@type": "EducationalAudience",
       educationalRole: "student",
     },
+    featureList: [
+      "Report lost items",
+      "Report found items",
+      "Image-based item reports",
+      "Category & location search",
+      "Verified student-only access",
+      "Private in-app messaging",
+      "Recovery case tracking",
+    ],
     offers: {
       "@type": "Offer",
       price: "0",

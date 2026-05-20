@@ -1,7 +1,7 @@
 {
-  "name": "Findora — Campus Community Network",
+  "name": "Findora — Campus Lost & Found",
   "short_name": "Findora",
-  "description": "Private, verified campus network for IITM DS students.",
+  "description": "The trusted campus lost & found platform for verified IITM DS students.",
   "id": "/",
   "start_url": "/home",
   "scope": "/",

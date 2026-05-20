@@ -18,16 +18,18 @@ import { createClient } from "@/utils/supabase/server";
 import { buildMetadata, JsonLd, faqSchema, breadcrumbSchema } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Campus Community Network for IITM DS Students",
+  title: "Find what's lost. Return what's found.",
   description:
-    "Findora is a private, verified campus network built for IITM DS students. Trusted peer connections, secure messaging, and a modern campus utility platform — not a public marketplace.",
+    "Findora is the trusted campus lost & found platform for verified IITM DS students. A secure recovery system replacing scattered WhatsApp groups and notice boards — fast, private, and built around verified identity.",
   path: "/",
   keywords: [
-    "Findora homepage",
-    "campus community network",
-    "IITM Findora",
+    "Findora",
+    "Findora lost and found",
+    "IITM lost and found",
+    "campus lost and found",
+    "lost item recovery campus",
+    "find lost belongings IITM",
     "verified student platform",
-    "campus utility app",
   ],
 });
 
@@ -35,12 +37,17 @@ const HOME_FAQ = [
   {
     question: "What is Findora?",
     answer:
-      "Findora is a private, verified campus network for IITM DS students. It enables trusted peer-to-peer connections, secure in-app messaging, and campus utilities like lost-and-found — all behind identity verification.",
+      "Findora is the trusted campus lost & found platform for verified IITM DS students. It helps you recover lost belongings faster by replacing scattered WhatsApp groups and notice boards with one private, identity-verified system.",
   },
   {
     question: "Who can use Findora?",
     answer:
-      "Findora is restricted to verified @ds.study.iitm.ac.in accounts via Google OAuth. Only authenticated students from IITM DS can sign in.",
+      "Findora is restricted to verified @ds.study.iitm.ac.in accounts via Google OAuth. Only authenticated IITM DS students can post or browse lost-and-found items.",
+  },
+  {
+    question: "How does recovery work on Findora?",
+    answer:
+      "Report a lost or found item with photos and location context. Findora surfaces matches across category and keyword search. Owner and finder connect through private in-app messaging — no phone numbers shared publicly.",
   },
   {
     question: "Is Findora free?",

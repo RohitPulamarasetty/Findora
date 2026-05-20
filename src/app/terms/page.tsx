@@ -6,9 +6,9 @@ import { buildMetadata, JsonLd, breadcrumbSchema } from "@/lib/seo";
 export const metadata: Metadata = buildMetadata({
   title: "Terms & Conditions",
   description:
-    "The rules and expectations for using Findora — a private campus network for verified IITM DS students. Acceptable use, eligibility, moderation, and platform terms.",
+    "The rules for using Findora — the trusted campus lost & found platform for verified IITM DS students. Eligibility, acceptable reporting, moderation, and platform terms.",
   path: "/terms",
-  keywords: ["Findora terms", "campus network terms", "Findora acceptable use"],
+  keywords: ["Findora terms", "lost and found platform terms", "Findora acceptable use"],
 });
 
 const SECTIONS = [
