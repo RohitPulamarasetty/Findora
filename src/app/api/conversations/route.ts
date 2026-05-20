@@ -22,7 +22,20 @@ export async function GET() {
     new Set(convos.flatMap((c) => [c.owner_id, c.finder_id]).filter((id) => id !== user.id))
   );
 
-  const [{ data: users }, { data: items }] = await Promise.all([
+  const convoIds = convos.map((c) => c.id);
+
+  // ── PERF ─────────────────────────────────────────────────────────────────
+  // Previously this route fetched EVERY message across ALL the user's
+  // conversations (`select ... order created_at desc`) just to pick the most
+  // recent per conversation. For a heavy user that meant pulling thousands
+  // of rows on every list refresh + every realtime event.
+  //
+  // We now fan out one `.limit(1)` query per conversation in parallel. Each
+  // query is fully covered by the `messages_conversation_idx` index on
+  // (conversation_id, created_at) — so they're O(1) lookups, not scans.
+  // Result: bounded payload (one row per convo) and dramatically less I/O.
+  // ────────────────────────────────────────────────────────────────────────
+  const [{ data: users }, { data: items }, lastMessageResults] = await Promise.all([
     supabase.from("users").select("id, full_name, avatar_url").in("id", otherIds),
     supabase
       .from("items")
@@ -31,27 +44,26 @@ export async function GET() {
         "id",
         convos.map((c) => c.item_id)
       ),
+    Promise.all(
+      convoIds.map(async (cid) => {
+        const { data } = await supabase
+          .from("messages")
+          .select("content, created_at")
+          .eq("conversation_id", cid)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        return [cid, data] as const;
+      })
+    ),
   ]);
 
   const userMap = new Map(users?.map((u) => [u.id, u]) ?? []);
   const itemMap = new Map(items?.map((i) => [i.id, i]) ?? []);
 
-  // Fetch last message per conversation in one query
-  const convoIds = convos.map((c) => c.id);
-  const { data: messages } = await supabase
-    .from("messages")
-    .select("id, conversation_id, content, created_at")
-    .in("conversation_id", convoIds)
-    .order("created_at", { ascending: false });
-
   const lastMessageMap = new Map<string, { content: string; created_at: string }>();
-  for (const msg of messages ?? []) {
-    if (!lastMessageMap.has(msg.conversation_id)) {
-      lastMessageMap.set(msg.conversation_id, {
-        content: msg.content,
-        created_at: msg.created_at,
-      });
-    }
+  for (const [cid, msg] of lastMessageResults) {
+    if (msg) lastMessageMap.set(cid, { content: msg.content, created_at: msg.created_at });
   }
 
   const result = convos.map((c) => {

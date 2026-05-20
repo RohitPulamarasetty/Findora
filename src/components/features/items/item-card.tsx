@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { MapPin, Clock, Camera } from "lucide-react";
@@ -42,7 +43,7 @@ const CATEGORY_ICON: Record<string, string> = {
   other: "📦",
 };
 
-export function ItemCard({
+function ItemCardImpl({
   item,
   variant = "grid",
   showOwner = false,
@@ -239,3 +240,29 @@ export function ItemCard({
     </Link>
   );
 }
+
+// Memoized — the item grid is the busiest list in the app and refetches on
+// scroll/pagination/filters. Without memo, every appended page re-renders
+// every previously-visible card (incl. all the Next/Image children).
+// We compare the small set of fields actually rendered.
+export const ItemCard = memo(ItemCardImpl, (prev, next) => {
+  if (prev.variant !== next.variant) return false;
+  if (prev.showOwner !== next.showOwner) return false;
+  if (prev.searchQuery !== next.searchQuery) return false;
+  if (prev.className !== next.className) return false;
+  const a = prev.item;
+  const b = next.item;
+  return (
+    a.id === b.id &&
+    a.title === b.title &&
+    a.status === b.status &&
+    a.type === b.type &&
+    a.category === b.category &&
+    a.location === b.location &&
+    a.created_at === b.created_at &&
+    (a.images?.length ?? 0) === (b.images?.length ?? 0) &&
+    a.images?.[0]?.url === b.images?.[0]?.url &&
+    a.user?.full_name === b.user?.full_name &&
+    a.user?.avatar_url === b.user?.avatar_url
+  );
+});

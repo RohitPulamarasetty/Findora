@@ -3,11 +3,15 @@ import Link from "next/link";
 import { Mail, MessageSquare, Code2, Bug, Send, Sparkles } from "lucide-react";
 import { MarketingShell, MarketingPageHeader } from "@/components/shared/marketing-shell";
 import { SupportCTA } from "@/components/shared/support-cta";
+import { buildMetadata, JsonLd, breadcrumbSchema } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildMetadata({
   title: "Contact & Support",
-  description: "Get in touch with the Findora team or report an issue.",
-};
+  description:
+    "Reach the Findora team — general enquiries, bug reports, abuse, and safety concerns. Built for verified IITM DS students with a focus on trust and accountability.",
+  path: "/contact",
+  keywords: ["Findora contact", "Findora support", "report abuse Findora", "Findora bug report"],
+});
 
 const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL || "rohitpulamarasetty@gmail.com";
 const GITHUB_REPO =
@@ -64,6 +68,12 @@ const ACCENT_MAP = {
 export default function ContactPage() {
   return (
     <MarketingShell>
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "Contact", path: "/contact" },
+        ])}
+      />
       <MarketingPageHeader
         eyebrow="Contact & Support"
         title="We'd love to hear from you."

@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
 import { FileText, UserCheck, Ban, AlertTriangle, Scale, MessageSquare } from "lucide-react";
 import { MarketingShell, MarketingPageHeader } from "@/components/shared/marketing-shell";
+import { buildMetadata, JsonLd, breadcrumbSchema } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildMetadata({
   title: "Terms & Conditions",
-  description: "The rules and expectations for using Findora.",
-};
+  description:
+    "The rules and expectations for using Findora — a private campus network for verified IITM DS students. Acceptable use, eligibility, moderation, and platform terms.",
+  path: "/terms",
+  keywords: ["Findora terms", "campus network terms", "Findora acceptable use"],
+});
 
 const SECTIONS = [
   {
@@ -61,6 +65,12 @@ const SECTIONS = [
 export default function TermsPage() {
   return (
     <MarketingShell>
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "Terms & Conditions", path: "/terms" },
+        ])}
+      />
       <MarketingPageHeader
         eyebrow="Terms & Conditions"
         title="Simple rules for a trusted community."

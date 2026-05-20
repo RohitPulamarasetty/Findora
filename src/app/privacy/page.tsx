@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
 import { Lock, Database, Eye, Cookie, Shield, Mail } from "lucide-react";
 import { MarketingShell, MarketingPageHeader } from "@/components/shared/marketing-shell";
+import { buildMetadata, JsonLd, breadcrumbSchema } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildMetadata({
   title: "Privacy Policy",
-  description: "How Findora collects, uses, and protects your data.",
-};
+  description:
+    "How Findora collects, uses, and protects your data. Privacy-first architecture for verified IITM DS students — minimal collection, no third-party trackers.",
+  path: "/privacy",
+  keywords: ["Findora privacy", "student data privacy", "campus network privacy policy"],
+});
 
 const SECTIONS = [
   {
@@ -63,6 +67,12 @@ const SECTIONS = [
 export default function PrivacyPage() {
   return (
     <MarketingShell>
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "Privacy Policy", path: "/privacy" },
+        ])}
+      />
       <MarketingPageHeader
         eyebrow="Privacy Policy"
         title="Your data, handled with care."

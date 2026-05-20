@@ -78,18 +78,49 @@ export function useMessages(conversationId: string) {
     };
   }, [conversationId, queryClient]);
 
-  // Safety-net polling — catches anything missed by realtime (e.g. websocket
-  // reconnects, brief disconnections). Background refetch keeps UI stable.
+  // Safety-net polling — catches anything missed by realtime (websocket
+  // reconnects, brief disconnections). The realtime channel above is the
+  // primary delivery mechanism, so this only needs to be a slow fallback.
+  //
+  // Also pauses while the tab is hidden so we don't burn requests in the
+  // background — visibilitychange re-triggers refetch on return.
   useEffect(() => {
     if (!conversationId) return;
-    const id = setInterval(
-      () =>
-        void queryClient.invalidateQueries({
-          queryKey: queryKeys.conversations.messages(conversationId),
-        }),
-      15_000
-    );
-    return () => clearInterval(id);
+    if (typeof document === "undefined") return;
+
+    const refetch = () =>
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys.conversations.messages(conversationId),
+      });
+
+    let id: ReturnType<typeof setInterval> | null = null;
+    const start = () => {
+      if (id !== null) return;
+      // 60s (was 15s) — realtime is primary; this is just a heartbeat.
+      id = setInterval(refetch, 60_000);
+    };
+    const stop = () => {
+      if (id !== null) {
+        clearInterval(id);
+        id = null;
+      }
+    };
+
+    if (document.visibilityState === "visible") start();
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") {
+        refetch(); // immediate refetch on tab return
+        start();
+      } else {
+        stop();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+
+    return () => {
+      stop();
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
   }, [conversationId, queryClient]);
 
   return query;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, keepPreviousData } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
 import type { ItemFilters, ItemWithUser } from "@/types/items";
 
@@ -36,5 +36,9 @@ export function useItems(filters: ItemFilters = {}) {
       ...data,
       items: data.pages.flatMap((p) => p.items),
     }),
+    // PERF: keep the previously-rendered list visible while a new filter /
+    // search query loads. Avoids the jarring "skeleton flash" every time
+    // the user changes a tab or types in the search bar.
+    placeholderData: keepPreviousData,
   });
 }

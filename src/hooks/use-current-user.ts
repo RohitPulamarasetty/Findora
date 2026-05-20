@@ -7,6 +7,11 @@ import type { Database } from "@/types/database";
 
 type UserRow = Database["public"]["Tables"]["users"]["Row"];
 
+// Columns the client actually reads. Keep in sync with consumers; expanding
+// here is the only place to add fields.
+const CLIENT_USER_FIELDS =
+  "id, email, full_name, avatar_url, role, is_banned, created_at, updated_at";
+
 export function useCurrentUser() {
   return useQuery({
     queryKey: queryKeys.users.current(),
@@ -17,10 +22,19 @@ export function useCurrentUser() {
       } = await supabase.auth.getUser();
       if (!user) return null;
 
-      const { data } = await supabase.from("users").select("*").eq("id", user.id).single();
+      // PERF: was `.select("*")`; pruned to the columns the UI actually
+      // reads. Saves payload + serialization on every authenticated mount.
+      const { data } = await supabase
+        .from("users")
+        .select(CLIENT_USER_FIELDS)
+        .eq("id", user.id)
+        .single<UserRow>();
 
       return data;
     },
     staleTime: 5 * 60 * 1000,
+    // Profile rarely changes during a session — keep cached longer to avoid
+    // refetches when navigating between pages that read currentUser.
+    gcTime: 30 * 60 * 1000,
   });
 }

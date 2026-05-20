@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { CheckCheck, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Message } from "@/types/conversations";
@@ -15,7 +16,7 @@ function StatusIcon({ status }: { status: Message["status"] }) {
   return <Check size={12} className="text-white/50" />;
 }
 
-export function MessageBubble({ message, isOwn }: MessageBubbleProps) {
+function MessageBubbleImpl({ message, isOwn }: MessageBubbleProps) {
   const time = new Date(message.created_at).toLocaleTimeString("en-IN", {
     hour: "2-digit",
     minute: "2-digit",
@@ -62,3 +63,17 @@ export function MessageBubble({ message, isOwn }: MessageBubbleProps) {
     </div>
   );
 }
+
+// Memoized — message list rebuilds on every incoming/outgoing message,
+// every typing indicator update, and every read-receipt change. Without
+// memo, every bubble re-renders on every parent update.
+// Equality check: a bubble only changes when the message id, status, or
+// content changes (read-receipts mutate status; is_system is immutable).
+export const MessageBubble = memo(MessageBubbleImpl, (prev, next) => {
+  return (
+    prev.isOwn === next.isOwn &&
+    prev.message.id === next.message.id &&
+    prev.message.status === next.message.status &&
+    prev.message.content === next.message.content
+  );
+});

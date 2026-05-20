@@ -13,6 +13,17 @@ export function useConversations() {
       const data = await res.json();
       return Array.isArray(data) ? data : [];
     },
-    refetchInterval: 30_000,
+    // Realtime channel (useRealtimeConversations) is the primary update path.
+    // The polling here is a slow safety-net for missed events / reconnects.
+    // Stretched from 30s → 90s; gated on tab visibility to avoid background
+    // requests when the user has the tab in the background.
+    refetchInterval: (q) => {
+      if (typeof document !== "undefined" && document.visibilityState === "hidden") {
+        return false;
+      }
+      return q.state.error ? false : 90_000;
+    },
+    refetchIntervalInBackground: false,
+    staleTime: 30_000,
   });
 }

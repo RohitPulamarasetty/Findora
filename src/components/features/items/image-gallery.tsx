@@ -39,6 +39,9 @@ export function ImageGallery({ images, alt }: ImageGalleryProps) {
           src={images[activeIndex].url}
           alt={`${alt} — photo ${activeIndex + 1}`}
           fill
+          // PERF: explicit sizes lets next/image pick the right srcset entry.
+          // Item gallery is full-width on mobile, capped at ~640px on desktop.
+          sizes="(max-width: 768px) 100vw, 640px"
           className="object-cover"
           priority={activeIndex === 0}
         />
@@ -103,7 +106,13 @@ export function ImageGallery({ images, alt }: ImageGalleryProps) {
                 i === activeIndex ? "ring-2 ring-brand-500" : "opacity-60 hover:opacity-90"
               )}
             >
-              <Image src={img.url} alt={`Thumbnail ${i + 1}`} fill className="object-cover" />
+              <Image
+                src={img.url}
+                alt={`Thumbnail ${i + 1}`}
+                fill
+                sizes="64px"
+                className="object-cover"
+              />
             </button>
           ))}
         </div>

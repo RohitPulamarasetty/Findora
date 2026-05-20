@@ -11,11 +11,15 @@ import {
   Lightbulb,
 } from "lucide-react";
 import { SupportCTA } from "@/components/shared/support-cta";
+import { buildMetadata, JsonLd, breadcrumbSchema } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "About",
-  description: "The story behind Findora — built for students, by students.",
-};
+export const metadata: Metadata = buildMetadata({
+  title: "About Findora — Campus Utility Platform",
+  description:
+    "Findora is a private campus network built for IITM DS students. Learn about our mission to build trusted, verified peer-to-peer tools for college communities.",
+  path: "/about",
+  keywords: ["about Findora", "Findora story", "campus utility platform"],
+});
 
 const SOCIAL_ICONS = {
   github: (
@@ -75,6 +79,12 @@ const SOCIAL_LINKS = [
 export default function AboutPage() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#08080c] text-white">
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "About", path: "/about" },
+        ])}
+      />
       {/* ── Ambient background ────────────────────────────────────── */}
       <div aria-hidden className="pointer-events-none fixed inset-0 z-0">
         <div

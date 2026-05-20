@@ -1,5 +1,25 @@
+import type { Metadata } from "next";
 import { AppLayout } from "@/components/layout/app-layout";
 import { createClient } from "@/utils/supabase/server";
+
+// Authenticated app surfaces must NEVER be indexed — they expose campus-internal
+// content. Children pages may still override individual fields via their own
+// generateMetadata, but the robots block here propagates by default.
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+      noimageindex: true,
+      "max-snippet": -1,
+      "max-image-preview": "none",
+      "max-video-preview": -1,
+    },
+  },
+};
 
 export default async function Layout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();

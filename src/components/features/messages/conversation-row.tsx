@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import Link from "next/link";
 import { Lock } from "lucide-react";
 import { motion } from "framer-motion";
@@ -11,7 +12,7 @@ interface ConversationRowProps {
   conversation: ConversationWithPreview;
 }
 
-export function ConversationRow({ conversation }: ConversationRowProps) {
+function ConversationRowImpl({ conversation }: ConversationRowProps) {
   const { id, other_user, item, last_message, unread_count, is_locked } = conversation;
 
   function timeAgoLabel(dateStr: string) {
@@ -105,3 +106,21 @@ export function ConversationRow({ conversation }: ConversationRowProps) {
     </motion.div>
   );
 }
+
+// Memoized — conversation list refetches on realtime events and polling.
+// Without memo, all rows re-render on any sibling row's change.
+// Equality covers the fields the row actually displays.
+export const ConversationRow = memo(ConversationRowImpl, (prev, next) => {
+  const a = prev.conversation;
+  const b = next.conversation;
+  return (
+    a.id === b.id &&
+    a.unread_count === b.unread_count &&
+    a.is_locked === b.is_locked &&
+    a.last_message?.content === b.last_message?.content &&
+    a.last_message?.created_at === b.last_message?.created_at &&
+    a.other_user?.full_name === b.other_user?.full_name &&
+    a.other_user?.avatar_url === b.other_user?.avatar_url &&
+    a.item?.title === b.item?.title
+  );
+});

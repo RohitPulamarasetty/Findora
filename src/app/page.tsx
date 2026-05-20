@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -14,6 +15,44 @@ import {
   Sparkles,
 } from "lucide-react";
 import { createClient } from "@/utils/supabase/server";
+import { buildMetadata, JsonLd, faqSchema, breadcrumbSchema } from "@/lib/seo";
+
+export const metadata: Metadata = buildMetadata({
+  title: "Campus Community Network for IITM DS Students",
+  description:
+    "Findora is a private, verified campus network built for IITM DS students. Trusted peer connections, secure messaging, and a modern campus utility platform — not a public marketplace.",
+  path: "/",
+  keywords: [
+    "Findora homepage",
+    "campus community network",
+    "IITM Findora",
+    "verified student platform",
+    "campus utility app",
+  ],
+});
+
+const HOME_FAQ = [
+  {
+    question: "What is Findora?",
+    answer:
+      "Findora is a private, verified campus network for IITM DS students. It enables trusted peer-to-peer connections, secure in-app messaging, and campus utilities like lost-and-found — all behind identity verification.",
+  },
+  {
+    question: "Who can use Findora?",
+    answer:
+      "Findora is restricted to verified @ds.study.iitm.ac.in accounts via Google OAuth. Only authenticated students from IITM DS can sign in.",
+  },
+  {
+    question: "Is Findora free?",
+    answer:
+      "Yes. Findora is free for all eligible IITM DS students. There are no subscriptions, ads, or hidden fees.",
+  },
+  {
+    question: "How is my data protected?",
+    answer:
+      "Findora is built on a privacy-first architecture: row-level security, encrypted session cookies, no third-party trackers, and private in-app messaging restricted to participants.",
+  },
+];
 
 const SOCIAL_ICONS = {
   github: (
@@ -43,6 +82,7 @@ export default async function RootPage() {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#08080c] text-white">
+      <JsonLd data={[faqSchema(HOME_FAQ), breadcrumbSchema([{ name: "Home", path: "/" }])]} />
       {/* ── Global ambient background ─────────────────────────────── */}
       <div aria-hidden className="pointer-events-none fixed inset-0 z-0">
         {/* dotted grid */}
