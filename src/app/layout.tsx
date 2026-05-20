@@ -100,12 +100,20 @@ export const metadata: Metadata = {
     ],
   },
   icons: {
+    // Order matters — Next.js emits these as <link rel="icon"> tags in this
+    // order. Modern browsers walk the list and pick the first they support.
+    // 1) SVG (scalable, theme-aware, sharp on every DPR) — Chrome/Firefox/Safari
+    // 2) 96×96 PNG — covers older Chromium + tab-group thumbnails
+    // 3) .ico — universal fallback (IE/legacy)
     icon: [
-      { url: "/favicon.ico", sizes: "48x48" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
       { url: "/favicon-96x96.png", sizes: "96x96", type: "image/png" },
+      { url: "/favicon.ico", sizes: "48x48", type: "image/x-icon" },
     ],
+    // iOS home-screen icon (also used by macOS Safari pinned tabs).
     apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
-    shortcut: "/favicon.ico",
+    // Legacy IE shortcut — points at the .ico for maximum compatibility.
+    shortcut: ["/favicon.ico"],
   },
   manifest: "/site.webmanifest",
   ...(siteConfig.verification.google || siteConfig.verification.bing

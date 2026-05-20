@@ -59,5 +59,10 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|public|icons|images|manifest.json).*)"],
+  matcher: [
+    // Skip the auth middleware for static assets and icon/manifest requests so
+    // they're served cleanly by the CDN without any server logic running.
+    // Includes: Next.js statics, favicon family, manifest, and our public dirs.
+    "/((?!_next/static|_next/image|favicon\\.ico|favicon\\.svg|favicon-96x96\\.png|apple-touch-icon\\.png|web-app-manifest-192x192\\.png|web-app-manifest-512x512\\.png|site\\.webmanifest|opengraph-image|robots\\.txt|sitemap\\.xml|icons|images).*)",
+  ],
 };
