@@ -1,6 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 import { createFlagSchema } from "@/lib/validations";
+import { rateLimit } from "@/lib/rate-limit";
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -8,6 +9,9 @@ export async function POST(request: Request) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const rl = await rateLimit(request, "flags", { userId: user.id });
+  if (!rl.allowed) return rl.response!;
 
   const body = await request.json().catch(() => ({}));
   const parsed = createFlagSchema.safeParse(body);

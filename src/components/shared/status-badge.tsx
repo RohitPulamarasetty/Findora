@@ -29,10 +29,26 @@ const STATUS_CONFIG: Record<ItemStatus, { label: string; dot: string; className:
     className:
       "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 ring-1 ring-emerald-500/20",
   },
+  resolved: {
+    label: "Resolved",
+    dot: "bg-emerald-500",
+    className:
+      "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 ring-1 ring-emerald-500/20",
+  },
   closed: {
     label: "Closed",
     dot: "bg-text-muted-fg",
     className: "bg-bg-muted-surface text-text-muted-fg ring-1 ring-border-default",
+  },
+  expired: {
+    label: "Expired",
+    dot: "bg-text-muted-fg",
+    className: "bg-bg-muted-surface text-text-muted-fg ring-1 ring-border-default",
+  },
+  removed: {
+    label: "Removed",
+    dot: "bg-red-500",
+    className: "bg-red-500/10 text-red-600 dark:text-red-400 ring-1 ring-red-500/20",
   },
 };
 

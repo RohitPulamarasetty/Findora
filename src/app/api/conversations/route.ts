@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
+import { rateLimit } from "@/lib/rate-limit";
 
 export async function GET() {
   const supabase = await createClient();
@@ -93,6 +94,9 @@ export async function POST(request: Request) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const rl = await rateLimit(request, "messaging", { userId: user.id });
+  if (!rl.allowed) return rl.response!;
 
   const body = await request.json().catch(() => ({}));
   const { item_id, owner_id } = body as { item_id?: string; owner_id?: string };

@@ -29,6 +29,9 @@ export default async function ProfilePage() {
         `*, user:users(id, full_name, avatar_url), images:item_images(id, url, storage_path, created_at)`
       )
       .eq("user_id", user.id)
+      // Hide soft-removed items from the user's own profile view (admin
+      // analytics can still query the table directly).
+      .neq("status", "removed")
       .order("created_at", { ascending: false }),
   ]);
 
@@ -38,7 +41,9 @@ export default async function ProfilePage() {
   const activeItems = allItems.filter((i) =>
     ["active", "claim_pending", "verified"].includes(i.status)
   );
-  const completedItems = allItems.filter((i) => ["completed", "closed"].includes(i.status));
+  const completedItems = allItems.filter((i) =>
+    ["completed", "resolved", "closed"].includes(i.status)
+  );
 
   const joinedDate = new Date(profile.created_at).toLocaleDateString("en-IN", {
     month: "long",

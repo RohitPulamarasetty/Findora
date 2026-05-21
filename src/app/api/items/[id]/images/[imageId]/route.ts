@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { rateLimit } from "@/lib/rate-limit";
 
 interface RouteParams {
   params: Promise<{ id: string; imageId: string }>;
 }
 
-export async function DELETE(_request: NextRequest, { params }: RouteParams) {
+export async function DELETE(request: NextRequest, { params }: RouteParams) {
   const { id, imageId } = await params;
   const supabase = await createClient();
 
@@ -14,6 +15,9 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const rl = await rateLimit(request, "uploads", { userId: user.id });
+  if (!rl.allowed) return rl.response!;
 
   const { data: item } = await supabase.from("items").select("user_id").eq("id", id).single();
   const { data: profile } = await supabase.from("users").select("role").eq("id", user.id).single();

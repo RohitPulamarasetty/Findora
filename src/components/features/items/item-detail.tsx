@@ -66,7 +66,8 @@ export function ItemDetail({ item, currentUser, existingConversationId }: ItemDe
   const isOwner = currentUser?.id === item.user_id;
   const isAdmin = currentUser?.role === "admin";
   const isActive = item.status === "active";
-  const isCompleted = item.status === "completed" || item.status === "closed";
+  const isCompleted =
+    item.status === "completed" || item.status === "resolved" || item.status === "closed";
   const canMarkReceived = isOwner && !isCompleted;
   const isLost = item.type === "lost";
   const resolveLabel = isLost ? "Mark as Recovered" : "Mark as Handed Over";

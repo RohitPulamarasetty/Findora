@@ -4,7 +4,19 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type ItemType = "lost" | "found";
-export type ItemStatus = "active" | "claim_pending" | "verified" | "completed" | "closed";
+// Lifecycle aligned with supabase/migrations/0012_item_lifecycle.sql.
+// Kept identical to `src/types/items.ts#ItemStatus` (single source of truth
+// is currently the items type module, but database.ts re-declares for the
+// generated-style Database shape below).
+export type ItemStatus =
+  | "active"
+  | "claim_pending"
+  | "verified"
+  | "completed"
+  | "resolved"
+  | "closed"
+  | "expired"
+  | "removed";
 export type ItemCategory =
   | "electronics"
   | "clothing"
@@ -70,6 +82,10 @@ export interface Database {
           date_occurred: string;
           flag_count: number;
           search_vector: string | null;
+          resolved_at: string | null;
+          resolved_by: string | null;
+          handover_confirmed: boolean;
+          resolution_note: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -84,6 +100,10 @@ export interface Database {
           location: string;
           date_occurred: string;
           flag_count?: number;
+          resolved_at?: string | null;
+          resolved_by?: string | null;
+          handover_confirmed?: boolean;
+          resolution_note?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -96,6 +116,10 @@ export interface Database {
           location?: string;
           date_occurred?: string;
           flag_count?: number;
+          resolved_at?: string | null;
+          resolved_by?: string | null;
+          handover_confirmed?: boolean;
+          resolution_note?: string | null;
           updated_at?: string;
         };
         Relationships: [

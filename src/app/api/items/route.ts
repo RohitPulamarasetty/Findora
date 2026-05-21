@@ -4,11 +4,20 @@ import { createClient } from "@/utils/supabase/server";
 import { createItemSchema } from "@/lib/validations";
 import { containsProfanity } from "@/lib/profanity";
 import { RATE_LIMIT_ITEMS_PER_HOUR } from "@/lib/constants";
+import { rateLimit } from "@/lib/rate-limit";
 
 const BASE_SELECT = `*, user:users(id, full_name, avatar_url), images:item_images(id, url, storage_path, created_at)`;
 
 export async function GET(request: NextRequest) {
   const supabase = await createClient();
+
+  // ── Rate limit reads — search/feed traffic from clients. Identifier
+  // prefers the auth user when available, falls back to IP for guests.
+  const {
+    data: { user: rlUser },
+  } = await supabase.auth.getUser();
+  const rl = await rateLimit(request, "items_read", { userId: rlUser?.id });
+  if (!rl.allowed) return rl.response!;
   const { searchParams } = new URL(request.url);
 
   const type = searchParams.get("type");
@@ -33,8 +42,19 @@ export async function GET(request: NextRequest) {
       .limit(limit + 1);
 
     if (type && type !== "all") q = q.eq("type", type as "lost" | "found");
-    if (status === "active") q = q.eq("status", "active");
-    else if (status === "completed") q = q.in("status", ["completed", "closed"]);
+    // Lifecycle-aware filtering:
+    //   active     → only `active` rows (default public feed)
+    //   completed  → resolved/recovered cases (success view)
+    //   all        → everything except `removed` (so soft-deleted rows
+    //                never leak into any user-facing list; admin pages
+    //                query the table directly when they need them)
+    if (status === "active") {
+      q = q.eq("status", "active");
+    } else if (status === "completed") {
+      q = q.in("status", ["completed", "resolved", "closed"]);
+    } else {
+      q = q.neq("status", "removed");
+    }
     if (category) q = q.in("category", category.split(","));
     if (dateFrom) q = q.gte("date_occurred", dateFrom);
     if (dateTo) q = q.lte("date_occurred", dateTo);
@@ -163,6 +183,11 @@ export async function POST(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  // Edge limiter — protects the DB-backed hourly limit below from being
+  // hammered. Distinct bucket from the read path.
+  const rl = await rateLimit(request, "items_write", { userId: user.id });
+  if (!rl.allowed) return rl.response!;
 
   // Check ban status
   const { data: profile } = await supabase

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Razorpay from "razorpay";
 import { SUPPORT_MIN_AMOUNT_PAISE, SUPPORT_MAX_AMOUNT_PAISE } from "@/lib/support";
+import { rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -11,6 +12,10 @@ interface CreateOrderBody {
 }
 
 export async function POST(request: Request) {
+  // Strict payment limiter — donations are rare; bursts are signal of abuse.
+  const rl = await rateLimit(request, "payments");
+  if (!rl.allowed) return rl.response!;
+
   const keyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
   const keySecret = process.env.RAZORPAY_KEY_SECRET;
 

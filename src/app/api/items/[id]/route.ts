@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { updateItemSchema } from "@/lib/validations";
+import { rateLimit } from "@/lib/rate-limit";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -32,6 +33,9 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  const rl = await rateLimit(request, "items_write", { userId: user.id });
+  if (!rl.allowed) return rl.response!;
+
   const { data: item } = await supabase.from("items").select("user_id").eq("id", id).single();
   const { data: profile } = await supabase.from("users").select("role").eq("id", user.id).single();
 
@@ -55,7 +59,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
   return NextResponse.json(data);
 }
 
-export async function DELETE(_request: NextRequest, { params }: RouteParams) {
+export async function DELETE(request: NextRequest, { params }: RouteParams) {
   const { id } = await params;
   const supabase = await createClient();
 
@@ -64,6 +68,9 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  const rl = await rateLimit(request, "items_write", { userId: user.id });
+  if (!rl.allowed) return rl.response!;
+
   const { data: item } = await supabase.from("items").select("user_id").eq("id", id).single();
   const { data: profile } = await supabase.from("users").select("role").eq("id", user.id).single();
 
@@ -71,7 +78,23 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const { error } = await supabase.from("items").delete().eq("id", id);
+  // Soft remove — preserve historical proof, analytics, and any
+  // conversations attached to the case. Hard-delete is reserved for admins
+  // and must be requested explicitly via ?hard=1. Default is soft.
+  const url = new URL(request.url);
+  const hardRequested = url.searchParams.get("hard") === "1";
+  const allowHard = profile?.role === "admin" && hardRequested;
+
+  if (allowHard) {
+    const { error } = await supabase.from("items").delete().eq("id", id);
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return new NextResponse(null, { status: 204 });
+  }
+
+  const { error } = await supabase
+    .from("items")
+    .update({ status: "removed", updated_at: new Date().toISOString() })
+    .eq("id", id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return new NextResponse(null, { status: 204 });
 }

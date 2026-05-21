@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import crypto from "crypto";
 import Razorpay from "razorpay";
 import { createServiceRoleClient } from "@/utils/supabase/admin";
+import { rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -76,6 +77,11 @@ function serializeError(err: unknown): Record<string, unknown> {
 }
 
 export async function POST(request: Request) {
+  // ── Rate limit ───────────────────────────────────────────────────────────
+  // Strict — verify must not be reachable for brute-forcing signatures.
+  const rl = await rateLimit(request, "payments");
+  if (!rl.allowed) return rl.response!;
+
   // ── 0. Env sanity ───────────────────────────────────────────────────────
   const keyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
   const keySecret = process.env.RAZORPAY_KEY_SECRET;

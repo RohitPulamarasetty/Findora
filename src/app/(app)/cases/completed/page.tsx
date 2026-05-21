@@ -23,7 +23,7 @@ export default async function CompletedCasesPage() {
       `*, user:users(id, full_name, avatar_url), images:item_images(id, url, storage_path, created_at)`
     )
     .eq("user_id", user.id)
-    .in("status", ["completed", "closed"])
+    .in("status", ["completed", "resolved", "closed"])
     .order("created_at", { ascending: false });
 
   const completed = (items ?? []) as unknown as ItemWithUser[];

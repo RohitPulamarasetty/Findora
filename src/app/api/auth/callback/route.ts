@@ -1,11 +1,18 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { rateLimit } from "@/lib/rate-limit";
 
 const ALLOWED_DOMAIN = process.env.ALLOWED_EMAIL_DOMAIN ?? "ds.study.iitm.ac.in";
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
 export async function GET(request: NextRequest) {
+  // OAuth callback is unauthenticated — limit by IP only. Strict bucket.
+  const rl = await rateLimit(request, "auth");
+  if (!rl.allowed) {
+    return NextResponse.redirect(`${APP_URL}/login?error=rate_limited`);
+  }
+
   const { searchParams } = new URL(request.url);
   const code = searchParams.get("code");
   const next = searchParams.get("next") ?? "/home";

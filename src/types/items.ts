@@ -1,6 +1,32 @@
 export type ItemType = "lost" | "found";
 
-export type ItemStatus = "active" | "claim_pending" | "verified" | "completed" | "closed";
+// Lifecycle (see supabase/migrations/0012_item_lifecycle.sql):
+//   active         — visible in the public feed
+//   claim_pending  — finder/owner negotiation in progress
+//   verified       — admin or owner verified the handover
+//   completed      — owner confirmed recovery (terminal, success)
+//   resolved       — alias for completed, kept for forward-compat with admin tooling
+//   closed         — manually closed without recovery
+//   expired        — auto-aged out (future: maintenance job)
+//   removed        — soft-deleted (owner DELETE or admin action) — kept for analytics
+export type ItemStatus =
+  | "active"
+  | "claim_pending"
+  | "verified"
+  | "completed"
+  | "resolved"
+  | "closed"
+  | "expired"
+  | "removed";
+
+/** Statuses that should NOT appear in the public feed. */
+export const NON_ACTIVE_ITEM_STATUSES: readonly ItemStatus[] = [
+  "completed",
+  "resolved",
+  "closed",
+  "expired",
+  "removed",
+] as const;
 
 export type ItemCategory =
   | "electronics"
@@ -27,6 +53,11 @@ export interface Item {
   date_occurred: string;
   flag_count: number;
   search_vector: string | null;
+  // Lifecycle audit fields (nullable until resolved/removed).
+  resolved_at: string | null;
+  resolved_by: string | null;
+  handover_confirmed: boolean;
+  resolution_note: string | null;
   created_at: string;
   updated_at: string;
 }

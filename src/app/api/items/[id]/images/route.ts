@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createClient, createAdminClient } from "@/utils/supabase/server";
 import { MAX_ITEM_IMAGES, MAX_IMAGE_SIZE_MB, ALLOWED_IMAGE_TYPES } from "@/lib/constants";
+import { rateLimit } from "@/lib/rate-limit";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -21,6 +22,10 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
   if (authError || !user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  // Strict upload bucket — multipart uploads are the most expensive route.
+  const rl = await rateLimit(request, "uploads", { userId: user.id });
+  if (!rl.allowed) return rl.response!;
 
   // Check item ownership
   const { data: item, error: itemError } = await supabase

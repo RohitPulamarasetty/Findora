@@ -57,7 +57,11 @@ export function ConversationView({
   const { other_user, item, is_locked } = conversation;
   const isLost = item?.type === "lost";
   // "Resolved" means the item itself is closed — either from the server or this session.
-  const isItemResolved = localIsLocked || item?.status === "completed" || item?.status === "closed";
+  const isItemResolved =
+    localIsLocked ||
+    item?.status === "completed" ||
+    item?.status === "resolved" ||
+    item?.status === "closed";
   // "Locked" without being fully resolved means an admin/system locked the conversation
   // (e.g. pending review) without yet marking the item complete.
   const isAdminLocked = is_locked && !isItemResolved;

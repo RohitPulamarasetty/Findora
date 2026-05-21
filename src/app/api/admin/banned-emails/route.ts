@@ -1,6 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { rateLimit } from "@/lib/rate-limit";
 
 const addBanSchema = z.object({
   email: z.string().email(),
@@ -35,6 +36,9 @@ export async function POST(request: Request) {
   const admin = await requireAdmin(supabase);
   if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
+  const rl = await rateLimit(request, "admin", { userId: admin.id });
+  if (!rl.allowed) return rl.response!;
+
   const body = await request.json().catch(() => ({}));
   const parsed = addBanSchema.safeParse(body);
   if (!parsed.success) {
@@ -57,6 +61,9 @@ export async function DELETE(request: Request) {
   const supabase = await createClient();
   const admin = await requireAdmin(supabase);
   if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+  const rl = await rateLimit(request, "admin", { userId: admin.id });
+  if (!rl.allowed) return rl.response!;
 
   const { searchParams } = new URL(request.url);
   const email = searchParams.get("email");
