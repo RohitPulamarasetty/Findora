@@ -2,9 +2,19 @@
 
 import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ThemeProvider } from "next-themes";
-import { Toaster } from "@/components/ui/sonner";
 
+/**
+ * Root client providers. Holds the React Query client only.
+ *
+ * NOTE: ThemeProvider is intentionally NOT mounted here. A single root
+ * ThemeProvider would persist the authenticated user's theme preference
+ * (via localStorage) and apply it to public/auth pages after sign-out.
+ * Instead, theme is owned by the route-group layouts:
+ *   - (public) and (auth) → `<ForceDarkTheme>` (forced dark, ignores storage)
+ *   - (app)               → `<AppTheme>`        (system / user preference)
+ * Toaster is rendered inside each scoped provider so it always reflects
+ * the active theme.
+ */
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
     () =>
@@ -31,12 +41,5 @@ export function Providers({ children }: { children: React.ReactNode }) {
       })
   );
 
-  return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-      <QueryClientProvider client={queryClient}>
-        {children}
-        <Toaster richColors position="top-right" />
-      </QueryClientProvider>
-    </ThemeProvider>
-  );
+  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 }

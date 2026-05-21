@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AppLayout } from "@/components/layout/app-layout";
+import { AppTheme } from "@/components/shared/app-theme";
 import { createClient } from "@/utils/supabase/server";
 
 // Authenticated app surfaces must NEVER be indexed — they expose campus-internal
@@ -43,8 +44,10 @@ export default async function Layout({ children }: { children: React.ReactNode }
   }
 
   return (
-    <AppLayout isAdmin={isAdmin} user={userProfile}>
-      {children}
-    </AppLayout>
+    <AppTheme>
+      <AppLayout isAdmin={isAdmin} user={userProfile}>
+        {children}
+      </AppLayout>
+    </AppTheme>
   );
 }

@@ -143,8 +143,11 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     // Default to `dark` so guests / first paint of public + auth routes
-    // never flash light styles before next-themes hydrates. The authenticated
-    // (app) subtree's ThemeProvider (root providers.tsx) swaps the class to
+    // never flash light styles before any JS runs. ThemeProvider is mounted
+    // per route group (see `(public)/layout.tsx`, `(auth)/layout.tsx`,
+    // `(app)/layout.tsx`) — never at the root — so the authenticated user's
+    // localStorage preference cannot leak into public/auth surfaces after
+    // sign-out. The authenticated (app) ThemeProvider swaps this class to
     // the user's preference synchronously via its inline script before paint.
     // suppressHydrationWarning is required for next-themes class injection.
     <html lang={siteConfig.language} className="dark" suppressHydrationWarning>
