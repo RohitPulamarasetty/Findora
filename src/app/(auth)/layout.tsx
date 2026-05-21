@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AuthLayout } from "@/components/layout/auth-layout";
+import { ForceDarkTheme } from "@/components/shared/force-dark-theme";
 
 // Auth screens (login, callbacks) should not be indexed — they are gateway
 // pages, not content. Indexing them dilutes brand search results and exposes
@@ -18,5 +19,9 @@ export const metadata: Metadata = {
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return <AuthLayout>{children}</AuthLayout>;
+  return (
+    <ForceDarkTheme>
+      <AuthLayout>{children}</AuthLayout>
+    </ForceDarkTheme>
+  );
 }

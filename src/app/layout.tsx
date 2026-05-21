@@ -142,8 +142,12 @@ export const viewport: Viewport = {
 // ── Root Layout ───────────────────────────────────────────────────────────────
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    // suppressHydrationWarning prevents next-themes class injection mismatch
-    <html lang={siteConfig.language} suppressHydrationWarning>
+    // Default to `dark` so guests / first paint of public + auth routes
+    // never flash light styles before next-themes hydrates. The authenticated
+    // (app) subtree's ThemeProvider (root providers.tsx) swaps the class to
+    // the user's preference synchronously via its inline script before paint.
+    // suppressHydrationWarning is required for next-themes class injection.
+    <html lang={siteConfig.language} className="dark" suppressHydrationWarning>
       <head>
         {/* Site-wide JSON-LD: Organization, WebSite, WebApplication */}
         <JsonLd data={[organizationSchema(), websiteSchema(), webApplicationSchema()]} />
