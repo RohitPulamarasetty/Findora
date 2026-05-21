@@ -10,7 +10,14 @@
  * back to localhost — which breaks social previews everywhere.
  */
 
-const FALLBACK_URL = "http://localhost:3000";
+// Production canonical origin. Used as the fallback when NEXT_PUBLIC_APP_URL is
+// not present at build time — critical for Vercel deployments where the env var
+// may not be set. Without this, sitemap.xml and robots.txt would emit
+// `http://localhost:3000/...` URLs and Google Search Console reports
+// "Sitemap could not be read".
+// Local dev still gets http://localhost:3000 because .env.local sets
+// NEXT_PUBLIC_APP_URL explicitly, which takes precedence.
+const FALLBACK_URL = "https://findoraa.vercel.app";
 
 function normalizeUrl(url: string): string {
   return url.replace(/\/+$/, "");
