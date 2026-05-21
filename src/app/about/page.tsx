@@ -93,21 +93,21 @@ export default function AboutPage() {
       {/* ── Ambient background ────────────────────────────────────── */}
       <div aria-hidden className="pointer-events-none fixed inset-0 z-0">
         <div
-          className="absolute inset-0 opacity-[0.12] dark:opacity-[0.18]"
+          className="absolute inset-0 opacity-[0.18] dark:opacity-[0.18]"
           style={{
             backgroundImage:
-              "radial-gradient(rgb(var(--color-text-primary) / 0.18) 1px, transparent 1px)",
+              "radial-gradient(rgb(var(--color-text-primary) / 0.16) 1px, transparent 1px)",
             backgroundSize: "28px 28px",
           }}
         />
-        <div className="absolute left-1/2 top-0 h-[700px] w-[900px] -translate-x-1/2 -translate-y-1/3 rounded-full bg-brand-500/15 blur-[140px] dark:bg-brand-600/25" />
-        <div className="absolute right-[-10%] top-[35%] h-[480px] w-[480px] rounded-full bg-accentc-500/10 blur-[120px] dark:bg-accentc-600/20" />
-        <div className="bg-spark-500/8 dark:bg-spark-500/12 absolute bottom-[-10%] left-[-5%] h-[420px] w-[420px] rounded-full blur-[120px]" />
+        <div className="absolute left-1/2 top-0 h-[700px] w-[900px] -translate-x-1/2 -translate-y-1/3 rounded-full bg-brand-500/20 blur-[140px] dark:bg-brand-600/25" />
+        <div className="bg-accentc-500/14 absolute right-[-10%] top-[35%] h-[480px] w-[480px] rounded-full blur-[120px] dark:bg-accentc-600/20" />
+        <div className="dark:bg-spark-500/12 absolute bottom-[-10%] left-[-5%] h-[420px] w-[420px] rounded-full bg-spark-500/10 blur-[120px]" />
       </div>
 
       <div className="relative z-10">
         {/* ── Top bar ───────────────────────────────────────────── */}
-        <nav className="fixed left-0 right-0 top-0 z-50 border-b border-border-default/70 bg-bg-base/70 backdrop-blur-2xl">
+        <nav className="fixed left-0 right-0 top-0 z-50 border-b border-border-default bg-bg-base/80 shadow-[0_1px_0_rgb(var(--color-border)/0.4)] backdrop-blur-2xl dark:border-border-default/70 dark:bg-bg-base/70 dark:shadow-none">
           <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
             <Link
               href="/"
@@ -144,7 +144,7 @@ export default function AboutPage() {
         {/* ── Hero ──────────────────────────────────────────────── */}
         <section className="relative px-4 pb-14 pt-28 sm:px-6 sm:pb-20 sm:pt-32">
           <div className="relative mx-auto max-w-3xl text-center">
-            <div className="mb-6 inline-flex items-center gap-1.5 rounded-full border border-border-default bg-bg-subtle/70 px-3 py-1 text-[11px] font-medium text-text-secondary backdrop-blur-md">
+            <div className="mb-6 inline-flex items-center gap-1.5 rounded-full border border-border-default bg-bg-subtle px-3 py-1 text-[11px] font-medium text-text-secondary shadow-card backdrop-blur-md dark:border-border-default dark:bg-bg-subtle/70 dark:shadow-none">
               <Sparkles size={11} className="text-brand-500 dark:text-brand-400" />
               <span className="tracking-wide">The story behind Findora</span>
             </div>
@@ -169,10 +169,10 @@ export default function AboutPage() {
         {/* ── Founder card ─────────────────────────────────────── */}
         <section className="relative px-4 pb-16 sm:px-6 sm:pb-20">
           <div className="mx-auto max-w-3xl">
-            <div className="relative overflow-hidden rounded-3xl border border-border-default bg-bg-subtle/80 p-6 backdrop-blur-md dark:bg-bg-subtle/40 sm:p-9">
+            <div className="relative overflow-hidden rounded-3xl border border-border-default bg-bg-subtle p-6 shadow-card backdrop-blur-md dark:border-border-default dark:bg-bg-subtle/40 dark:shadow-none sm:p-9">
               {/* inner glows */}
-              <div className="bg-brand-500/12 pointer-events-none absolute -left-16 -top-16 h-60 w-60 rounded-full blur-[80px] dark:bg-brand-500/20" />
-              <div className="bg-accentc-500/12 dark:bg-accentc-500/18 pointer-events-none absolute -bottom-16 -right-16 h-60 w-60 rounded-full blur-[80px]" />
+              <div className="bg-brand-500/14 pointer-events-none absolute -left-16 -top-16 h-60 w-60 rounded-full blur-[80px] dark:bg-brand-500/20" />
+              <div className="bg-accentc-500/14 dark:bg-accentc-500/18 pointer-events-none absolute -bottom-16 -right-16 h-60 w-60 rounded-full blur-[80px]" />
 
               <div className="relative flex flex-col items-center gap-6 text-center sm:flex-row sm:items-start sm:gap-8 sm:text-left">
                 {/* Profile avatar with gradient ring */}
@@ -193,13 +193,13 @@ export default function AboutPage() {
                 </div>
 
                 <div className="min-w-0 flex-1">
-                  <div className="dark:text-brand-300 mb-2 inline-flex items-center gap-1.5 rounded-full border border-brand-500/25 bg-brand-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-brand-600">
+                  <div className="dark:text-brand-300 mb-2 inline-flex items-center gap-1.5 rounded-full border border-brand-500/30 bg-brand-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-brand-700 dark:border-brand-500/25">
                     Creator of Findora
                   </div>
                   <h2 className="text-[22px] font-bold tracking-[-0.02em] sm:text-[26px]">
                     Rohit Pulamarasetty
                   </h2>
-                  <p className="mt-1 inline-flex items-center gap-1.5 text-[12.5px] text-text-muted-fg">
+                  <p className="mt-1 inline-flex items-center gap-1.5 text-[12.5px] text-text-secondary">
                     <GraduationCap size={13} className="text-text-muted-fg" />
                     Engineering Student at IIT Madras
                   </p>
@@ -222,7 +222,7 @@ export default function AboutPage() {
                     ].map(({ label, Icon }) => (
                       <span
                         key={label}
-                        className="inline-flex items-center gap-1.5 rounded-full border border-border-default bg-bg-subtle/60 px-2.5 py-1 text-[11px] font-medium text-text-secondary backdrop-blur-sm"
+                        className="inline-flex items-center gap-1.5 rounded-full border border-border-default bg-bg-base px-2.5 py-1 text-[11px] font-medium text-text-secondary shadow-card backdrop-blur-sm dark:bg-bg-subtle/60 dark:shadow-none"
                       >
                         <Icon size={11} className="dark:text-brand-300 text-brand-500" />
                         {label}
@@ -239,13 +239,13 @@ export default function AboutPage() {
         <section className="relative px-4 pb-16 sm:px-6 sm:pb-20">
           <div className="mx-auto max-w-5xl">
             <div className="mb-10 text-center sm:mb-12">
-              <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-border-default bg-bg-subtle/60 px-2.5 py-0.5 text-[10.5px] font-semibold uppercase tracking-[0.15em] text-text-secondary">
+              <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-border-default bg-bg-subtle px-2.5 py-0.5 text-[10.5px] font-semibold uppercase tracking-[0.15em] text-text-secondary shadow-card dark:bg-bg-subtle/60 dark:shadow-none">
                 Why Findora exists
               </div>
               <h2 className="text-[22px] font-bold tracking-[-0.02em] sm:text-[28px]">
                 A small problem worth solving well
               </h2>
-              <p className="mx-auto mt-2 max-w-[48ch] text-[13px] text-text-muted-fg sm:text-sm">
+              <p className="mx-auto mt-2 max-w-[48ch] text-[13px] text-text-secondary sm:text-sm">
                 Lost items on campus rarely come back — not because no one finds them, but because
                 the way we recover them is fragmented.
               </p>
@@ -284,7 +284,7 @@ export default function AboutPage() {
               ].map((card) => (
                 <div
                   key={card.title}
-                  className="group relative overflow-hidden rounded-2xl border border-border-default bg-bg-subtle/60 p-5 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-border-strong hover:bg-bg-subtle/80 dark:bg-bg-subtle/30 dark:hover:bg-bg-subtle/50"
+                  className="hover:shadow-card-hover group relative overflow-hidden rounded-2xl border border-border-default bg-bg-subtle p-5 shadow-card backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-border-strong dark:bg-bg-subtle/30 dark:shadow-none dark:hover:bg-bg-subtle/50 dark:hover:shadow-none"
                 >
                   <div
                     className={`pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-gradient-to-br ${card.accent} opacity-60 blur-2xl transition-opacity duration-300 group-hover:opacity-100`}
@@ -309,7 +309,7 @@ export default function AboutPage() {
         {/* ── Support Findora ─────────────────────────────────── */}
         <section className="relative px-4 pb-16 sm:px-6 sm:pb-20">
           <div className="mx-auto max-w-3xl">
-            <SupportCTA variant="marketing" />
+            <SupportCTA variant="app" />
           </div>
         </section>
 
@@ -317,7 +317,7 @@ export default function AboutPage() {
         <section className="relative px-4 pb-16 sm:px-6 sm:pb-20">
           <div className="mx-auto max-w-3xl">
             <div className="flex flex-col items-center gap-4 text-center">
-              <p className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-text-muted-fg">
+              <p className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-text-secondary">
                 Connect
               </p>
               <div className="flex items-center gap-2">
@@ -328,7 +328,7 @@ export default function AboutPage() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={label}
-                    className="group flex h-10 w-10 items-center justify-center rounded-xl border border-border-default bg-bg-subtle/60 text-text-secondary backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-border-strong hover:bg-bg-subtle/90 hover:text-text-base hover:shadow-[0_8px_24px_rgb(var(--color-brand-500)/0.2)]"
+                    className="group flex h-10 w-10 items-center justify-center rounded-xl border border-border-default bg-bg-subtle text-text-secondary shadow-card backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-border-strong hover:bg-bg-base hover:text-text-base hover:shadow-[0_8px_24px_rgb(var(--color-brand-500)/0.2)] dark:bg-bg-subtle/60 dark:shadow-none dark:hover:bg-bg-subtle/90"
                   >
                     {icon}
                   </Link>
@@ -363,7 +363,7 @@ export default function AboutPage() {
               </Link>
               <Link
                 href="/"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-border-default bg-bg-subtle/60 px-7 py-3.5 text-[13.5px] font-semibold text-text-base backdrop-blur-md transition-all hover:border-border-strong hover:bg-bg-subtle/90 sm:w-auto"
+                className="hover:shadow-card-hover inline-flex w-full items-center justify-center gap-2 rounded-xl border border-border-default bg-bg-subtle px-7 py-3.5 text-[13.5px] font-semibold text-text-base shadow-card backdrop-blur-md transition-all hover:border-border-strong hover:bg-bg-base dark:bg-bg-subtle/60 dark:shadow-none dark:hover:bg-bg-subtle/90 dark:hover:shadow-none sm:w-auto"
               >
                 Return Home
               </Link>
@@ -372,7 +372,7 @@ export default function AboutPage() {
         </section>
 
         {/* ── Footer ──────────────────────────────────────────── */}
-        <footer className="relative border-t border-border-default/70 px-4 py-8 sm:px-6">
+        <footer className="relative border-t border-border-default px-4 py-8 dark:border-border-default/70 sm:px-6">
           <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 sm:flex-row">
             <div className="flex items-center gap-2.5">
               <div className="relative flex h-6 w-6 items-center justify-center overflow-hidden rounded-md ring-1 ring-border-default">
@@ -386,13 +386,13 @@ export default function AboutPage() {
                 />
               </div>
               <span className="text-[13px] font-semibold text-text-base">Findora</span>
-              <span className="hidden text-[11px] text-text-muted-fg sm:inline-block">
+              <span className="hidden text-[11px] text-text-secondary sm:inline-block">
                 &middot; &copy; {new Date().getFullYear()}
               </span>
             </div>
-            <p className="text-center text-[11.5px] text-text-muted-fg">
+            <p className="text-center text-[11.5px] text-text-secondary">
               Designed &amp; Developed by{" "}
-              <span className="font-medium text-text-secondary">Rohit Pulamarasetty</span>
+              <span className="font-medium text-text-base">Rohit Pulamarasetty</span>
             </p>
           </div>
         </footer>
