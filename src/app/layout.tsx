@@ -118,16 +118,12 @@ export const metadata: Metadata = {
     shortcut: ["/favicon.ico"],
   },
   manifest: "/site.webmanifest",
-  ...(siteConfig.verification.google || siteConfig.verification.bing
-    ? {
-        verification: {
-          ...(siteConfig.verification.google ? { google: siteConfig.verification.google } : {}),
-          ...(siteConfig.verification.bing
-            ? { other: { "msvalidate.01": siteConfig.verification.bing } }
-            : {}),
-        },
-      }
-    : {}),
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+    ...(siteConfig.verification.bing
+      ? { other: { "msvalidate.01": siteConfig.verification.bing } }
+      : {}),
+  },
 };
 
 // ── Viewport ──────────────────────────────────────────────────────────────────
