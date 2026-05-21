@@ -6,7 +6,7 @@
  * JSON-LD schema generators, robots.ts, sitemap.ts.
  *
  * Set NEXT_PUBLIC_APP_URL in production (Vercel env) to your real domain
- * (e.g. https://findora.app). Without it, OG image URLs and canonicals fall
+ * (e.g. https://findora.live). Without it, OG image URLs and canonicals fall
  * back to localhost — which breaks social previews everywhere.
  */
 
@@ -17,7 +17,7 @@
 // "Sitemap could not be read".
 // Local dev still gets http://localhost:3000 because .env.local sets
 // NEXT_PUBLIC_APP_URL explicitly, which takes precedence.
-const FALLBACK_URL = "https://findoraa.vercel.app";
+const FALLBACK_URL = "https://findora.live";
 
 function normalizeUrl(url: string): string {
   return url.replace(/\/+$/, "");
