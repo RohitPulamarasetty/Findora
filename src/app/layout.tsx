@@ -72,13 +72,13 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: siteConfig.locale,
-    title: siteConfig.fullName,
-    description: siteConfig.description,
+    title: `${siteConfig.tagline} | ${siteConfig.name}`,
+    description: siteConfig.shortDescription,
     url: siteConfig.url,
     siteName: siteConfig.name,
     images: [
       {
-        url: absoluteUrl(siteConfig.ogImage.path),
+        url: `https://findora.live${siteConfig.ogImage.path}`,
         width: siteConfig.ogImage.width,
         height: siteConfig.ogImage.height,
         alt: siteConfig.ogImage.alt,
@@ -88,13 +88,13 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: siteConfig.fullName,
-    description: siteConfig.description,
+    title: `${siteConfig.tagline} | ${siteConfig.name}`,
+    description: siteConfig.shortDescription,
     site: siteConfig.social.twitter,
     creator: siteConfig.social.twitter,
     images: [
       {
-        url: absoluteUrl(siteConfig.ogImage.path),
+        url: `https://findora.live${siteConfig.ogImage.path}`,
         alt: siteConfig.ogImage.alt,
         width: siteConfig.ogImage.width,
         height: siteConfig.ogImage.height,

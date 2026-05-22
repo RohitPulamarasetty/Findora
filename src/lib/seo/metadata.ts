@@ -55,7 +55,7 @@ export function buildMetadata(opts: BuildMetadataOptions = {}): Metadata {
   const resolvedImagePath = image ?? siteConfig.ogImage.path;
   const ogImageUrl = resolvedImagePath.startsWith("http")
     ? resolvedImagePath
-    : absoluteUrl(resolvedImagePath);
+    : `https://findora.live${resolvedImagePath.startsWith("/") ? "" : "/"}${resolvedImagePath}`;
 
   const finalKeywords = keywords
     ? Array.from(new Set([...siteConfig.keywords, ...keywords]))

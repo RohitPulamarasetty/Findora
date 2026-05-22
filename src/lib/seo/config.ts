@@ -91,9 +91,9 @@ export const siteConfig = {
   // which matches the OG 1.91:1 spec, so social platforms render it
   // without cropping the headline or trust signals.
   ogImage: {
-    path: "/og_img.png",
-    width: 1731,
-    height: 909,
+    path: "/og_img.png?v=2",
+    width: 1200,
+    height: 630,
     alt: "Findora — Find what's lost. Return what's found. The trusted campus lost & found platform for IITM DS students.",
   },
 
