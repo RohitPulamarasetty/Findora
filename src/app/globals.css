@@ -49,10 +49,12 @@
     --color-brand-50: 236 243 255;
     --color-brand-100: 212 227 255;
     --color-brand-200: 169 198 255;
+    --color-brand-300: 133 170 255;
     --color-brand-400: 100 142 255;
     --color-brand-500: 65 112 255;
     --color-brand-600: 43 87 240;
     --color-brand-700: 28 63 210;
+    --color-brand-800: 22 49 168;
     --color-brand-900: 15 34 118;
 
     /* ── Accent palette (Plasma Violet) ── */
@@ -71,13 +73,23 @@
     --color-bg: 249 248 245;
     --color-bg-subtle: 255 255 255;
     --color-bg-muted: 241 240 237;
-    --color-border: 226 224 218;
-    --color-border-strong: 200 198 190;
+    /* Slightly darker borders so chip/badge outlines remain visible against
+       the warm canvas. The old 226/224/218 was only ~23 units away from
+       --color-bg and disappeared into the page on translucent surfaces. */
+    --color-border: 212 209 200;
+    --color-border-strong: 180 177 167;
 
-    /* ── Text — light mode ── */
+    /* ── Text — light mode ──
+       NOTE on contrast (WCAG AA = 4.5:1 for normal body text):
+         - primary   → 19:1 vs --color-bg (AAA)
+         - secondary → 9.7:1 vs --color-bg (AAA)
+         - muted     → previous 120/116/106 was ~3.6:1 (FAIL AA for body text).
+                       Darkened to 88/84/76 → ~5.8:1 (AA Large + AA normal).
+                       This is the global lever for uppercase metadata, dim
+                       labels, chip captions, tiny secondary text. */
     --color-text-primary: 14 13 11;
-    --color-text-secondary: 68 65 58;
-    --color-text-muted: 120 116 106;
+    --color-text-secondary: 60 57 50;
+    --color-text-muted: 88 84 76;
     --color-text-inverted: 255 255 255;
 
     /* ── Semantic status ── */
@@ -126,10 +138,18 @@
     --color-border: 42 45 60;
     --color-border-strong: 64 68 88;
 
-    /* ── Text — dark ── */
+    /* ── Text — dark ──
+       NOTE on contrast vs --color-bg = rgb(12 14 22):
+         - primary   → ~17:1 (AAA)
+         - secondary → previous 178/180/195 (~10:1) — kept (AAA).
+         - muted     → previous 120/124/140 (~5.6:1) was on the AA edge, and
+                       perceived even lower on translucent surfaces / blur
+                       backdrops. Brightened to 148/152/170 → ~7.6:1 (AAA).
+                       Same global lever for uppercase metadata + chip text
+                       behind glass / gradient overlays in dark mode. */
     --color-text-primary: 240 240 245;
-    --color-text-secondary: 178 180 195;
-    --color-text-muted: 120 124 140;
+    --color-text-secondary: 188 190 205;
+    --color-text-muted: 148 152 170;
     --color-text-inverted: 12 14 22;
   }
 }

@@ -34,7 +34,7 @@ export function SupportCTA({
         />
         <div className="relative grid items-center gap-6 sm:grid-cols-[1fr_auto] sm:gap-10">
           <div>
-            <div className="dark:text-brand-300 mb-3 inline-flex items-center gap-1.5 rounded-full border border-brand-500/25 bg-brand-500/10 px-2.5 py-0.5 text-[10.5px] font-semibold uppercase tracking-[0.15em] text-brand-600">
+            <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-brand-500/25 bg-brand-500/10 px-2.5 py-0.5 text-[10.5px] font-semibold uppercase tracking-[0.15em] text-brand-600 dark:text-brand-300">
               <Heart size={11} />
               {ctaLabel}
             </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,6 +22,7 @@ interface EditItemFormProps {
 export function EditItemForm({ item }: EditItemFormProps) {
   const router = useRouter();
   const { mutateAsync: updateItem, isPending } = useUpdateItem(item.id);
+  const submittingRef = useRef(false);
 
   const form = useForm<CreateItemInput>({
     resolver: zodResolver(createItemSchema),
@@ -35,13 +37,27 @@ export function EditItemForm({ item }: EditItemFormProps) {
   });
 
   async function handleSubmit(values: CreateItemInput) {
-    await updateItem(values);
-    router.push(`/items/${item.id}`);
+    if (submittingRef.current || isPending) return;
+    submittingRef.current = true;
+    try {
+      await updateItem(values);
+      router.push(`/items/${item.id}`);
+    } finally {
+      submittingRef.current = false;
+    }
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+      <form
+        onSubmit={form.handleSubmit(handleSubmit)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && (e.target as HTMLElement).tagName !== "TEXTAREA") {
+            e.preventDefault();
+          }
+        }}
+        className="space-y-8"
+      >
         <BasicInfoStep form={form} />
         <DetailsStep form={form} />
         <Button type="submit" disabled={isPending} className="w-full gap-2">

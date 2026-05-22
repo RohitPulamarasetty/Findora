@@ -12,7 +12,16 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error(error);
+    // Capture for telemetry (Sentry if configured, structured log otherwise).
+    // Dynamic import keeps the logger out of the public-route hot bundle.
+    import("@/lib/logger")
+      .then(({ captureException }) =>
+        captureException(error, { event: "client_error_boundary", digest: error.digest })
+      )
+      .catch(() => {
+        // eslint-disable-next-line no-console
+        console.error(error);
+      });
   }, [error]);
 
   return (

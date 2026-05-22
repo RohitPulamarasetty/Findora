@@ -6,6 +6,7 @@ import { Home, PlusCircle, MessageCircle, User, MoreHorizontal } from "lucide-re
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useAppStore } from "@/stores/app-store";
+import { useNavTransition } from "@/hooks/use-nav-transition";
 import { HamburgerSheet } from "./hamburger-sheet";
 
 const NAV_ITEMS = [
@@ -18,6 +19,7 @@ const NAV_ITEMS = [
 export function BottomNav() {
   const pathname = usePathname();
   const unreadMessages = useAppStore((s) => s.unreadMessages);
+  const { isPending, pendingHref, linkProps } = useNavTransition();
 
   return (
     <nav aria-label="Main navigation" className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
@@ -27,7 +29,12 @@ export function BottomNav() {
       >
         <div className="flex h-[62px] items-center justify-around rounded-[26px] border border-border-default/40 bg-bg-base/80 shadow-[0_8px_32px_rgba(0,0,0,0.14),0_2px_8px_rgba(0,0,0,0.08),0_0_0_0.5px_rgba(0,0,0,0.06)] backdrop-blur-2xl dark:border-white/[0.07] dark:bg-bg-subtle/85 dark:shadow-[0_8px_40px_rgba(0,0,0,0.65),0_2px_12px_rgba(0,0,0,0.4),0_0_0_0.5px_rgba(255,255,255,0.04)]">
           {NAV_ITEMS.map(({ label, href, Icon }) => {
-            const active = pathname === href || (href !== "/home" && pathname.startsWith(href));
+            const isActiveRoute =
+              pathname === href || (href !== "/home" && pathname.startsWith(href));
+            // Optimistic active: while we're navigating *to* this href, treat
+            // it as active so the pill/icon flips immediately on tap.
+            const isPendingTarget = isPending && pendingHref === href;
+            const active = isActiveRoute || isPendingTarget;
             const isReport = href === "/report";
 
             return (
@@ -38,6 +45,7 @@ export function BottomNav() {
               >
                 <Link
                   href={href}
+                  {...linkProps(href)}
                   aria-label={label}
                   aria-current={active ? "page" : undefined}
                   className="relative flex flex-col items-center gap-1"

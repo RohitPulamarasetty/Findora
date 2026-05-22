@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Lock } from "lucide-react";
 import { motion } from "framer-motion";
 import { UserAvatar } from "@/components/shared/user-avatar";
+import { useNavTransition } from "@/hooks/use-nav-transition";
 import { cn } from "@/lib/utils";
 import type { ConversationWithPreview } from "@/types/conversations";
 
@@ -14,6 +15,9 @@ interface ConversationRowProps {
 
 function ConversationRowImpl({ conversation }: ConversationRowProps) {
   const { id, other_user, item, last_message, unread_count, is_locked } = conversation;
+  const href = `/messages/${id}`;
+  const { isPending, pendingHref, linkProps } = useNavTransition();
+  const isOpening = isPending && pendingHref === href;
 
   function timeAgoLabel(dateStr: string) {
     const diff = Date.now() - new Date(dateStr).getTime();
@@ -38,12 +42,15 @@ function ConversationRowImpl({ conversation }: ConversationRowProps) {
       transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
     >
       <Link
-        href={`/messages/${id}`}
+        href={href}
+        {...linkProps(href)}
+        aria-busy={isOpening || undefined}
         className={cn(
           "flex items-center gap-3.5 rounded-2xl px-4 py-3.5 transition-all duration-150",
           hasUnread
             ? "hover:bg-brand-500/8 dark:bg-brand-500/6 bg-brand-500/5 ring-1 ring-brand-500/15 dark:ring-brand-500/20"
-            : "bg-bg-subtle ring-1 ring-border-default/60 hover:bg-bg-muted-surface hover:ring-border-strong"
+            : "bg-bg-subtle ring-1 ring-border-default/60 hover:bg-bg-muted-surface hover:ring-border-strong",
+          isOpening && "pointer-events-none opacity-70"
         )}
       >
         {/* Avatar */}

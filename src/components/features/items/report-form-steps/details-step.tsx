@@ -10,6 +10,7 @@ import {
   FormDescription,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
+import { VerificationQuestionsField } from "../verification-questions-field";
 import type { CreateItemInput } from "@/lib/validations";
 
 interface DetailsStepProps {
@@ -20,6 +21,10 @@ const inputClass =
   "w-full rounded-xl border border-border-default bg-bg-base px-3.5 py-2.5 text-sm text-text-base placeholder:text-text-muted-fg transition-colors focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20";
 
 export function DetailsStep({ form }: DetailsStepProps) {
+  // Verification questions are only meaningful for "found" item reports —
+  // the finder sets them so a claimant has to prove ownership before the
+  // finder approves and hands the item over.
+  const showVerificationQuestions = form.watch("type") === "found";
   return (
     <div className="space-y-5">
       {/* Description */}
@@ -93,6 +98,22 @@ export function DetailsStep({ form }: DetailsStepProps) {
           </FormItem>
         )}
       />
+
+      {/* Verification questions — only for "lost" items */}
+      {showVerificationQuestions && (
+        <FormField
+          control={form.control}
+          name="verification_questions"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <VerificationQuestionsField value={field.value ?? []} onChange={field.onChange} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      )}
     </div>
   );
 }

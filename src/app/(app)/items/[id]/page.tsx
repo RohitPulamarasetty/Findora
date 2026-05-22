@@ -29,7 +29,9 @@ export default async function ItemDetailPage({ params }: PageProps) {
     supabase
       .from("items")
       .select(
-        `*, user:users(id, full_name, avatar_url), images:item_images(id, url, storage_path, created_at)`
+        // `recoveries_count` populates the reporter's TrustBadge (mig. 0015).
+        // FK pinned because items has two refs to users (user_id + resolved_by).
+        `*, user:users!items_user_id_fkey(id, full_name, avatar_url, recoveries_count), images:item_images(id, url, storage_path, created_at)`
       )
       .eq("id", id)
       .single(),

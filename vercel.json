@@ -1,0 +1,21 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+
+  "crons": [
+    {
+      "path": "/api/cron/expire-items",
+      "schedule": "0 4 * * *"
+    },
+    {
+      "path": "/api/cron/reconcile-counters",
+      "schedule": "0 3 * * 0"
+    }
+  ],
+
+  "headers": [
+    {
+      "source": "/api/health",
+      "headers": [{ "key": "Cache-Control", "value": "no-store, max-age=0" }]
+    }
+  ]
+}

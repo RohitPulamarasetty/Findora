@@ -3,9 +3,10 @@
 import { useCallback, useRef } from "react";
 import { ImagePlus, X, AlertCircle } from "lucide-react";
 import Image from "next/image";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { validateImageFile } from "@/lib/file-validation";
-import { MAX_ITEM_IMAGES } from "@/lib/constants";
+import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE_MB, MAX_ITEM_IMAGES } from "@/lib/constants";
 
 interface ImageUploaderProps {
   maxFiles?: number;
@@ -25,13 +26,34 @@ export function ImageUploader({
   const handleFiles = useCallback(
     (incoming: FileList | null) => {
       if (!incoming) return;
-      const valid: File[] = [];
       const remaining = maxFiles - value.length;
-      Array.from(incoming)
-        .slice(0, remaining)
-        .forEach((file) => {
-          if (validateImageFile(file).valid) valid.push(file);
-        });
+      const picked = Array.from(incoming);
+      const truncated = picked.slice(0, remaining);
+
+      const valid: File[] = [];
+      let badType = 0;
+      let oversize = 0;
+
+      for (const file of truncated) {
+        if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+          badType++;
+          continue;
+        }
+        if (file.size > MAX_IMAGE_SIZE_MB * 1024 * 1024) {
+          oversize++;
+          continue;
+        }
+        // Defence-in-depth: keep the canonical validator authoritative.
+        if (!validateImageFile(file).valid) continue;
+        valid.push(file);
+      }
+
+      if (badType > 0) toast.error("Only JPG, PNG, and WEBP images are supported.");
+      if (oversize > 0) toast.error(`Image must be smaller than ${MAX_IMAGE_SIZE_MB} MB.`);
+      if (picked.length > remaining) {
+        toast.error(`You can attach up to ${maxFiles} photos.`);
+      }
+
       if (valid.length > 0) onChange([...value, ...valid]);
     },
     [value, onChange, maxFiles]

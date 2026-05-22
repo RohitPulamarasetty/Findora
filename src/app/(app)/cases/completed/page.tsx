@@ -20,7 +20,8 @@ export default async function CompletedCasesPage() {
   const { data: items } = await supabase
     .from("items")
     .select(
-      `*, user:users(id, full_name, avatar_url), images:item_images(id, url, storage_path, created_at)`
+      // FK pinned because items has two refs to users (user_id + resolved_by).
+      `*, user:users!items_user_id_fkey(id, full_name, avatar_url), images:item_images(id, url, storage_path, created_at)`
     )
     .eq("user_id", user.id)
     .in("status", ["completed", "resolved", "closed"])

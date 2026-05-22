@@ -9,9 +9,11 @@ import { Input } from "@/components/ui/input";
 interface EditNameFormProps {
   initialName: string;
   userId: string;
+  /** Called after a successful save so the parent can patch the query cache. */
+  onSaveSuccess?: (newName: string) => void;
 }
 
-export function EditNameForm({ initialName, userId }: EditNameFormProps) {
+export function EditNameForm({ initialName, userId, onSaveSuccess }: EditNameFormProps) {
   const [name, setName] = useState(initialName);
   const [isPending, setIsPending] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -31,6 +33,9 @@ export function EditNameForm({ initialName, userId }: EditNameFormProps) {
     } else {
       toast.success("Name updated");
       setIsEditing(false);
+      // Optimistically patch the profile user cache before the realtime
+      // UPDATE event arrives (avoids a ~200–400 ms display lag).
+      onSaveSuccess?.(trimmed);
     }
   }
 

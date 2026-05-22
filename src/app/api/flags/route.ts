@@ -50,7 +50,15 @@ export async function POST(request: Request) {
     .select()
     .single();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    // 23505 = unique_violation. Partial unique indexes
+    //   flags_reporter_item_uniq / flags_reporter_message_uniq (mig. 0013)
+    // protect against the SELECT-then-INSERT race above. Translate to 409.
+    if ((error as { code?: string }).code === "23505") {
+      return NextResponse.json({ error: "You have already flagged this" }, { status: 409 });
+    }
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 
   return NextResponse.json(flag, { status: 201 });
 }

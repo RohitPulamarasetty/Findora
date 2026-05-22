@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import {
   MapPin,
   Calendar,
@@ -18,11 +20,15 @@ import { ImageGallery } from "./image-gallery";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { CategoryBadge } from "@/components/shared/category-badge";
 import { UserAvatar } from "@/components/shared/user-avatar";
+import { TrustBadge } from "@/components/shared/trust-badge";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { FlagDialog } from "./flag-dialog";
+import { ClaimSheet } from "./claim-sheet";
+import { ClaimReviewSection } from "./claim-review-section";
 import { Button } from "@/components/ui/button";
 import { useDeleteItem } from "@/hooks/use-delete-item";
 import { useMarkReceived } from "@/hooks/use-mark-received";
+import { useRealtimeItem } from "@/hooks/use-realtime-item";
 import { cn } from "@/lib/utils";
 import type { ItemWithUser } from "@/types/items";
 import type { Database } from "@/types/database";
@@ -59,9 +65,29 @@ export function ItemDetail({ item, currentUser, existingConversationId }: ItemDe
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [markReceivedOpen, setMarkReceivedOpen] = useState(false);
   const [flagOpen, setFlagOpen] = useState(false);
+  const [claimOpen, setClaimOpen] = useState(false);
 
   const { mutate: deleteItem, isPending: isDeleting } = useDeleteItem();
   const { mutate: markReceived, isPending: isMarkingReceived } = useMarkReceived(item.id);
+
+  // ── Realtime ──────────────────────────────────────────────────────────────
+  // Scoped to this exact item id. On UPDATE the hook calls router.refresh()
+  // so the SSR'd page re-renders with the latest row (status, title,
+  // description, images, auto_hidden). On DELETE or status='removed' it
+  // fires the callback below — toast once, then redirect to /home. The
+  // `removedRef` guard makes the redirect idempotent across rapid duplicate
+  // events (realtime DELETE + UPDATE-to-'removed' can arrive in either
+  // order; we only want one toast and one navigation).
+  const router = useRouter();
+  const removedRef = useRef(false);
+  useRealtimeItem(item.id, {
+    onRemoved: () => {
+      if (removedRef.current) return;
+      removedRef.current = true;
+      toast.info("This item is no longer available.");
+      router.push("/home");
+    },
+  });
 
   const isOwner = currentUser?.id === item.user_id;
   const isAdmin = currentUser?.role === "admin";
@@ -136,11 +162,15 @@ export function ItemDetail({ item, currentUser, existingConversationId }: ItemDe
         </div>
         <div className="flex items-center gap-2">
           <UserAvatar user={item.user} size="sm" showName />
+          <TrustBadge recoveriesCount={item.user.recoveries_count ?? 0} size="sm" />
           <span className="hidden text-[11px] text-text-muted-fg sm:block">
             {formatDate(item.created_at)}
           </span>
         </div>
       </div>
+
+      {/* ── Owner-only: pending claims ───────────────────────────── */}
+      {isOwner && isActive && <ClaimReviewSection itemId={item.id} />}
 
       {/* ── Recovered banner ──────────────────────────────────────── */}
       {isCompleted && (
@@ -162,12 +192,34 @@ export function ItemDetail({ item, currentUser, existingConversationId }: ItemDe
       {/* ── Actions ───────────────────────────────────────────────── */}
       {currentUser && (
         <div className="space-y-2.5">
-          {/* Connect CTA */}
+          {/* Claim this item — only for found items, non-owner, active.
+              The finder reviews answers to their verification questions and
+              approves/rejects the ownership claim. */}
+          {!isOwner && isActive && !isLost && (
+            <Button
+              size="lg"
+              className="shadow-glow-brand group h-12 w-full gap-2 rounded-2xl"
+              onClick={() => setClaimOpen(true)}
+            >
+              <CheckCircle size={16} />
+              Claim this item
+              <ArrowRight
+                size={13}
+                className="ml-auto transition-transform group-hover:translate-x-0.5"
+              />
+            </Button>
+          )}
+
+          {/* Connect CTA — primary action for lost items (normal messaging
+              flow), and a secondary outline alongside Claim for found items
+              (lets a claimant ask clarifying questions before formally
+              submitting a claim). */}
           {!isOwner && isActive && (
             <Button
               asChild
               size="lg"
-              className="shadow-glow-brand group h-12 w-full gap-2 rounded-2xl"
+              variant={isLost ? "default" : "outline"}
+              className={cn("group h-12 w-full gap-2 rounded-2xl", isLost && "shadow-glow-brand")}
             >
               {existingConversationId ? (
                 <Link href={`/messages/${existingConversationId}`}>
@@ -256,6 +308,13 @@ export function ItemDetail({ item, currentUser, existingConversationId }: ItemDe
         onConfirm={() => deleteItem(item.id)}
       />
       <FlagDialog open={flagOpen} onOpenChange={setFlagOpen} itemId={item.id} />
+      <ClaimSheet
+        open={claimOpen}
+        onOpenChange={setClaimOpen}
+        itemId={item.id}
+        itemTitle={item.title}
+        verificationQuestions={item.verification_questions ?? []}
+      />
       <ConfirmDialog
         open={markReceivedOpen}
         onOpenChange={setMarkReceivedOpen}

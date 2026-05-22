@@ -11,9 +11,11 @@ import { ChatInput } from "@/components/features/messages/chat-input";
 import { TypingIndicator } from "@/components/features/messages/typing-indicator";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { UserAvatar } from "@/components/shared/user-avatar";
+import { TrustBadge } from "@/components/shared/trust-badge";
 import { Button } from "@/components/ui/button";
 import { useMessages } from "@/hooks/use-messages";
 import { useSendMessage } from "@/hooks/use-send-message";
+import { useRealtimeConversation } from "@/hooks/use-realtime-conversation";
 import { queryKeys } from "@/lib/query-keys";
 import type { ConversationWithPreview } from "@/types/conversations";
 
@@ -41,6 +43,24 @@ export function ConversationView({
   // Track locked state locally so the UI updates immediately after resolving,
   // without requiring a full server round-trip / router refresh.
   const [localIsLocked, setLocalIsLocked] = useState(conversation.is_locked);
+  const queryClient = useQueryClient();
+  // Synchronous lock so the confirm dialog can't be re-opened and re-fired
+  // while the mutation is in flight (isResolving takes a frame to propagate).
+  const resolvingRef = useRef(false);
+
+  // ── Realtime: scoped to this exact conversation id.
+  // The item-complete trigger flips conversations.is_locked = true when the
+  // owner marks the item recovered. With this hook, the *other* participant
+  // (and any other tab) sees the lock flip live — chat input disables, lock
+  // banner appears — without needing to refresh.
+  useRealtimeConversation(conversationId, {
+    onUpdate: (next) => {
+      if (next.is_locked === true && !localIsLocked) {
+        setLocalIsLocked(true);
+        void queryClient.invalidateQueries({ queryKey: queryKeys.conversations.lists() });
+      }
+    },
+  });
 
   const typingTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -71,18 +91,20 @@ export function ConversationView({
   const resolveLabel = isLost ? "Mark as Recovered" : "Mark as Handed Over";
 
   // ── Resolve mutation ────────────────────────────────────────────
-  const queryClient = useQueryClient();
   const { mutate: resolveItem, isPending: isResolving } = useMutation({
     mutationFn: async () => {
       if (!item) throw new Error("Item not found");
       const res = await fetch(`/api/items/${item.id}/complete`, { method: "POST" });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
+        // 409 means already resolved — treat as success so the UI locks.
+        if (res.status === 409) return null;
         throw new Error(err.error ?? "Failed to resolve");
       }
       return res.json();
     },
     onSuccess: () => {
+      resolvingRef.current = false;
       setLocalIsLocked(true);
       toast.success("Case resolved — the item is now marked as recovered.");
       // Refresh all affected caches.
@@ -92,7 +114,10 @@ export function ConversationView({
         void queryClient.invalidateQueries({ queryKey: queryKeys.items.detail(item.id) });
       }
     },
-    onError: (err: Error) => toast.error(err.message),
+    onError: (err: Error) => {
+      resolvingRef.current = false;
+      toast.error(err.message);
+    },
   });
 
   // ── Scroll helpers ──────────────────────────────────────────────
@@ -183,9 +208,18 @@ export function ConversationView({
         <UserAvatar user={other_user ?? { full_name: "Unknown", avatar_url: null }} size="sm" />
 
         <div className="min-w-0 flex-1">
-          <p className="truncate text-[13px] font-bold text-text-base">
-            {other_user?.full_name ?? "Unknown User"}
-          </p>
+          <div className="flex items-center gap-1.5">
+            <p className="truncate text-[13px] font-bold text-text-base">
+              {other_user?.full_name ?? "Unknown User"}
+            </p>
+            <TrustBadge
+              recoveriesCount={
+                (other_user as { recoveries_count?: number | null } | null | undefined)
+                  ?.recoveries_count ?? 0
+              }
+              size="sm"
+            />
+          </div>
           {item && (
             <Link
               href={`/items/${item.id}`}
@@ -264,6 +298,8 @@ export function ConversationView({
         confirmLabel={resolveLabel}
         isLoading={isResolving}
         onConfirm={() => {
+          if (resolvingRef.current) return;
+          resolvingRef.current = true;
           resolveItem();
           setResolveOpen(false);
         }}

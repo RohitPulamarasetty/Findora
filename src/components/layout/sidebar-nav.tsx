@@ -21,6 +21,7 @@ import { UserAvatar } from "@/components/shared/user-avatar";
 import { FindoraLogo } from "@/components/shared/findora-logo";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
+import { useNavTransition } from "@/hooks/use-nav-transition";
 
 const PRIMARY_NAV = [
   { label: "Home", href: "/home", Icon: Home },
@@ -53,18 +54,22 @@ function NavItem({
   isActive: boolean;
   badge?: number;
 }) {
+  const { isPending, pendingHref, linkProps } = useNavTransition();
+  const isPendingTarget = isPending && pendingHref === href;
+  const showActive = isActive || isPendingTarget;
   return (
     <Link
       href={href}
-      aria-current={isActive ? "page" : undefined}
+      {...linkProps(href)}
+      aria-current={showActive ? "page" : undefined}
       className={cn(
         "ease-[cubic-bezier(0.16,1,0.3,1)] group relative flex h-10 items-center gap-3 rounded-xl px-3 text-[13px] font-semibold transition-all duration-200",
-        isActive
+        showActive
           ? "text-brand-500 dark:text-brand-400"
           : "text-text-muted-fg hover:bg-bg-muted-surface/70 hover:text-text-base"
       )}
     >
-      {isActive && (
+      {showActive && (
         <motion.span
           layoutId="sidebar-pill"
           className="absolute inset-0 rounded-xl border border-brand-500/20 bg-gradient-to-r from-brand-500/15 via-brand-500/10 to-accentc-500/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_4px_14px_rgb(var(--color-brand-500)/0.18)] dark:border-brand-400/25"
@@ -74,12 +79,12 @@ function NavItem({
       <span
         className={cn(
           "relative z-10 flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-lg transition-all duration-200",
-          isActive
+          showActive
             ? "bg-gradient-to-br from-brand-500 to-brand-600 text-white shadow-[0_4px_12px_rgb(var(--color-brand-500)/0.45)]"
             : "text-text-muted-fg group-hover:bg-bg-muted-surface group-hover:text-text-base"
         )}
       >
-        <Icon size={15} aria-hidden="true" strokeWidth={isActive ? 2.5 : 2} />
+        <Icon size={15} aria-hidden="true" strokeWidth={showActive ? 2.5 : 2} />
       </span>
       <span className="relative z-10 flex-1 truncate">{label}</span>
       {badge != null && badge > 0 && (

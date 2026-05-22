@@ -5,8 +5,13 @@ import { createItemSchema } from "@/lib/validations";
 import { containsProfanity } from "@/lib/profanity";
 import { RATE_LIMIT_ITEMS_PER_HOUR } from "@/lib/constants";
 import { rateLimit } from "@/lib/rate-limit";
+import { checkDedup, storeDedup } from "@/lib/request-dedup";
 
-const BASE_SELECT = `*, user:users(id, full_name, avatar_url), images:item_images(id, url, storage_path, created_at)`;
+// `items` has TWO foreign keys to `users` (`user_id` → reporter; `resolved_by`
+// → who resolved the case, added in 0012). PostgREST refuses to auto-resolve
+// the `users(...)` embed when there's more than one FK and returns a 500.
+// We pin the FK explicitly by constraint name so the embed is unambiguous.
+const BASE_SELECT = `*, user:users!items_user_id_fkey(id, full_name, avatar_url), images:item_images(id, url, storage_path, created_at)`;
 
 export async function GET(request: NextRequest) {
   const supabase = await createClient();
@@ -225,6 +230,32 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // 5-second dedup: two identical submits from the same user (double-tap,
+  // network retry, concurrent tabs) within 5 s must create exactly ONE item.
+  // Key: user + type + first 80 chars of title (enough to distinguish items
+  // without encoding entire payloads in the Redis key).
+  const dedupKey = `dedup:items:create:${user.id}:${encodeURIComponent(`${parsed.data.type}:${parsed.data.title}`).slice(0, 100)}`;
+  const dedupHit = await checkDedup<string>(dedupKey);
+  if (dedupHit.isDuplicate) {
+    // eslint-disable-next-line no-console
+    console.info(
+      JSON.stringify({
+        ts: new Date().toISOString(),
+        route: "items/create",
+        event: "duplicate_submit_blocked",
+        user_id: user.id,
+        existing_item_id: dedupHit.value,
+      })
+    );
+    // Return the original item so the client can navigate to it normally.
+    const { data: existing } = await supabase
+      .from("items")
+      .select()
+      .eq("id", dedupHit.value)
+      .single();
+    if (existing) return NextResponse.json(existing, { status: 200 });
+  }
+
   const { data, error } = await supabase
     .from("items")
     .insert({ ...parsed.data, user_id: user.id })
@@ -232,5 +263,10 @@ export async function POST(request: NextRequest) {
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  // Register the new item in the dedup store so concurrent/rapid identical
+  // requests within the next 5 s resolve to this row instead of a duplicate.
+  await storeDedup(dedupKey, data.id, 5);
+
   return NextResponse.json(data, { status: 201 });
 }

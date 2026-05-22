@@ -47,7 +47,12 @@ export default async function ConversationPage({ params }: PageProps) {
 
   const otherId = convo.owner_id === user.id ? convo.finder_id : convo.owner_id;
   const [{ data: otherUser }, { data: item }] = await Promise.all([
-    supabase.from("users").select("id, full_name, avatar_url").eq("id", otherId).single(),
+    // `recoveries_count` powers the TrustBadge in the conversation header.
+    supabase
+      .from("users")
+      .select("id, full_name, avatar_url, recoveries_count")
+      .eq("id", otherId)
+      .single(),
     // Include status so the chat view can show/hide the resolve action.
     supabase.from("items").select("id, title, type, status").eq("id", convo.item_id).single(),
   ]);
