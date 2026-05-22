@@ -12,10 +12,19 @@ export const createItemSchema = z.object({
   description: z.string().min(10, "Description must be at least 10 characters").max(1000),
   location: z.string().min(2, "Location is required").max(200),
   date_occurred: z.string(),
+  // Optional verification questions (≤3, each ≤140 chars). Only meaningful
+  // for type="found"; the UI hides the field for "lost". The DB enforces
+  // the same bounds via the items_validate_questions trigger (mig. 0015).
+  verification_questions: z
+    .array(z.string().trim().min(1, "Question cannot be empty").max(140))
+    .max(3, "At most 3 questions")
+    .optional(),
 });
 
 export const updateItemSchema = createItemSchema.partial().extend({
-  status: z.enum(["active", "claim_pending", "verified", "completed", "closed"]).optional(),
+  // claim_pending and verified are lifecycle-managed by the claims workflow;
+  // owners must not set them directly via PATCH.
+  status: z.enum(["active", "completed", "closed"]).optional(),
 });
 
 export const sendMessageSchema = z.object({

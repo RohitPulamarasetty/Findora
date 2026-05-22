@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { Trash2, ExternalLink } from "lucide-react";
 import Link from "next/link";
@@ -25,18 +25,27 @@ interface AdminItemRowProps {
 export function AdminItemRow({ item, onDelete }: AdminItemRowProps) {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [isPending, setIsPending] = useState(false);
+  const pendingRef = useRef(false);
 
   async function handleDelete() {
+    if (pendingRef.current) return;
+    pendingRef.current = true;
     setIsPending(true);
-    const res = await fetch(`/api/admin/items/${item.id}`, { method: "DELETE" });
-    setIsPending(false);
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      toast.error(err.error ?? "Failed to delete item");
-    } else {
-      toast.success("Item deleted");
-      setDeleteOpen(false);
-      onDelete();
+    try {
+      const res = await fetch(`/api/admin/items/${item.id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        toast.error(err.error ?? "Failed to delete item");
+      } else {
+        toast.success("Item deleted");
+        setDeleteOpen(false);
+        onDelete();
+      }
+    } catch {
+      toast.error("Network error — please try again.");
+    } finally {
+      pendingRef.current = false;
+      setIsPending(false);
     }
   }
 

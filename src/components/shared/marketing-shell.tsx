@@ -119,7 +119,7 @@ export function MarketingPageHeader({
 }) {
   return (
     <header className="mx-auto max-w-3xl pb-10 pt-8 text-center sm:pb-14 sm:pt-12">
-      <div className="dark:text-brand-300 mb-4 inline-flex items-center gap-1.5 rounded-full border border-brand-500/20 bg-brand-500/10 px-2.5 py-0.5 text-[10.5px] font-semibold uppercase tracking-[0.15em] text-brand-600">
+      <div className="mb-4 inline-flex items-center gap-1.5 rounded-full border border-brand-500/20 bg-brand-500/10 px-2.5 py-0.5 text-[10.5px] font-semibold uppercase tracking-[0.15em] text-brand-600 dark:text-brand-300">
         {eyebrow}
       </div>
       <h1 className="text-[30px] font-bold leading-[1.1] tracking-[-0.025em] sm:text-[38px]">

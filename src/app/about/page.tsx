@@ -150,7 +150,7 @@ export default function AboutPage() {
             </div>
             <h1 className="mx-auto max-w-[20ch] text-[32px] font-bold leading-[1.08] tracking-[-0.03em] sm:text-[42px] sm:leading-[1.05] md:text-[50px]">
               Built for students,{" "}
-              <span className="dark:from-brand-300 bg-gradient-to-br from-brand-500 via-brand-600 to-accentc-500 bg-clip-text text-transparent dark:via-brand-400 dark:to-accentc-400">
+              <span className="bg-gradient-to-br from-brand-500 via-brand-600 to-accentc-500 bg-clip-text text-transparent dark:from-brand-300 dark:via-brand-400 dark:to-accentc-400">
                 by students
               </span>
               .
@@ -193,7 +193,7 @@ export default function AboutPage() {
                 </div>
 
                 <div className="min-w-0 flex-1">
-                  <div className="dark:text-brand-300 mb-2 inline-flex items-center gap-1.5 rounded-full border border-brand-500/30 bg-brand-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-brand-700 dark:border-brand-500/25">
+                  <div className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-brand-500/30 bg-brand-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-brand-700 dark:border-brand-500/25 dark:text-brand-300">
                     Creator of Findora
                   </div>
                   <h2 className="text-[22px] font-bold tracking-[-0.02em] sm:text-[26px]">
@@ -224,7 +224,7 @@ export default function AboutPage() {
                         key={label}
                         className="inline-flex items-center gap-1.5 rounded-full border border-border-default bg-bg-base px-2.5 py-1 text-[11px] font-medium text-text-secondary shadow-card backdrop-blur-sm dark:bg-bg-subtle/60 dark:shadow-none"
                       >
-                        <Icon size={11} className="dark:text-brand-300 text-brand-500" />
+                        <Icon size={11} className="text-brand-500 dark:text-brand-300" />
                         {label}
                       </span>
                     ))}

@@ -3,6 +3,7 @@ import type { NextRequest } from "next/server";
 import { createClient, createAdminClient } from "@/utils/supabase/server";
 import { MAX_ITEM_IMAGES, MAX_IMAGE_SIZE_MB, ALLOWED_IMAGE_TYPES } from "@/lib/constants";
 import { rateLimit } from "@/lib/rate-limit";
+import { detectImageMime } from "@/lib/file-magic";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -41,7 +42,13 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  // Check existing image count
+  // Check existing image count.
+  // Known race: two concurrent uploads both reading count=N-1 could both
+  // pass and produce N+1 images. The window is narrow (ms), the consequence
+  // is one extra image, and the DB has no count constraint to enforce here.
+  // We log when the count is already at the limit so operations can monitor
+  // for abuse; a DB-level CHECK constraint can close this fully in a future
+  // migration if it becomes a problem.
   const { count, error: countError } = await supabase
     .from("item_images")
     .select("id", { count: "exact", head: true })
@@ -54,6 +61,20 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     return NextResponse.json(
       { error: `Maximum ${MAX_ITEM_IMAGES} images allowed per item.` },
       { status: 400 }
+    );
+  }
+  if ((count ?? 0) === MAX_ITEM_IMAGES - 1) {
+    // Concurrent upload may arrive here simultaneously. Log so we can track
+    // whether this race is hit in practice.
+    // eslint-disable-next-line no-console
+    console.info(
+      JSON.stringify({
+        ts: new Date().toISOString(),
+        route: "items/images",
+        event: "upload_at_limit_boundary",
+        item_id: id,
+        current_count: count,
+      })
     );
   }
 
@@ -77,10 +98,26 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     );
   }
 
-  const ext = file.type === "image/webp" ? "webp" : file.type === "image/png" ? "png" : "jpg";
-  const storagePath = `${user.id}/${id}/${Date.now()}.${ext}`;
-
+  // Read bytes once and verify the actual file signature. Refuses uploads
+  // whose claimed Content-Type disagrees with the on-the-wire magic bytes
+  // (defends against MIME-spoofed HTML / SVG / arbitrary payloads).
   const bytes = await file.arrayBuffer();
+  const sniffedMime = detectImageMime(new Uint8Array(bytes, 0, Math.min(bytes.byteLength, 16)));
+  if (!sniffedMime) {
+    return NextResponse.json(
+      { error: "File content is not a recognized image (JPEG, PNG, or WebP)." },
+      { status: 400 }
+    );
+  }
+  if (sniffedMime !== file.type) {
+    return NextResponse.json(
+      { error: "File content does not match the declared image type." },
+      { status: 400 }
+    );
+  }
+
+  const ext = sniffedMime === "image/webp" ? "webp" : sniffedMime === "image/png" ? "png" : "jpg";
+  const storagePath = `${user.id}/${id}/${Date.now()}.${ext}`;
 
   // Use admin client for storage upload to bypass RLS — auth/ownership already
   // verified above. Anon-key storage uploads can silently fail when the cookie

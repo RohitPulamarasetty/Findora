@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { Flag } from "lucide-react";
 import {
@@ -33,9 +33,11 @@ export function FlagDialog({ open, onOpenChange, itemId }: FlagDialogProps) {
   const [reason, setReason] = useState<FlagReason | "">("");
   const [notes, setNotes] = useState("");
   const [isPending, setIsPending] = useState(false);
+  const pendingRef = useRef(false);
 
   async function handleSubmit() {
-    if (!reason) return;
+    if (!reason || pendingRef.current) return;
+    pendingRef.current = true;
     setIsPending(true);
     try {
       const res = await fetch("/api/flags", {
@@ -57,6 +59,7 @@ export function FlagDialog({ open, onOpenChange, itemId }: FlagDialogProps) {
     } catch {
       toast.error("Something went wrong. Please try again.");
     } finally {
+      pendingRef.current = false;
       setIsPending(false);
     }
   }
@@ -81,7 +84,7 @@ export function FlagDialog({ open, onOpenChange, itemId }: FlagDialogProps) {
                 key={value}
                 className={`flex cursor-pointer items-center gap-3 rounded-lg border px-4 py-3 text-sm transition-colors ${
                   reason === value
-                    ? "dark:text-brand-300 border-brand-500 bg-brand-50 text-brand-700 dark:bg-brand-900/20"
+                    ? "border-brand-500 bg-brand-50 text-brand-700 dark:bg-brand-900/20 dark:text-brand-300"
                     : "border-border-default hover:bg-bg-subtle"
                 }`}
               >

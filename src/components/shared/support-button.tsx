@@ -142,6 +142,10 @@ export function SupportButton({
   const [customRupees, setCustomRupees] = useState<string>("");
   const [isProcessing, setIsProcessing] = useState(false);
 
+  // Synchronous lock so a second click/tap cannot queue a parallel request
+  // before React re-renders with isProcessing=true (there's a ~1 frame gap).
+  const processingRef = useRef(false);
+
   // Pending checkout opened only after our Dialog has fully closed.
   // Radix Dialog puts pointer-events: none on <body> while open and renders
   // a z-50 overlay — both of which hide Razorpay's modal. We close our
@@ -206,7 +210,9 @@ export function SupportButton({
       toast.error("Payments are not configured. Please try again later.");
       return;
     }
-
+    // Synchronous lock — blocks a second click before React re-renders.
+    if (processingRef.current) return;
+    processingRef.current = true;
     setIsProcessing(true);
 
     try {
@@ -215,6 +221,7 @@ export function SupportButton({
       const ok = await loadCheckoutScript();
       if (!ok || !window.Razorpay) {
         toast.error("Could not load the payment SDK. Check your connection and try again.");
+        processingRef.current = false;
         setIsProcessing(false);
         return;
       }
@@ -233,6 +240,7 @@ export function SupportButton({
       if (!orderRes.ok) {
         const data = (await orderRes.json().catch(() => ({}))) as { error?: string };
         toast.error(data.error || "Could not start payment. Please try again.");
+        processingRef.current = false;
         setIsProcessing(false);
         return;
       }
@@ -245,6 +253,7 @@ export function SupportButton({
 
       if (!order.order_id || typeof order.amount !== "number" || !order.currency) {
         toast.error("Failed to initialize Razorpay checkout.");
+        processingRef.current = false;
         setIsProcessing(false);
         return;
       }
@@ -283,6 +292,7 @@ export function SupportButton({
         },
         modal: {
           ondismiss: () => {
+            processingRef.current = false;
             setIsProcessing(false);
           },
         },
@@ -302,6 +312,7 @@ export function SupportButton({
           } catch {
             toast.error("Payment verification failed. Please contact support if charged.");
           } finally {
+            processingRef.current = false;
             setIsProcessing(false);
           }
         },
@@ -320,6 +331,7 @@ export function SupportButton({
       }, 400);
     } catch {
       toast.error("Failed to initialize Razorpay checkout.");
+      processingRef.current = false;
       setIsProcessing(false);
     }
   }, [finalAmount, isValidAmount, launchRazorpay]);
@@ -379,7 +391,7 @@ export function SupportButton({
                 className={cn(
                   "relative flex h-12 items-center justify-center rounded-xl border text-[13.5px] font-semibold transition-all duration-200",
                   isActive
-                    ? "dark:text-brand-300 border-brand-500/60 bg-gradient-to-br from-brand-500/15 to-accentc-500/10 text-brand-600 shadow-[0_4px_14px_rgb(var(--color-brand-500)/0.2)]"
+                    ? "border-brand-500/60 bg-gradient-to-br from-brand-500/15 to-accentc-500/10 text-brand-600 shadow-[0_4px_14px_rgb(var(--color-brand-500)/0.2)] dark:text-brand-300"
                     : "border-border-default bg-bg-subtle/60 text-text-secondary hover:border-border-strong hover:bg-bg-subtle"
                 )}
                 aria-pressed={isActive}

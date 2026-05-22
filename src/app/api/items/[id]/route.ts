@@ -15,7 +15,8 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
   const { data, error } = await supabase
     .from("items")
     .select(
-      `*, user:users(id, full_name, avatar_url), images:item_images(id, url, storage_path, created_at)`
+      // Pin the FK (items has two refs to users: user_id + resolved_by).
+      `*, user:users!items_user_id_fkey(id, full_name, avatar_url), images:item_images(id, url, storage_path, created_at)`
     )
     .eq("id", id)
     .single();

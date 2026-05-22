@@ -114,7 +114,7 @@ export default function ContactPage() {
                 href={href}
                 target={href.startsWith("http") ? "_blank" : undefined}
                 rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
-                className="group/cta dark:hover:text-brand-300 relative mt-4 inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-brand-600 transition-colors hover:text-brand-700 dark:text-brand-400"
+                className="group/cta relative mt-4 inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-brand-600 transition-colors hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300"
               >
                 {cta}
                 <Send size={12} className="transition-transform group-hover/cta:translate-x-0.5" />

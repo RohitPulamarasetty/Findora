@@ -1,4 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
+import { createServiceRoleClient } from "@/utils/supabase/admin";
 import { NextResponse } from "next/server";
 import { rateLimit } from "@/lib/rate-limit";
 
@@ -33,7 +34,24 @@ export async function DELETE(request: Request, { params }: RouteContext) {
       .eq("item_id", id);
 
     if (images?.length) {
-      await supabase.storage.from("item-images").remove(images.map((img) => img.storage_path));
+      // Use service-role client so storage deletion succeeds regardless of
+      // which user owns the files. The user client respects storage RLS and
+      // would silently orphan files belonging to other users.
+      const adminStorage = createServiceRoleClient();
+      const { error: storageErr } = await adminStorage.storage
+        .from("item-images")
+        .remove(images.map((img) => img.storage_path));
+      if (storageErr) {
+        console.error(
+          JSON.stringify({
+            ts: new Date().toISOString(),
+            route: "admin/items/hard-delete",
+            event: "storage_remove_failed",
+            item_id: id,
+            message: storageErr.message,
+          })
+        );
+      }
     }
 
     const { error } = await supabase.from("items").delete().eq("id", id);

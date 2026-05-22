@@ -58,6 +58,13 @@ export interface Item {
   resolved_by: string | null;
   handover_confirmed: boolean;
   resolution_note: string | null;
+  // Trust & moderation (mig. 0015). Optional in this TS interface so
+  // existing consumers keep compiling; the DB always returns concrete
+  // values once 0015 is applied.
+  verification_questions?: string[];
+  auto_hidden?: boolean;
+  anonymized_at?: string | null;
+  allow_success_story?: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -75,6 +82,9 @@ export interface ItemWithUser extends Item {
     id: string;
     full_name: string;
     avatar_url: string | null;
+    /** Public trust signal (mig. 0015). Optional for backwards compat
+     *  with existing joins that don't yet select this column. */
+    recoveries_count?: number | null;
   };
   images: ItemImage[];
 }

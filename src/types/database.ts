@@ -32,6 +32,12 @@ export type ItemCategory =
 export type UserRole = "student" | "admin";
 export type MessageStatus = "sent" | "delivered" | "read";
 export type FlagReason = "spam" | "inappropriate" | "fake" | "duplicate" | "other";
+export type ClaimStatus = "pending" | "approved" | "rejected" | "withdrawn";
+
+export interface ClaimAnswer {
+  q: string;
+  a: string;
+}
 
 export interface Database {
   public: {
@@ -45,6 +51,10 @@ export interface Database {
           role: UserRole;
           is_banned: boolean;
           items_count: number;
+          recoveries_count: number;
+          flags_received: number;
+          first_post_at: string | null;
+          last_active_at: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -56,6 +66,10 @@ export interface Database {
           role?: UserRole;
           is_banned?: boolean;
           items_count?: number;
+          recoveries_count?: number;
+          flags_received?: number;
+          first_post_at?: string | null;
+          last_active_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -65,6 +79,10 @@ export interface Database {
           role?: UserRole;
           is_banned?: boolean;
           items_count?: number;
+          recoveries_count?: number;
+          flags_received?: number;
+          first_post_at?: string | null;
+          last_active_at?: string | null;
           updated_at?: string;
         };
         Relationships: [];
@@ -86,6 +104,10 @@ export interface Database {
           resolved_by: string | null;
           handover_confirmed: boolean;
           resolution_note: string | null;
+          verification_questions: string[];
+          auto_hidden: boolean;
+          anonymized_at: string | null;
+          allow_success_story: boolean;
           created_at: string;
           updated_at: string;
         };
@@ -104,6 +126,9 @@ export interface Database {
           resolved_by?: string | null;
           handover_confirmed?: boolean;
           resolution_note?: string | null;
+          verification_questions?: string[];
+          auto_hidden?: boolean;
+          allow_success_story?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -120,6 +145,8 @@ export interface Database {
           resolved_by?: string | null;
           handover_confirmed?: boolean;
           resolution_note?: string | null;
+          verification_questions?: string[];
+          allow_success_story?: boolean;
           updated_at?: string;
         };
         Relationships: [
@@ -267,6 +294,69 @@ export interface Database {
         Update: {
           reason?: string | null;
         };
+        Relationships: [];
+      };
+      claims: {
+        Row: {
+          id: string;
+          item_id: string;
+          claimant_id: string;
+          status: ClaimStatus;
+          answers: ClaimAnswer[];
+          evidence_text: string | null;
+          evidence_image_url: string | null;
+          owner_response: string | null;
+          decided_at: string | null;
+          decided_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          item_id: string;
+          claimant_id: string;
+          status?: ClaimStatus;
+          answers?: ClaimAnswer[];
+          evidence_text?: string | null;
+          evidence_image_url?: string | null;
+          owner_response?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          status?: ClaimStatus;
+          answers?: ClaimAnswer[];
+          evidence_text?: string | null;
+          evidence_image_url?: string | null;
+          owner_response?: string | null;
+          decided_at?: string | null;
+          decided_by?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      admin_audit_log: {
+        Row: {
+          id: string;
+          actor_id: string | null;
+          action: string;
+          target_table: string;
+          target_id: string | null;
+          payload: Json;
+          ip_address: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          actor_id?: string | null;
+          action: string;
+          target_table: string;
+          target_id?: string | null;
+          payload?: Json;
+          ip_address?: string | null;
+          created_at?: string;
+        };
+        Update: never;
         Relationships: [];
       };
       payments: {

@@ -10,6 +10,7 @@ import { ItemCardSkeletonGrid } from "@/components/shared/loading-skeletons/item
 import { Button } from "@/components/ui/button";
 import { useItemFilters } from "@/hooks/use-item-filters";
 import { useItems } from "@/hooks/use-items";
+import { useRealtimeItems } from "@/hooks/use-realtime-items";
 import { useDebounce } from "@/hooks/use-debounce";
 import type { ItemWithUser } from "@/types/items";
 
@@ -33,6 +34,10 @@ export function SearchView() {
   const activeFilters = { ...filters, search: debouncedSearch || undefined };
   const { data, isLoading, isFetching, isFetchingNextPage, fetchNextPage, hasNextPage } =
     useItems(activeFilters);
+
+  // Live eviction: removes items from the cache the instant they transition
+  // to a terminal status in another tab or on another device — no refresh needed.
+  useRealtimeItems();
 
   const items: ItemWithUser[] = data?.items ?? [];
   const hasActiveFilters =

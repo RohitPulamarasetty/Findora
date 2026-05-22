@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, type FieldErrors } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronLeft, ChevronRight, Check, Loader2, Upload, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
@@ -32,8 +32,21 @@ export function ReportForm({ type = "lost", onSuccess }: ReportFormProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadErrors, setUploadErrors] = useState<string[]>([]);
+  // Terminal success state — once true, the form is permanently locked.
+  // Drives the disabled attribute and the "Redirecting…" label so the button
+  // never re-enables during the async Next.js route transition.
+  const [isCompleted, setIsCompleted] = useState(false);
   const router = useRouter();
   const { mutateAsync: createItem, isPending } = useCreateItem();
+
+  // Synchronous submit lock — set before any awaits so rapid tap/click or
+  // Enter-key spam cannot queue a second request before React re-renders.
+  const submittingRef = useRef(false);
+
+  // Permanent completion guard — survives React rerenders, slow navigation,
+  // and any timing gap between setState and the next render frame. This is the
+  // source-of-truth check; isCompleted is only for rendering.
+  const completedRef = useRef(false);
 
   const form = useForm<CreateItemInput>({
     resolver: zodResolver(createItemSchema),
@@ -44,6 +57,7 @@ export function ReportForm({ type = "lost", onSuccess }: ReportFormProps) {
       description: "",
       location: "",
       date_occurred: new Date().toISOString().split("T")[0],
+      verification_questions: [],
     },
   });
 
@@ -58,10 +72,44 @@ export function ReportForm({ type = "lost", onSuccess }: ReportFormProps) {
     if (valid) setStep((s) => s + 1);
   }
 
+  function onInvalid(errors: FieldErrors<CreateItemInput>) {
+    const fields = Object.keys(errors);
+    const step0Fields = ["type", "title", "category"];
+    const step1Fields = ["description", "location", "date_occurred", "verification_questions"];
+    if (fields.some((f) => step0Fields.includes(f))) {
+      setStep(0);
+    } else if (fields.some((f) => step1Fields.includes(f))) {
+      setStep(1);
+    }
+    toast.error("Please fix the highlighted fields before submitting.");
+  }
+
   async function handleSubmit(values: CreateItemInput) {
+    // Hard guards — completedRef fires synchronously before any re-render, and
+    // blocks every path: Enter-key spam, rapid taps, back-button re-submit,
+    // and any timing gap during the async Next.js route transition.
+    if (completedRef.current || submittingRef.current || isPending || isUploading) return;
+    submittingRef.current = true;
     setUploadErrors([]);
 
-    const item = await createItem(values);
+    let item: Awaited<ReturnType<typeof createItem>>;
+    try {
+      item = await createItem(values);
+    } catch {
+      // useCreateItem's onError already shows a toast.
+      // Release the in-flight lock so the user can retry — but completedRef
+      // stays false (creation genuinely failed, no duplicate risk).
+      submittingRef.current = false;
+      return;
+    }
+
+    // ── Item row created successfully ─────────────────────────────────────
+    // Lock permanently NOW — before image uploads, before navigation.
+    // DO NOT reset completedRef or submittingRef from this point forward.
+    // This guarantees exactly-once submission even if navigation is slow,
+    // the component re-renders, or the user spam-clicks during the redirect.
+    completedRef.current = true;
+    setIsCompleted(true);
 
     if (files.length > 0) {
       setIsUploading(true);
@@ -107,6 +155,8 @@ export function ReportForm({ type = "lost", onSuccess }: ReportFormProps) {
       }
     }
 
+    // Navigate — form is already permanently locked above, so even if
+    // router.push takes multiple seconds the button cannot be re-clicked.
     if (onSuccess) {
       onSuccess(item.id);
     } else {
@@ -122,6 +172,10 @@ export function ReportForm({ type = "lost", onSuccess }: ReportFormProps) {
   }
 
   const isSubmitting = isPending || isUploading;
+  // isLocked is the single source-of-truth for the disabled state.
+  // It is true the moment the item row is created and stays true forever —
+  // even after isPending/isUploading both return to false during navigation.
+  const isLocked = isCompleted || isSubmitting;
   const isLastStep = step === STEPS.length - 1;
 
   return (
@@ -194,7 +248,7 @@ export function ReportForm({ type = "lost", onSuccess }: ReportFormProps) {
          * This is the primary guard against auto-submit.
          */}
         <form
-          onSubmit={form.handleSubmit(handleSubmit)}
+          onSubmit={form.handleSubmit(handleSubmit, onInvalid)}
           onKeyDown={handleFormKeyDown}
           noValidate
           className="space-y-5"
@@ -282,15 +336,21 @@ export function ReportForm({ type = "lost", onSuccess }: ReportFormProps) {
                 key="submit-btn"
                 type="submit"
                 size="sm"
-                disabled={isSubmitting}
+                disabled={isLocked}
                 className="h-10 gap-2 px-5"
               >
-                {isSubmitting ? (
+                {isLocked ? (
                   <Loader2 size={14} className="animate-spin" />
                 ) : (
                   <Check size={14} strokeWidth={2.5} />
                 )}
-                {isSubmitting ? "Submitting…" : "Submit Report"}
+                {isPending
+                  ? "Submitting…"
+                  : isUploading
+                    ? "Uploading…"
+                    : isCompleted
+                      ? "Redirecting…"
+                      : "Submit Report"}
               </Button>
             )}
           </div>

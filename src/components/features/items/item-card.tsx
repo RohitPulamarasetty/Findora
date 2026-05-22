@@ -6,6 +6,7 @@ import Image from "next/image";
 import { MapPin, Clock, Camera } from "lucide-react";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { highlightTerms } from "@/lib/highlight";
+import { useNavTransition } from "@/hooks/use-nav-transition";
 import { cn } from "@/lib/utils";
 import type { ItemWithUser } from "@/types/items";
 
@@ -54,16 +55,25 @@ function ItemCardImpl({
   const isLost = item.type === "lost";
   const isActive = item.status === "active";
   const emoji = CATEGORY_ICON[item.category] ?? "📦";
+  const href = `/items/${item.id}`;
+  const { isPending, pendingHref, linkProps } = useNavTransition();
+  // Apply a subtle pending look while we're navigating *to this card*.
+  // Other cards on the same screen stay fully opaque so the user can still
+  // change their mind and tap a different one.
+  const isOpening = isPending && pendingHref === href;
 
   /* ── List variant ────────────────────────────────────────────── */
   if (variant === "list") {
     return (
       <Link
-        href={`/items/${item.id}`}
+        href={href}
+        {...linkProps(href)}
+        aria-busy={isOpening || undefined}
         className={cn(
           "group flex gap-3.5 rounded-2xl border border-border-default bg-bg-subtle p-3.5 transition-all duration-200",
           "hover:border-brand-500/20 hover:shadow-[0_4px_16px_rgba(0,0,0,0.08)]",
           "dark:hover:shadow-[0_4px_16px_rgba(0,0,0,0.35)]",
+          isOpening && "pointer-events-none opacity-70",
           className
         )}
       >
@@ -128,7 +138,9 @@ function ItemCardImpl({
   /* ── Grid variant (default) ──────────────────────────────────── */
   return (
     <Link
-      href={`/items/${item.id}`}
+      href={href}
+      {...linkProps(href)}
+      aria-busy={isOpening || undefined}
       className={cn(
         "group block overflow-hidden rounded-2xl border border-border-default bg-bg-subtle",
         "shadow-[0_2px_8px_rgba(0,0,0,0.06),0_1px_2px_rgba(0,0,0,0.04)]",
@@ -137,6 +149,7 @@ function ItemCardImpl({
         "hover:-translate-y-1.5 hover:border-brand-500/25",
         "hover:shadow-[0_12px_28px_rgba(0,0,0,0.11),0_4px_10px_rgba(0,0,0,0.07)]",
         "dark:hover:shadow-[0_12px_32px_rgba(0,0,0,0.55),0_4px_10px_rgba(0,0,0,0.35)]",
+        isOpening && "pointer-events-none opacity-70",
         className
       )}
     >

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { AppLayout } from "@/components/layout/app-layout";
 import { AppTheme } from "@/components/shared/app-theme";
+import { RealtimeShell } from "@/components/layout/realtime-shell";
 import { createClient } from "@/utils/supabase/server";
 
 // Authenticated app surfaces must NEVER be indexed — they expose campus-internal
@@ -45,6 +46,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
 
   return (
     <AppTheme>
+      {user && <RealtimeShell userId={user.id} />}
       <AppLayout isAdmin={isAdmin} user={userProfile}>
         {children}
       </AppLayout>

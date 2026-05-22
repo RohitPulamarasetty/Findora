@@ -67,8 +67,8 @@ export function CategoryPicker({ value, onChange, error }: CategoryPickerProps) 
               className={cn(
                 "flex flex-col items-center gap-1 rounded-xl border px-1.5 py-2.5 text-center transition-all duration-150",
                 selected
-                  ? "dark:text-brand-300 border-brand-500/60 bg-brand-50 text-brand-600 shadow-sm dark:border-brand-400/50 dark:bg-brand-900/25"
-                  : "hover:border-brand-300/50 border-border-default bg-bg-subtle text-text-muted-fg hover:bg-bg-muted-surface hover:text-text-secondary"
+                  ? "border-brand-500/60 bg-brand-50 text-brand-600 shadow-sm dark:border-brand-400/50 dark:bg-brand-900/25 dark:text-brand-300"
+                  : "border-border-default bg-bg-subtle text-text-muted-fg hover:border-brand-300/50 hover:bg-bg-muted-surface hover:text-text-secondary"
               )}
             >
               <Icon

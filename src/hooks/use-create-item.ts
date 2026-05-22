@@ -12,6 +12,7 @@ interface CreateItemPayload {
   description: string;
   location: string;
   date_occurred: string;
+  verification_questions?: string[];
 }
 
 export function useCreateItem() {
