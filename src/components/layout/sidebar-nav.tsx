@@ -12,6 +12,7 @@ import {
   Shield,
   LogOut,
   Info,
+  LifeBuoy,
   type LucideIcon,
 } from "lucide-react";
 import { motion } from "framer-motion";
@@ -33,7 +34,11 @@ const PRIMARY_NAV = [
 const SECONDARY_NAV = [
   { label: "Completed", href: "/cases/completed", Icon: CheckCircle2 },
   { label: "Settings", href: "/settings", Icon: Settings },
+] as const;
+
+const SUPPORT_NAV = [
   { label: "About", href: "/about", Icon: Info },
+  { label: "Contact & Support", href: "/contact", Icon: LifeBuoy },
 ] as const;
 
 interface SidebarNavProps {
@@ -108,6 +113,14 @@ function NavDivider() {
   );
 }
 
+function NavSectionLabel({ label }: { label: string }) {
+  return (
+    <p className="mb-1 mt-0.5 px-3 text-[9.5px] font-bold uppercase tracking-[0.13em] text-text-muted-fg/70">
+      {label}
+    </p>
+  );
+}
+
 export function SidebarNav({ isAdmin, user }: SidebarNavProps) {
   const pathname = usePathname();
   const router = useRouter();
@@ -139,25 +152,31 @@ export function SidebarNav({ isAdmin, user }: SidebarNavProps) {
       />
 
       {/* ── Wordmark ─────────────────────────────────────────────── */}
-      <div className="relative flex h-16 shrink-0 items-center gap-3 border-b border-border-default/70 px-4">
+      <div className="relative flex h-[60px] shrink-0 items-center border-b border-border-default/60 px-4">
         <Link
           href="/home"
-          className="group flex items-center gap-2.5 transition-opacity hover:opacity-90"
+          className="group flex items-center gap-3 transition-opacity hover:opacity-90"
         >
-          <div className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-xl shadow-[0_4px_14px_rgb(var(--color-brand-500)/0.35)] ring-1 ring-brand-500/20">
-            <div className="absolute inset-0 bg-gradient-to-br from-brand-500 via-brand-600 to-accentc-600 opacity-100" />
+          <div className="relative flex h-[34px] w-[34px] shrink-0 items-center justify-center overflow-hidden rounded-[10px] shadow-[0_4px_14px_rgb(var(--color-brand-500)/0.30)] ring-1 ring-brand-500/25">
+            <div className="absolute inset-0 bg-gradient-to-br from-brand-500 via-brand-600 to-accentc-600" />
             <div className="relative z-10">
-              <FindoraLogo size={28} />
+              <FindoraLogo size={26} />
             </div>
           </div>
-          <span className="gradient-brand-text text-[17px] font-extrabold tracking-tight">
-            Findora
-          </span>
+          <div className="flex flex-col gap-0">
+            <span className="gradient-brand-text text-[15px] font-extrabold leading-tight tracking-tight">
+              Findora
+            </span>
+            <span className="text-[9.5px] font-semibold uppercase tracking-[0.13em] text-text-muted-fg/80">
+              Campus Lost &amp; Found
+            </span>
+          </div>
         </Link>
       </div>
 
       {/* ── Navigation ───────────────────────────────────────────── */}
-      <nav className="relative flex flex-1 flex-col gap-0 overflow-y-auto px-2.5 py-4">
+      <nav className="relative flex flex-1 flex-col overflow-y-auto px-2.5 py-3">
+        {/* Primary actions */}
         <NavSection>
           {PRIMARY_NAV.map(({ label, href, Icon }) => (
             <NavItem
@@ -173,14 +192,32 @@ export function SidebarNav({ isAdmin, user }: SidebarNavProps) {
 
         <NavDivider />
 
+        {/* User workspace */}
         <NavSection>
           {SECONDARY_NAV.map(({ label, href, Icon }) => (
             <NavItem key={href} href={href} label={label} Icon={Icon} isActive={isActive(href)} />
           ))}
-          {isAdmin && (
-            <NavItem href="/admin" label="Admin" Icon={Shield} isActive={isActive("/admin")} />
-          )}
         </NavSection>
+
+        <NavDivider />
+
+        {/* Support & info */}
+        <NavSectionLabel label="Support" />
+        <NavSection>
+          {SUPPORT_NAV.map(({ label, href, Icon }) => (
+            <NavItem key={href} href={href} label={label} Icon={Icon} isActive={isActive(href)} />
+          ))}
+        </NavSection>
+
+        {/* Admin — isolated at bottom */}
+        {isAdmin && (
+          <>
+            <NavDivider />
+            <NavSection>
+              <NavItem href="/admin" label="Admin" Icon={Shield} isActive={isActive("/admin")} />
+            </NavSection>
+          </>
+        )}
       </nav>
 
       {/* ── User section ─────────────────────────────────────────── */}

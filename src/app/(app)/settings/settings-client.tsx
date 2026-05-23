@@ -10,6 +10,7 @@ import {
   ChevronRight,
   Info,
   Shield,
+  LifeBuoy,
   type LucideIcon,
 } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
@@ -126,90 +127,101 @@ export function SettingsClient({ profile }: SettingsClientProps) {
   }
 
   return (
-    <div className="animate-fade-in space-y-6 px-4 py-6">
-      {/* ── Account ──────────────────────────────────────────────── */}
-      <section className="space-y-2">
-        <SectionHeader title="Account" />
-        <SettingsCard>
-          {/* Profile identity */}
-          <div className="relative overflow-hidden">
-            <div className="to-violet-500/8 h-16 bg-gradient-to-br from-brand-500/20" />
-            <div className="-mt-6 flex items-center gap-4 px-4 pb-4">
-              <UserAvatar user={profile} size="lg" />
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-[15px] font-bold tracking-tight text-text-base">
-                  {profile.full_name}
-                </p>
-                <p className="truncate text-[13px] text-text-secondary">{profile.email}</p>
-                <p className="mt-0.5 text-[11px] text-text-muted-fg">Joined {joinedDate}</p>
+    <div className="animate-fade-in px-4 py-6 md:mx-auto md:max-w-[640px] md:px-0 md:py-8">
+      <div className="space-y-6">
+        {/* ── Account ──────────────────────────────────────────────── */}
+        <section className="space-y-2">
+          <SectionHeader title="Account" />
+          <SettingsCard>
+            {/* Profile identity */}
+            <div className="relative overflow-hidden">
+              <div className="to-violet-500/8 h-16 bg-gradient-to-br from-brand-500/20" />
+              <div className="-mt-6 flex items-center gap-4 px-4 pb-4">
+                <UserAvatar user={profile} size="lg" />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[15px] font-bold tracking-tight text-text-base">
+                    {profile.full_name}
+                  </p>
+                  <p className="truncate text-[13px] text-text-secondary">{profile.email}</p>
+                  <p className="mt-0.5 text-[11px] text-text-muted-fg">Joined {joinedDate}</p>
+                </div>
               </div>
             </div>
-          </div>
-          <SettingsDivider />
-          <SettingsRow label="Edit profile" href="/profile" />
-        </SettingsCard>
-      </section>
+            <SettingsDivider />
+            <SettingsRow label="Edit profile" href="/profile" />
+          </SettingsCard>
+        </section>
 
-      {/* ── Appearance ───────────────────────────────────────────── */}
-      <section className="space-y-2">
-        <SectionHeader title="Appearance" />
-        <SettingsCard>
-          <div className="p-4">
-            <p className="mb-3 text-[13px] font-semibold text-text-base">Theme</p>
-            <div className="grid grid-cols-3 gap-2">
-              {THEME_OPTIONS.map(({ value, label, Icon }) => (
-                <button
-                  key={value}
-                  onClick={() => setTheme(value)}
-                  className={cn(
-                    "flex flex-col items-center gap-2.5 rounded-2xl border py-4 text-xs font-semibold transition-all duration-150",
-                    theme === value
-                      ? "bg-brand-500/8 dark:bg-brand-500/12 border-brand-500/50 text-brand-600 shadow-sm dark:text-brand-400"
-                      : "border-border-default bg-bg-base text-text-secondary hover:border-border-strong hover:bg-bg-subtle"
-                  )}
-                >
-                  <div
+        {/* ── Appearance ───────────────────────────────────────────── */}
+        <section className="space-y-2">
+          <SectionHeader title="Appearance" />
+          <SettingsCard>
+            <div className="p-4">
+              <p className="mb-3 text-[13px] font-semibold text-text-base">Theme</p>
+              <div className="grid grid-cols-3 gap-2">
+                {THEME_OPTIONS.map(({ value, label, Icon }) => (
+                  <button
+                    key={value}
+                    onClick={() => setTheme(value)}
                     className={cn(
-                      "flex h-9 w-9 items-center justify-center rounded-xl",
+                      "flex flex-col items-center gap-2.5 rounded-2xl border py-4 text-xs font-semibold transition-all duration-150",
                       theme === value
-                        ? "bg-brand-500/12 dark:bg-brand-500/18"
-                        : "bg-bg-muted-surface"
+                        ? "bg-brand-500/8 dark:bg-brand-500/12 border-brand-500/50 text-brand-600 shadow-sm dark:text-brand-400"
+                        : "border-border-default bg-bg-base text-text-secondary hover:border-border-strong hover:bg-bg-subtle"
                     )}
                   >
-                    <Icon
-                      size={18}
-                      className={
+                    <div
+                      className={cn(
+                        "flex h-9 w-9 items-center justify-center rounded-xl",
                         theme === value
-                          ? "text-brand-500 dark:text-brand-400"
-                          : "text-text-muted-fg"
-                      }
-                    />
-                  </div>
-                  {label}
-                </button>
-              ))}
+                          ? "bg-brand-500/12 dark:bg-brand-500/18"
+                          : "bg-bg-muted-surface"
+                      )}
+                    >
+                      <Icon
+                        size={18}
+                        className={
+                          theme === value
+                            ? "text-brand-500 dark:text-brand-400"
+                            : "text-text-muted-fg"
+                        }
+                      />
+                    </div>
+                    {label}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-        </SettingsCard>
-      </section>
+          </SettingsCard>
+        </section>
 
-      {/* ── About ────────────────────────────────────────────────── */}
-      <section className="space-y-2">
-        <SectionHeader title="About" />
-        <SettingsCard>
-          <SettingsRow icon={Info} label="Version" value="1.0.0" />
-          <SettingsDivider />
-          <SettingsRow icon={Shield} label="Campus" value="IIT Madras DS" />
-        </SettingsCard>
-      </section>
+        {/* ── About ────────────────────────────────────────────────── */}
+        <section className="space-y-2">
+          <SectionHeader title="About" />
+          <SettingsCard>
+            <SettingsRow icon={Info} label="Version" value="1.0.0" />
+            <SettingsDivider />
+            <SettingsRow icon={Shield} label="Campus" value="IIT Madras DS" />
+            <SettingsDivider />
+            <SettingsRow icon={Info} label="About Findora" href="/about" />
+            <SettingsDivider />
+            <SettingsRow icon={LifeBuoy} label="Contact & Support" href="/contact" />
+          </SettingsCard>
+        </section>
 
-      {/* ── Session ──────────────────────────────────────────────── */}
-      <section className="space-y-2">
-        <SectionHeader title="Session" />
-        <SettingsCard>
-          <SettingsRow icon={LogOut} label="Sign out" onClick={() => void handleSignOut()} danger />
-        </SettingsCard>
-      </section>
+        {/* ── Session ──────────────────────────────────────────────── */}
+        <section className="space-y-2">
+          <SectionHeader title="Session" />
+          <SettingsCard>
+            <SettingsRow
+              icon={LogOut}
+              label="Sign out"
+              onClick={() => void handleSignOut()}
+              danger
+            />
+          </SettingsCard>
+        </section>
+      </div>
     </div>
   );
 }
