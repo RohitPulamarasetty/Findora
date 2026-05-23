@@ -103,9 +103,6 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: "2mb",
     },
-    // Required to enable ./instrumentation.ts (env validation + optional
-    // Sentry init). No-op in Next 15+.
-    instrumentationHook: true,
   },
 };
 
