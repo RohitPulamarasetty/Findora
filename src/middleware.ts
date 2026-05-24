@@ -38,19 +38,32 @@ export async function middleware(request: NextRequest) {
 
   // For all authenticated app routes: check ban status
   if (isAppRoute && user) {
-    const { data: profile } = await supabase
+    const { data: profile, error: profileError } = await supabase
       .from("users")
       .select("role, is_banned")
       .eq("id", user.id)
-      .single();
+      .maybeSingle();
 
-    if (!profile || profile.is_banned) {
+    if (profileError) {
+      console.error("[middleware] profile fetch error", {
+        userId: user.id,
+        code: profileError.code,
+        message: profileError.message,
+        pathname,
+      });
+    }
+
+    // A null profile means the trigger/callback hasn't created the row yet
+    // (race condition on first sign-in). Never treat a missing row as a ban.
+    // Only sign out when is_banned is explicitly true.
+    if (profile?.is_banned === true) {
+      console.warn("[middleware] blocked banned user", { userId: user.id, pathname });
       await supabase.auth.signOut();
       return NextResponse.redirect(new URL("/login?error=account_banned", request.url));
     }
 
-    // Admin-only routes
-    if (pathname.startsWith("/admin") && profile.role !== "admin") {
+    // Admin-only routes — treat missing profile as non-admin (fail safe)
+    if (pathname.startsWith("/admin") && profile?.role !== "admin") {
       return NextResponse.redirect(new URL("/home", request.url));
     }
   }

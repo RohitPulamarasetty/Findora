@@ -194,13 +194,14 @@ export async function POST(request: NextRequest) {
   const rl = await rateLimit(request, "items_write", { userId: user.id });
   if (!rl.allowed) return rl.response!;
 
-  // Check ban status
+  // Check ban status — maybeSingle() avoids a PGRST116 error log when the
+  // profile row doesn't exist yet. Missing profile is not a ban.
   const { data: profile } = await supabase
     .from("users")
     .select("is_banned")
     .eq("id", user.id)
-    .single();
-  if (profile?.is_banned) return NextResponse.json({ error: "Account suspended" }, { status: 403 });
+    .maybeSingle();
+  if (profile?.is_banned === true) return NextResponse.json({ error: "Account suspended" }, { status: 403 });
 
   // Rate limit
   const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();

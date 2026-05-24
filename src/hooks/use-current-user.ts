@@ -24,11 +24,25 @@ export function useCurrentUser() {
 
       // PERF: was `.select("*")`; pruned to the columns the UI actually
       // reads. Saves payload + serialization on every authenticated mount.
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("users")
         .select(CLIENT_USER_FIELDS)
         .eq("id", user.id)
-        .single<UserRow>();
+        .maybeSingle<UserRow>();
+
+      if (error) {
+        console.error("[useCurrentUser] profile fetch error", {
+          userId: user.id,
+          code: error.code,
+          message: error.message,
+        });
+      }
+
+      if (!data) {
+        console.warn("[useCurrentUser] no profile row found for authenticated user", {
+          userId: user.id,
+        });
+      }
 
       return data;
     },
