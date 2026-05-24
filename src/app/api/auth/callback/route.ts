@@ -56,7 +56,10 @@ export async function GET(request: NextRequest) {
   try {
     admin = createServiceRoleClient();
   } catch (e) {
-    console.error("[auth/callback] failed to create service-role client:", e instanceof Error ? e.message : e);
+    console.error(
+      "[auth/callback] failed to create service-role client:",
+      e instanceof Error ? e.message : e
+    );
     await supabase.auth.signOut();
     return NextResponse.redirect(`${APP_URL}/login?error=auth_failed`);
   }
@@ -76,7 +79,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(`${APP_URL}/login?error=account_banned`);
     }
   } catch (e) {
-    console.error("[auth/callback] banned_emails lookup failed:", e instanceof Error ? e.message : e);
+    console.error(
+      "[auth/callback] banned_emails lookup failed:",
+      e instanceof Error ? e.message : e
+    );
     // Fail closed: if we can't verify, treat as unsafe.
     await supabase.auth.signOut();
     return NextResponse.redirect(`${APP_URL}/login?error=auth_failed`);
@@ -113,6 +119,7 @@ export async function GET(request: NextRequest) {
       message: upsertError.message,
     });
   } else {
+    // eslint-disable-next-line no-console
     console.log("[auth/callback] profile ensured", { userId: user.id });
   }
 
@@ -139,7 +146,7 @@ export async function GET(request: NextRequest) {
     await supabase.auth.signOut();
     return NextResponse.redirect(`${APP_URL}/login?error=account_banned`);
   }
-
+  // eslint-disable-next-line no-console
   console.log("[auth/callback] sign-in complete", { userId: user.id, next });
   return NextResponse.redirect(`${APP_URL}${next}`);
 }

@@ -201,7 +201,8 @@ export async function POST(request: NextRequest) {
     .select("is_banned")
     .eq("id", user.id)
     .maybeSingle();
-  if (profile?.is_banned === true) return NextResponse.json({ error: "Account suspended" }, { status: 403 });
+  if (profile?.is_banned === true)
+    return NextResponse.json({ error: "Account suspended" }, { status: 403 });
 
   // Rate limit
   const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
