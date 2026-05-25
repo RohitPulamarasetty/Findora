@@ -40,6 +40,7 @@ const CSP_DIRECTIVES = {
     "https://checkout.razorpay.com",
     "https://www.googletagmanager.com",
     "https://www.clarity.ms",
+    "https://scripts.clarity.ms",
   ],
 
   // ── Styles ───────────────────────────────────────────────────────────────
@@ -84,6 +85,7 @@ const CSP_DIRECTIVES = {
     "https://www.google-analytics.com",
     "https://region1.google-analytics.com",
     "https://*.clarity.ms",
+    "https://scripts.clarity.ms",
   ],
 
   // ── Frames ───────────────────────────────────────────────────────────────
