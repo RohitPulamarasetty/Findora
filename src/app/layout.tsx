@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { GoogleAnalytics } from "@next/third-parties/google";
+import Script from "next/script";
 import { Providers } from "./providers";
 import {
   siteConfig,
@@ -12,6 +14,11 @@ import {
   webApplicationSchema,
 } from "@/lib/seo";
 import "./globals.css";
+
+// Analytics IDs — sourced from env so they never need to be hard-coded in
+// source files. Both vars are NEXT_PUBLIC_* (safe to expose to the browser).
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
+const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_ID;
 
 // ── Typography ────────────────────────────────────────────────────────────────
 // Body + Display font (UI_UX_GUIDELINES §3 — Font Stack)
@@ -168,6 +175,34 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             them re-running on provider state changes. */}
         <Analytics />
         <SpeedInsights />
+
+        {/* ── Google Analytics 4 ────────────────────────────────────────────
+            @next/third-parties/google injects the gtag.js script with
+            strategy="afterInteractive" automatically — no duplicate injection,
+            no hydration mismatch. Skipped when NEXT_PUBLIC_GA_ID is unset
+            (local dev without the env var). */}
+        {GA_ID && <GoogleAnalytics gaId={GA_ID} />}
+
+        {/* ── Microsoft Clarity ─────────────────────────────────────────────
+            Injected once at the root layout so every page is covered.
+            strategy="afterInteractive" defers execution until after hydration,
+            preventing any risk of SSR/client mismatch. Skipped when
+            NEXT_PUBLIC_CLARITY_ID is unset. */}
+        {CLARITY_ID && (
+          <Script
+            id="microsoft-clarity"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+              __html: `
+                (function(c,l,a,r,i,t,y){
+                  c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                  t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                  y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+                })(window,document,"clarity","script","${CLARITY_ID}");
+              `,
+            }}
+          />
+        )}
       </body>
     </html>
   );
