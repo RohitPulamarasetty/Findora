@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { GoogleAnalytics } from "@next/third-parties/google";
 import Script from "next/script";
 import { Providers } from "./providers";
 import {
@@ -64,10 +63,12 @@ export const metadata: Metadata = {
   alternates: {
     canonical: siteConfig.url,
   },
+  // Public pages: allow full indexing. Routes inside (app) and (auth)
+  // override this with noindex in their own layout.tsx — those private
+  // campus surfaces should never appear in search results.
   robots: {
     index: true,
     follow: true,
-    nocache: false,
     googleBot: {
       index: true,
       follow: true,
@@ -176,12 +177,48 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Analytics />
         <SpeedInsights />
 
-        {/* ── Google Analytics 4 ────────────────────────────────────────────
-            @next/third-parties/google injects the gtag.js script with
-            strategy="afterInteractive" automatically — no duplicate injection,
-            no hydration mismatch. Skipped when NEXT_PUBLIC_GA_ID is unset
-            (local dev without the env var). */}
-        {GA_ID && <GoogleAnalytics gaId={GA_ID} />}
+        {/* ── Google Analytics 4 ─────────────────────────────────────────────
+            Two-script manual pattern (canonical GA4 setup):
+              1. ga-loader  — async-loads gtag.js from Google's CDN
+              2. ga-init    — initialises window.dataLayer and calls gtag('config')
+
+            Why manual instead of @next/third-parties/google:
+            • The third-party wrapper wraps gtag internally in a way that can
+              suppress the initial page_view hit in App Router, so no data shows
+              in GA4 Realtime even though the script appears in the page source.
+            • The manual pattern matches GA4's own "Add Google Analytics" snippet
+              exactly, so gtag(), window.dataLayer, and the config call all exist
+              in the order GA4 expects them.
+
+            Both scripts use strategy="afterInteractive" — they run after React
+            hydration, preventing any server/client mismatch. The unique `id`
+            props tell Next.js's Script manager to inject each tag only once,
+            even across client-side navigations.
+
+            Skipped entirely when NEXT_PUBLIC_GA_ID is unset (local dev). */}
+        {GA_ID && (
+          <>
+            {/* 1️⃣  Load gtag.js library from Google's CDN */}
+            <Script
+              id="ga-loader"
+              strategy="afterInteractive"
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+            />
+            {/* 2️⃣  Initialise dataLayer and send the config hit */}
+            <Script
+              id="ga-init"
+              strategy="afterInteractive"
+              dangerouslySetInnerHTML={{
+                __html: `
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', '${GA_ID}');
+                `,
+              }}
+            />
+          </>
+        )}
 
         {/* ── Microsoft Clarity ─────────────────────────────────────────────
             Injected once at the root layout so every page is covered.
