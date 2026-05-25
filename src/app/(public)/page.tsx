@@ -17,19 +17,23 @@ import {
 import { createClient } from "@/utils/supabase/server";
 import { buildMetadata, JsonLd, faqSchema, breadcrumbSchema } from "@/lib/seo";
 
+// No `title` passed — Next.js falls back to the root layout's `title.default`
+// ("Findora — IITM DS Lost & Found Platform"), so no " | Findora" suffix is
+// appended. OG and Twitter titles also use siteConfig.fullName via buildMetadata.
 export const metadata: Metadata = buildMetadata({
-  title: "Find what's lost. Return what's found.",
   description:
-    "Findora is the trusted campus lost & found platform for verified IITM DS students. A secure recovery system replacing scattered WhatsApp groups and notice boards — fast, private, and built around verified identity.",
+    "Findora is a secure IITM DS campus lost and found platform helping students recover lost items quickly through verified reporting and matching.",
   path: "/",
   keywords: [
     "Findora",
     "Findora lost and found",
+    "IITM DS lost and found",
     "IITM lost and found",
     "campus lost and found",
     "lost item recovery campus",
     "find lost belongings IITM",
     "verified student platform",
+    "IITM DS campus platform",
   ],
 });
 
