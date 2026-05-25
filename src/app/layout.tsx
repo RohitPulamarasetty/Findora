@@ -178,46 +178,69 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SpeedInsights />
 
         {/* ── Google Analytics 4 ─────────────────────────────────────────────
-            Two-script manual pattern (canonical GA4 setup):
-              1. ga-loader  — async-loads gtag.js from Google's CDN
-              2. ga-init    — initialises window.dataLayer and calls gtag('config')
+            Single-script pattern — the only way to guarantee execution order
+            in Next.js App Router with strategy="afterInteractive".
 
-            Why manual instead of @next/third-parties/google:
-            • The third-party wrapper wraps gtag internally in a way that can
-              suppress the initial page_view hit in App Router, so no data shows
-              in GA4 Realtime even though the script appears in the page source.
-            • The manual pattern matches GA4's own "Add Google Analytics" snippet
-              exactly, so gtag(), window.dataLayer, and the config call all exist
-              in the order GA4 expects them.
+            WHY a single script beats two separate scripts:
+            ─────────────────────────────────────────────
+            The previous two-script approach (ga-loader + ga-init, both
+            afterInteractive) had a race condition: if gtag.js was already
+            in the browser's HTTP cache it could execute *before* ga-init's
+            useEffect had a chance to run, finding window.dataLayer uninitialised
+            and silently dropping the page_view — which is why /g/collect was
+            never appearing in the Network tab.
 
-            Both scripts use strategy="afterInteractive" — they run after React
-            hydration, preventing any server/client mismatch. The unique `id`
-            props tell Next.js's Script manager to inject each tag only once,
+            This single script guarantees order by doing everything inline:
+              1. window.dataLayer is created FIRST
+              2. window.gtag() wrapper is defined
+              3. gtag('js', new Date()) timestamps the session
+              4. gtag('config', ...) queues the page_view
+              5. THEN — and only then — the <script src="gtag.js"> tag is
+                 injected into the DOM; by the time gtag.js loads and runs,
+                 the full queue is already in place.
+
+            strategy="afterInteractive" defers the entire block until after
+            React hydration, keeping SSR output clean. The unique id prop
+            ensures Next.js's Script dedup manager never injects it twice,
             even across client-side navigations.
 
             Skipped entirely when NEXT_PUBLIC_GA_ID is unset (local dev). */}
         {GA_ID && (
-          <>
-            {/* 1️⃣  Load gtag.js library from Google's CDN */}
-            <Script
-              id="ga-loader"
-              strategy="afterInteractive"
-              src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
-            />
-            {/* 2️⃣  Initialise dataLayer and send the config hit */}
-            <Script
-              id="ga-init"
-              strategy="afterInteractive"
-              dangerouslySetInnerHTML={{
-                __html: `
-                  window.dataLayer = window.dataLayer || [];
-                  function gtag(){dataLayer.push(arguments);}
-                  gtag('js', new Date());
-                  gtag('config', '${GA_ID}');
-                `,
-              }}
-            />
-          </>
+          <Script
+            id="google-analytics"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+              __html: `
+                /* ── Step 0: mark entry for debugging ─────────────────── */
+                console.debug('[GA4] GA loader executed');
+
+                /* ── Step 1: dataLayer MUST exist before any gtag() call ─ */
+                window.dataLayer = window.dataLayer || [];
+                window.gtag = function gtag(){ window.dataLayer.push(arguments); };
+                console.debug('[GA4] GA init executed');
+
+                /* ── Step 2: queue the session timestamp ──────────────── */
+                window.gtag('js', new Date());
+
+                /* ── Step 3: queue the config + initial page_view ─────── */
+                window.gtag('config', '${GA_ID}', {
+                  page_path: window.location.pathname,
+                  send_page_view: true
+                });
+                console.debug('[GA4] GA config fired — page_path: ' + window.location.pathname);
+
+                /* ── Step 4: inject gtag.js AFTER the queue is ready ───── *
+                 * Doing this last guarantees gtag.js always finds a fully  *
+                 * populated dataLayer when it loads, regardless of caching. */
+                (function() {
+                  var s = document.createElement('script');
+                  s.async = true;
+                  s.src = 'https://www.googletagmanager.com/gtag/js?id=${GA_ID}';
+                  document.head.appendChild(s);
+                })();
+              `,
+            }}
+          />
         )}
 
         {/* ── Microsoft Clarity ─────────────────────────────────────────────
