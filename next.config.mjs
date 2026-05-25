@@ -1,67 +1,115 @@
 /** @type {import('next').NextConfig} */
 
-// Content Security Policy
-// Supabase URL is read at build time so the CDN URL ends up in the header.
+// ── Content Security Policy ────────────────────────────────────────────────────
+//
+// Built as a structured object (directive → array of allowed values) so the
+// final header string is 100% explicit — no regex, no template-literal
+// whitespace collapsing, no silent truncation risk.
 //
 // SECURITY NOTE (audit 0013):
-//   - 'unsafe-eval' is required only by Next.js HMR in dev. We drop it in
-//     production, which eliminates the easiest XSS payload-eval vector.
-//   - 'unsafe-inline' on script-src remains pending a per-request nonce
-//     migration. Next 14 App Router still emits inline <script> blocks for
-//     hydration data and next-themes's color-scheme bootstrap; nonce-based
-//     CSP requires generating + passing the nonce through every server
-//     component render. Tracked as a follow-up — not in scope for this fix.
+//   • 'unsafe-eval'  — required only by Next.js HMR in dev. Dropped in prod,
+//                      eliminating the easiest XSS payload-eval vector.
+//   • 'unsafe-inline' on script-src — pending a per-request nonce migration.
+//     Next.js App Router emits inline <script> blocks for hydration data and
+//     next-themes' color-scheme bootstrap; nonce-based CSP would require
+//     threading a nonce through every server component. Tracked as follow-up.
+//   • Analytics domains — GA4 (googletagmanager + google-analytics) and
+//     Microsoft Clarity (*.clarity.ms) are whitelisted in the minimum required
+//     directives only (script-src, connect-src, img-src). No extra permissions
+//     are granted.
+
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseHost = supabaseUrl ? new URL(supabaseUrl).hostname : "";
-const isProd = process.env.NODE_ENV === "production";
+const isDev = process.env.NODE_ENV !== "production";
 
-const ContentSecurityPolicy = `
-  default-src 'self';
+// Each key is a CSP directive name; each value is the ordered list of sources.
+// Directives with an empty array emit as a flag-only directive (e.g.
+// "upgrade-insecure-requests" which takes no value).
+const CSP_DIRECTIVES = {
+  "default-src": ["'self'"],
 
-  script-src
-    'self'
-    ${isProd ? "" : "'unsafe-eval'"}
-    'unsafe-inline'
-    https://checkout.razorpay.com
-    https://www.googletagmanager.com
-    https://www.clarity.ms;
+  // ── Scripts ──────────────────────────────────────────────────────────────
+  // 'unsafe-eval' only in dev (Next.js HMR + React Fast Refresh require it).
+  // 'unsafe-inline' required for Next.js hydration chunks & next-themes.
+  // googletagmanager.com  — GA4 loader (gtag.js)
+  // clarity.ms            — Microsoft Clarity loader
+  "script-src": [
+    "'self'",
+    ...(isDev ? ["'unsafe-eval'"] : []),
+    "'unsafe-inline'",
+    "https://checkout.razorpay.com",
+    "https://www.googletagmanager.com",
+    "https://www.clarity.ms",
+  ],
 
-  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-  font-src 'self' https://fonts.gstatic.com;
+  // ── Styles ───────────────────────────────────────────────────────────────
+  "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
 
-  img-src
-    'self'
-    blob:
-    data:
-    https://*.supabase.co
-    https://*.supabase.in
-    https://*.razorpay.com
-    ${supabaseHost ? `https://${supabaseHost}` : ""}
-    https://www.google-analytics.com
-    https://www.googletagmanager.com;
+  // ── Fonts ────────────────────────────────────────────────────────────────
+  "font-src": ["'self'", "https://fonts.gstatic.com"],
 
-  connect-src
-    'self'
-    https://*.supabase.co
-    https://*.supabase.in
-    wss://*.supabase.co
-    wss://*.supabase.in
-    https://accounts.google.com
-    https://api.razorpay.com
-    https://lumberjack.razorpay.com
-    https://www.googletagmanager.com
-    https://www.google-analytics.com
-    https://*.clarity.ms;
+  // ── Images ───────────────────────────────────────────────────────────────
+  // google-analytics.com  — GA4 img-beacon fallback (sendBeacon or img pixel)
+  // googletagmanager.com  — GTM pixel (defence-in-depth)
+  "img-src": [
+    "'self'",
+    "blob:",
+    "data:",
+    "https://*.supabase.co",
+    "https://*.supabase.in",
+    "https://*.razorpay.com",
+    // Explicit Supabase project host (e.g. storage CDN origin)
+    ...(supabaseHost ? [`https://${supabaseHost}`] : []),
+    "https://www.google-analytics.com",
+    "https://www.googletagmanager.com",
+    // Google OAuth profile photos
+    "https://lh3.googleusercontent.com",
+  ],
 
-  frame-src 'self' https://accounts.google.com https://api.razorpay.com https://checkout.razorpay.com;
-  object-src 'none';
-  base-uri 'self';
-  form-action 'self';
-  frame-ancestors 'none';
-  upgrade-insecure-requests;
-`
-  .replace(/\s{2,}/g, " ")
-  .trim();
+  // ── Fetch / XHR / Beacon / WebSocket ─────────────────────────────────────
+  // google-analytics.com        — GA4 g/collect endpoint
+  // region1.google-analytics.com — GA4 regional collect endpoint (EU traffic)
+  // googletagmanager.com        — GTM secondary config fetches
+  // *.clarity.ms                — Clarity data collection (d. / e. subdomains)
+  "connect-src": [
+    "'self'",
+    "https://*.supabase.co",
+    "https://*.supabase.in",
+    "wss://*.supabase.co",
+    "wss://*.supabase.in",
+    "https://accounts.google.com",
+    "https://api.razorpay.com",
+    "https://lumberjack.razorpay.com",
+    "https://www.googletagmanager.com",
+    "https://www.google-analytics.com",
+    "https://region1.google-analytics.com",
+    "https://*.clarity.ms",
+  ],
+
+  // ── Frames ───────────────────────────────────────────────────────────────
+  "frame-src": [
+    "'self'",
+    "https://accounts.google.com",
+    "https://api.razorpay.com",
+    "https://checkout.razorpay.com",
+  ],
+
+  // ── Lockdown directives ───────────────────────────────────────────────────
+  "object-src": ["'none'"],
+  "base-uri": ["'self'"],
+  "form-action": ["'self'"],
+  "frame-ancestors": ["'none'"],
+  // Flag directive — no value list
+  "upgrade-insecure-requests": [],
+};
+
+// Serialise: "directive-name val1 val2 val3; next-directive ..."
+// Directives with no values emit as bare tokens (e.g. upgrade-insecure-requests).
+const ContentSecurityPolicy = Object.entries(CSP_DIRECTIVES)
+  .map(([directive, sources]) =>
+    sources.length > 0 ? `${directive} ${sources.join(" ")}` : directive,
+  )
+  .join("; ");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
