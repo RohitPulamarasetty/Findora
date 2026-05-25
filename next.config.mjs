@@ -17,11 +17,42 @@ const isProd = process.env.NODE_ENV === "production";
 
 const ContentSecurityPolicy = `
   default-src 'self';
-  script-src 'self' ${isProd ? "" : "'unsafe-eval'"} 'unsafe-inline' https://checkout.razorpay.com;
+
+  script-src
+    'self'
+    ${isProd ? "" : "'unsafe-eval'"}
+    'unsafe-inline'
+    https://checkout.razorpay.com
+    https://www.googletagmanager.com
+    https://www.clarity.ms;
+
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
   font-src 'self' https://fonts.gstatic.com;
-  img-src 'self' blob: data: https://*.supabase.co https://*.supabase.in https://*.razorpay.com ${supabaseHost ? `https://${supabaseHost}` : ""};
-  connect-src 'self' https://*.supabase.co https://*.supabase.in wss://*.supabase.co wss://*.supabase.in https://accounts.google.com https://api.razorpay.com https://lumberjack.razorpay.com;
+
+  img-src
+    'self'
+    blob:
+    data:
+    https://*.supabase.co
+    https://*.supabase.in
+    https://*.razorpay.com
+    ${supabaseHost ? `https://${supabaseHost}` : ""}
+    https://www.google-analytics.com
+    https://www.googletagmanager.com;
+
+  connect-src
+    'self'
+    https://*.supabase.co
+    https://*.supabase.in
+    wss://*.supabase.co
+    wss://*.supabase.in
+    https://accounts.google.com
+    https://api.razorpay.com
+    https://lumberjack.razorpay.com
+    https://www.googletagmanager.com
+    https://www.google-analytics.com
+    https://*.clarity.ms;
+
   frame-src 'self' https://accounts.google.com https://api.razorpay.com https://checkout.razorpay.com;
   object-src 'none';
   base-uri 'self';
