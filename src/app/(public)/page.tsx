@@ -219,8 +219,7 @@ export default async function RootPage() {
             </div>
 
             <p className="relative mt-5 text-[11.5px] text-white/35 lg:mt-7 lg:text-[12.5px]">
-              Exclusive to{" "}
-              <span className="font-medium text-white/55">IITM student accounts</span>
+              Exclusive to <span className="font-medium text-white/55">IITM student accounts</span>
             </p>
           </div>
 
@@ -436,8 +435,8 @@ export default async function RootPage() {
                     Built for trust, not just convenience
                   </h2>
                   <p className="mt-3 max-w-[42ch] text-[13px] leading-relaxed text-white/55 sm:text-[13.5px]">
-                    Every user is a verified IITM student. Row-level security ensures you only
-                    see what you&apos;re authorized to. No public listings, no anonymous messages.
+                    Every user is a verified IITM student. Row-level security ensures you only see
+                    what you&apos;re authorized to. No public listings, no anonymous messages.
                   </p>
                 </div>
                 <div className="grid grid-cols-2 gap-2.5">
