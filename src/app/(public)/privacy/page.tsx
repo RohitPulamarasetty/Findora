@@ -6,7 +6,7 @@ import { buildMetadata, JsonLd, breadcrumbSchema } from "@/lib/seo";
 export const metadata: Metadata = buildMetadata({
   title: "Privacy Policy",
   description:
-    "How Findora collects, uses, and protects your data on the campus lost & found platform. Privacy-first architecture for verified IITM DS students — minimal collection, no third-party trackers.",
+    "How Findora collects, uses, and protects your data on the campus lost & found platform. Privacy-first architecture for verified IITM students — minimal collection, no third-party trackers.",
   path: "/privacy",
   keywords: ["Findora privacy", "student data privacy", "campus lost and found privacy policy"],
 });
@@ -16,7 +16,7 @@ const SECTIONS = [
     Icon: Database,
     title: "1. Information we collect",
     body: [
-      "Your IITM DS email address, name, and profile photo (from Google sign-in).",
+      "Your IITM student email address, name, and profile photo (from Google sign-in).",
       "Content you create — item reports, photos, messages, and case status.",
       "Basic technical data such as IP address, browser type, and timestamps for security and abuse prevention.",
     ],
@@ -34,7 +34,7 @@ const SECTIONS = [
     Icon: Shield,
     title: "3. Identity & access",
     body: [
-      "Findora is restricted to verified @ds.study.iitm.ac.in accounts via Google OAuth. We do not create or store passwords.",
+      "Findora is restricted to verified IITM student accounts (@ds.study.iitm.ac.in, @es.study.iitm.ac.in, @study.iitm.ac.in) via Google OAuth. We do not create or store passwords.",
       "Row-level security in our database ensures you can only access data you are authorized to see.",
       "Admins can act on abuse reports and remove content that violates the terms.",
     ],

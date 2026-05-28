@@ -120,7 +120,7 @@ export function HomeFeed() {
           <div>
             <p className="inline-flex items-center gap-1.5 rounded-full border border-brand-500/20 bg-brand-500/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-brand-600 dark:text-brand-400">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-brand-500" />
-              IITM DS Campus
+              IITM Campus
             </p>
             <h1 className="mt-1.5 text-[26px] font-extrabold leading-tight tracking-[-0.03em] text-text-base">
               Lost <span className="gradient-brand-text">&amp;</span> Found

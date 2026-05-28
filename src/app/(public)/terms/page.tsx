@@ -6,7 +6,7 @@ import { buildMetadata, JsonLd, breadcrumbSchema } from "@/lib/seo";
 export const metadata: Metadata = buildMetadata({
   title: "Terms & Conditions",
   description:
-    "The rules for using Findora — the trusted campus lost & found platform for verified IITM DS students. Eligibility, acceptable reporting, moderation, and platform terms.",
+    "The rules for using Findora — the trusted campus lost & found platform for verified IITM students. Eligibility, acceptable reporting, moderation, and platform terms.",
   path: "/terms",
   keywords: ["Findora terms", "lost and found platform terms", "Findora acceptable use"],
 });
@@ -16,7 +16,7 @@ const SECTIONS = [
     Icon: UserCheck,
     title: "1. Eligibility",
     body: [
-      "Findora is exclusively available to current students with verified @ds.study.iitm.ac.in accounts. By signing in you confirm that you are an authorized member of this community.",
+      "Findora is exclusively available to current IITM students with a verified @ds.study.iitm.ac.in, @es.study.iitm.ac.in, or @study.iitm.ac.in account. By signing in you confirm that you are an authorized member of this community.",
       "You are responsible for keeping your account secure. Do not share access with others.",
     ],
   },

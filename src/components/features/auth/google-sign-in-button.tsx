@@ -14,7 +14,6 @@ export function GoogleSignInButton() {
       options: {
         redirectTo: `${window.location.origin}/api/auth/callback`,
         queryParams: {
-          hd: process.env.NEXT_PUBLIC_ALLOWED_EMAIL_DOMAIN ?? "ds.study.iitm.ac.in",
           prompt: "select_account",
         },
       },

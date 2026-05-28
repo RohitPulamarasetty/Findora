@@ -32,7 +32,7 @@ export const siteConfig = {
   // secondary context, never the headline.
   name: "Findora",
   shortName: "Findora",
-  fullName: "Findora — IITM DS Lost & Found Platform",
+  fullName: "Findora — IITM Lost & Found Platform",
   tagline: "Find what's lost. Return what's found.",
 
   // ── URLs ────────────────────────────────────────────────────────────
@@ -40,8 +40,8 @@ export const siteConfig = {
 
   // ── Descriptions ────────────────────────────────────────────────────
   description:
-    "Findora is a secure IITM DS campus lost and found platform helping students recover lost items quickly through verified reporting and matching.",
-  shortDescription: "Secure campus lost and found platform for IITM DS students.",
+    "Findora is a secure IITM campus lost and found platform helping students recover lost items quickly through verified reporting and matching.",
+  shortDescription: "Secure campus lost and found platform for IITM students.",
 
   // ── Keywords (used selectively; modern SEO mostly ignores) ──────────
   keywords: [
@@ -94,7 +94,7 @@ export const siteConfig = {
     path: "/og_img.png",
     width: 1731,
     height: 909,
-    alt: "Findora — Find what's lost. Return what's found. The trusted campus lost & found platform for IITM DS students.",
+    alt: "Findora — Find what's lost. Return what's found. The trusted campus lost & found platform for IITM students.",
   },
 
   // ── Verification (set in env when ready) ────────────────────────────

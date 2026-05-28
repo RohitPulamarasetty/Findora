@@ -16,7 +16,7 @@ import { buildMetadata, JsonLd, breadcrumbSchema } from "@/lib/seo";
 export const metadata: Metadata = buildMetadata({
   title: "About Findora — The Trusted Campus Lost & Found Platform",
   description:
-    "The story behind Findora — a trusted lost & found platform for verified IITM DS students, built to replace scattered WhatsApp groups and notice boards with one secure recovery system.",
+    "The story behind Findora — a trusted lost & found platform for verified IITM students, built to replace scattered WhatsApp groups and notice boards with one secure recovery system.",
   path: "/about",
   keywords: [
     "about Findora",
@@ -346,7 +346,7 @@ export default function AboutPage() {
               Help make campus recovery smarter.
             </h3>
             <p className="relative mx-auto mt-2.5 max-w-[44ch] text-[13.5px] text-text-secondary">
-              Sign in with your IITM DS account to start using Findora.
+              Sign in with your IITM student account to start using Findora.
             </p>
             <div className="relative mt-7 flex flex-col items-center justify-center gap-2.5 sm:flex-row sm:gap-3">
               <Link

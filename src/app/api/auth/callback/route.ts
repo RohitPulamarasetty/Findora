@@ -5,7 +5,15 @@ import { createServiceRoleClient } from "@/utils/supabase/admin";
 import { rateLimit } from "@/lib/rate-limit";
 import { safeNextPath } from "@/lib/safe-redirect";
 
-const ALLOWED_DOMAIN = process.env.ALLOWED_EMAIL_DOMAIN ?? "ds.study.iitm.ac.in";
+const ALLOWED_DOMAINS = (
+  process.env.ALLOWED_EMAIL_DOMAINS ??
+  process.env.ALLOWED_EMAIL_DOMAIN ??
+  "ds.study.iitm.ac.in,es.study.iitm.ac.in,study.iitm.ac.in"
+)
+  .split(",")
+  .map((d) => d.trim().toLowerCase())
+  .filter(Boolean);
+
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
 export async function GET(request: NextRequest) {
@@ -45,7 +53,7 @@ export async function GET(request: NextRequest) {
 
   const normalizedEmail = user.email.trim().toLowerCase();
 
-  if (!normalizedEmail.endsWith(`@${ALLOWED_DOMAIN.toLowerCase()}`)) {
+  if (!ALLOWED_DOMAINS.some((domain) => normalizedEmail.endsWith(`@${domain}`))) {
     await supabase.auth.signOut();
     return NextResponse.redirect(`${APP_URL}/login?error=domain_not_allowed`);
   }

@@ -9,7 +9,8 @@ export const metadata: Metadata = {
 };
 
 const ERROR_MESSAGES: Record<string, string> = {
-  domain_not_allowed: "Only @ds.study.iitm.ac.in email addresses are allowed.",
+  domain_not_allowed:
+    "Only IITM student email addresses (@ds.study.iitm.ac.in, @es.study.iitm.ac.in, @study.iitm.ac.in) are allowed.",
   account_banned: "Your account has been suspended. Contact an admin.",
   auth_failed: "Sign-in failed. Please try again.",
   missing_code: "Invalid sign-in link. Please try again.",
@@ -57,7 +58,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               Welcome to Findora
             </h1>
             <p className="mt-1.5 max-w-[300px] text-[13.5px] leading-relaxed text-text-secondary">
-              The campus lost &amp; found platform built for IITM Data Science students.
+              The campus lost &amp; found platform built for IITM online degree students.
             </p>
           </div>
 
@@ -83,7 +84,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
                   Sign in to continue
                 </h2>
                 <p className="mb-6 text-[13px] text-text-muted-fg">
-                  Use your IITM DS Google account to access the platform.
+                  Use your IITM student Google account to access the platform.
                 </p>
 
                 <GoogleSignInButton />
@@ -97,9 +98,11 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
                 </div>
 
                 <p className="mt-4 text-center text-[12px] leading-relaxed text-text-muted-fg">
-                  Only{" "}
-                  <span className="font-semibold text-text-secondary">@ds.study.iitm.ac.in</span>{" "}
-                  accounts are permitted.
+                  IITM student accounts only
+                  <br />
+                  <span className="text-[10.5px] text-text-muted-fg/70">
+                    @ds / @es / @study .iitm.ac.in
+                  </span>
                 </p>
               </div>
             </div>
@@ -138,7 +141,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           </div>
 
           <p className="mt-6 text-center text-[11px] text-text-muted-fg">
-            &copy; {new Date().getFullYear()} Findora &middot; IIT Madras DS
+            &copy; {new Date().getFullYear()} Findora &middot; IIT Madras
           </p>
         </div>
       </div>

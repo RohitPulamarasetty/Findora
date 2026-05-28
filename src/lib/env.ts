@@ -27,8 +27,9 @@ const RULES: EnvRule[] = [
   },
   { key: "NEXT_PUBLIC_SUPABASE_ANON_KEY", required: true, publicSafe: true },
   { key: "SUPABASE_SERVICE_ROLE_KEY", required: true, publicSafe: false },
-  { key: "ALLOWED_EMAIL_DOMAIN", required: true, publicSafe: false },
-  { key: "NEXT_PUBLIC_ALLOWED_EMAIL_DOMAIN", required: true, publicSafe: true },
+  // ALLOWED_EMAIL_DOMAINS (preferred) or legacy ALLOWED_EMAIL_DOMAIN — both optional;
+  // the auth callback defaults to all three IITM online-degree domains when unset.
+  { key: "ALLOWED_EMAIL_DOMAINS", required: false, publicSafe: false },
   {
     key: "NEXT_PUBLIC_APP_URL",
     required: true,
@@ -40,6 +41,7 @@ const RULES: EnvRule[] = [
 ];
 
 const OPTIONAL_BUT_RECOMMENDED: string[] = [
+  "ALLOWED_EMAIL_DOMAINS",
   "UPSTASH_REDIS_REST_URL",
   "UPSTASH_REDIS_REST_TOKEN",
   "SENTRY_DSN",

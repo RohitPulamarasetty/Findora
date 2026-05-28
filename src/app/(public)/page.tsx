@@ -18,22 +18,22 @@ import { createClient } from "@/utils/supabase/server";
 import { buildMetadata, JsonLd, faqSchema, breadcrumbSchema } from "@/lib/seo";
 
 // No `title` passed — Next.js falls back to the root layout's `title.default`
-// ("Findora — IITM DS Lost & Found Platform"), so no " | Findora" suffix is
+// ("Findora — IITM Lost & Found Platform"), so no " | Findora" suffix is
 // appended. OG and Twitter titles also use siteConfig.fullName via buildMetadata.
 export const metadata: Metadata = buildMetadata({
   description:
-    "Findora is a secure IITM DS campus lost and found platform helping students recover lost items quickly through verified reporting and matching.",
+    "Findora is a secure IITM campus lost and found platform helping students recover lost items quickly through verified reporting and matching.",
   path: "/",
   keywords: [
     "Findora",
     "Findora lost and found",
-    "IITM DS lost and found",
     "IITM lost and found",
+    "IIT Madras lost and found",
     "campus lost and found",
     "lost item recovery campus",
     "find lost belongings IITM",
     "verified student platform",
-    "IITM DS campus platform",
+    "IITM campus platform",
   ],
 });
 
@@ -41,12 +41,12 @@ const HOME_FAQ = [
   {
     question: "What is Findora?",
     answer:
-      "Findora is the trusted campus lost & found platform for verified IITM DS students. It helps you recover lost belongings faster by replacing scattered WhatsApp groups and notice boards with one private, identity-verified system.",
+      "Findora is the trusted campus lost & found platform for verified IITM students. It helps you recover lost belongings faster by replacing scattered WhatsApp groups and notice boards with one private, identity-verified system.",
   },
   {
     question: "Who can use Findora?",
     answer:
-      "Findora is restricted to verified @ds.study.iitm.ac.in accounts via Google OAuth. Only authenticated IITM DS students can post or browse lost-and-found items.",
+      "Findora is restricted to verified IITM student accounts (@ds.study.iitm.ac.in, @es.study.iitm.ac.in, @study.iitm.ac.in) via Google OAuth. Only authenticated IITM students can post or browse lost-and-found items.",
   },
   {
     question: "How does recovery work on Findora?",
@@ -56,7 +56,7 @@ const HOME_FAQ = [
   {
     question: "Is Findora free?",
     answer:
-      "Yes. Findora is free for all eligible IITM DS students. There are no subscriptions, ads, or hidden fees.",
+      "Yes. Findora is free for all eligible IITM students. There are no subscriptions, ads, or hidden fees.",
   },
   {
     question: "How is my data protected?",
@@ -175,7 +175,7 @@ export default async function RootPage() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
               </span>
-              <span className="tracking-wide">IITM DS Campus Platform</span>
+              <span className="tracking-wide">IITM Student Platform</span>
             </div>
 
             <h1 className="relative mx-auto max-w-[18ch] text-[34px] font-bold leading-[1.08] tracking-[-0.03em] sm:text-[44px] sm:leading-[1.05] md:text-[54px] lg:max-w-[20ch] lg:text-[68px] lg:leading-[1.02] lg:tracking-[-0.035em] xl:text-[78px]">
@@ -193,7 +193,7 @@ export default async function RootPage() {
 
             <p className="relative mx-auto mt-5 max-w-[44ch] text-[14.5px] leading-relaxed text-white/55 sm:mt-6 sm:text-[15.5px] lg:mt-8 lg:max-w-[52ch] lg:text-[17.5px] lg:leading-[1.6] xl:text-[18.5px]">
               A secure, centralized platform replacing scattered WhatsApp groups and notice boards —
-              verified with your IITM DS identity.
+              verified with your IITM student identity.
             </p>
 
             {/* CTAs */}
@@ -219,8 +219,8 @@ export default async function RootPage() {
             </div>
 
             <p className="relative mt-5 text-[11.5px] text-white/35 lg:mt-7 lg:text-[12.5px]">
-              Exclusive to <span className="font-medium text-white/55">@ds.study.iitm.ac.in</span>{" "}
-              accounts
+              Exclusive to{" "}
+              <span className="font-medium text-white/55">IITM student accounts</span>
             </p>
           </div>
 
@@ -271,7 +271,7 @@ export default async function RootPage() {
                   icon: Shield,
                   color: "blue",
                   title: "Verified Identity",
-                  desc: "Only @ds.study.iitm.ac.in accounts. No anonymous users, no fake reports.",
+                  desc: "IITM student accounts only. No anonymous users, no fake reports.",
                 },
                 {
                   icon: Zap,
@@ -382,7 +382,7 @@ export default async function RootPage() {
               {[
                 {
                   title: "Sign in",
-                  desc: "Use your @ds.study.iitm.ac.in Google account. Verified instantly.",
+                  desc: "Use your IITM student Google account. Verified instantly.",
                   icon: Users,
                 },
                 {
@@ -436,13 +436,13 @@ export default async function RootPage() {
                     Built for trust, not just convenience
                   </h2>
                   <p className="mt-3 max-w-[42ch] text-[13px] leading-relaxed text-white/55 sm:text-[13.5px]">
-                    Every user is a verified IITM DS student. Row-level security ensures you only
+                    Every user is a verified IITM student. Row-level security ensures you only
                     see what you&apos;re authorized to. No public listings, no anonymous messages.
                   </p>
                 </div>
                 <div className="grid grid-cols-2 gap-2.5">
                   {[
-                    { label: "Domain restricted", sub: "@ds.study.iitm.ac.in only" },
+                    { label: "Domain restricted", sub: "IITM student accounts only" },
                     { label: "End-to-end verified", sub: "Google OAuth identity" },
                     { label: "Private messaging", sub: "Owner + finder only" },
                     { label: "Admin moderation", sub: "Abuse review & action" },

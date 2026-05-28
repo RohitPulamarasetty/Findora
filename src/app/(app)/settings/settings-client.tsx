@@ -201,7 +201,7 @@ export function SettingsClient({ profile }: SettingsClientProps) {
           <SettingsCard>
             <SettingsRow icon={Info} label="Version" value="1.0.0" />
             <SettingsDivider />
-            <SettingsRow icon={Shield} label="Campus" value="IIT Madras DS" />
+            <SettingsRow icon={Shield} label="Campus" value="IIT Madras" />
             <SettingsDivider />
             <SettingsRow icon={Info} label="About Findora" href="/about" />
             <SettingsDivider />

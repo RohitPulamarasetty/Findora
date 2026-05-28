@@ -8,7 +8,7 @@ import { buildMetadata, JsonLd, breadcrumbSchema } from "@/lib/seo";
 export const metadata: Metadata = buildMetadata({
   title: "Contact & Support",
   description:
-    "Reach the Findora team — general enquiries, bug reports, abuse and safety concerns about the campus lost & found platform. Built for verified IITM DS students.",
+    "Reach the Findora team — general enquiries, bug reports, abuse and safety concerns about the campus lost & found platform. Built for verified IITM students.",
   path: "/contact",
   keywords: [
     "Findora contact",
