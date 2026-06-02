@@ -12,6 +12,13 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
   const { id } = await params;
   const supabase = await createClient();
 
+  // Check who is calling — owners and admins may still need to view a
+  // removed item (e.g. the profile page navigating to an old case), but
+  // unauthenticated users and non-owners must never see soft-deleted content.
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   const { data, error } = await supabase
     .from("items")
     .select(
@@ -22,6 +29,25 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
     .single();
 
   if (error || !data) return NextResponse.json({ error: "Item not found" }, { status: 404 });
+
+  // Hide soft-deleted items from anyone who isn't the owner or an admin.
+  if (data.status === "removed") {
+    if (!user) {
+      return NextResponse.json({ error: "Item not found" }, { status: 404 });
+    }
+    // Fetch the caller's role to allow admins through.
+    const { data: profile } = await supabase
+      .from("users")
+      .select("role")
+      .eq("id", user.id)
+      .maybeSingle();
+    const isOwner = data.user_id === user.id;
+    const isAdmin = profile?.role === "admin";
+    if (!isOwner && !isAdmin) {
+      return NextResponse.json({ error: "Item not found" }, { status: 404 });
+    }
+  }
+
   return NextResponse.json(data);
 }
 

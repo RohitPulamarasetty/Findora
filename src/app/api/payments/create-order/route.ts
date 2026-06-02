@@ -14,16 +14,24 @@ interface CreateOrderBody {
 }
 
 export async function POST(request: Request) {
-  // Authenticated users: rate-limit by user.id so the 6-req/min bucket is
-  // per-account and shared users behind CGNAT don't starve each other.
-  // Guest users: fall back to IP-keyed rate-limiting — still strict (6/min
-  // per IP) to prevent Razorpay API-quota exhaustion via rotating IPs.
+  // Require a valid IITM student session before touching Razorpay's API.
+  // This prevents anonymous actors from exhausting Razorpay order quotas
+  // or inflating the dashboard with fake orders. Donations are intentionally
+  // a logged-in-only action for this campus platform.
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const rl = await rateLimit(request, "payments", { userId: user?.id ?? null });
+  if (!user) {
+    return NextResponse.json(
+      { error: "You must be signed in to make a donation." },
+      { status: 401 }
+    );
+  }
+
+  // Rate-limit by user.id (authenticated path only now).
+  const rl = await rateLimit(request, "payments", { userId: user.id });
   if (!rl.allowed) return rl.response!;
 
   const keyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
@@ -67,10 +75,9 @@ export async function POST(request: Request) {
   }
 
   // 10-second dedup: prevent duplicate Razorpay orders from double-tap or
-  // rapid retries. Key is scoped to (user/IP, amount) so a user who changes
+  // rapid retries. Key is scoped to (user.id, amount) so a user who changes
   // the amount gets a fresh order but a pure duplicate click reuses the last.
-  const identifier = user ? `u:${user.id}` : "guest";
-  const dedupKey = `dedup:payment:order:${identifier}:${amount}`;
+  const dedupKey = `dedup:payment:order:u:${user.id}:${amount}`;
   const dedupHit = await checkDedup<{ order_id: string; amount: number; currency: string }>(
     dedupKey
   );
@@ -81,7 +88,7 @@ export async function POST(request: Request) {
         ts: new Date().toISOString(),
         route: "payments/create-order",
         event: "duplicate_payment_order_blocked",
-        identifier,
+        user_id: user.id,
         amount,
         existing_order_id: dedupHit.value.order_id,
       })

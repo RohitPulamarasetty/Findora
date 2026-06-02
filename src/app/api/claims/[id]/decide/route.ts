@@ -31,6 +31,7 @@ import { createClient } from "@/utils/supabase/server";
 import { createServiceRoleClient } from "@/utils/supabase/admin";
 import { rateLimit } from "@/lib/rate-limit";
 import { containsProfanity } from "@/lib/profanity";
+import { getRequestIp } from "@/lib/request-ip";
 
 interface RouteContext {
   params: Promise<{ id: string }>;
@@ -126,6 +127,7 @@ export async function POST(request: Request, { params }: RouteContext) {
     target_table: "claims",
     target_id: id,
     payload: { item_id: claim.item_id, claimant_id: claim.claimant_id },
+    ip_address: getRequestIp(request),
   });
 
   // ── Bootstrap the post-decision conversation ────────────────────────────

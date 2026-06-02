@@ -2,6 +2,7 @@ import { createClient } from "@/utils/supabase/server";
 import { createServiceRoleClient } from "@/utils/supabase/admin";
 import { NextResponse } from "next/server";
 import { rateLimit } from "@/lib/rate-limit";
+import { getRequestIp } from "@/lib/request-ip";
 
 interface RouteContext {
   params: Promise<{ id: string }>;
@@ -43,6 +44,16 @@ export async function PATCH(request: Request, { params }: RouteContext) {
         { onConflict: "email" }
       );
   }
+
+  // Audit log — record every ban with the actor's IP for forensics.
+  await admin_db.from("admin_audit_log").insert({
+    actor_id: user.id,
+    action: "user.ban",
+    target_table: "users",
+    target_id: id,
+    payload: { reason: reason ?? null, email: target?.email ?? null },
+    ip_address: getRequestIp(request),
+  });
 
   return NextResponse.json({ ok: true });
 }

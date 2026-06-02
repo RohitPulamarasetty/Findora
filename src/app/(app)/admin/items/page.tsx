@@ -32,6 +32,11 @@ export default function AdminItemsPage() {
     queryKey: ["admin", "items", debouncedSearch, cursor],
     queryFn: async () => {
       const params = new URLSearchParams({ limit: "20" });
+      // "all" shows every item except hard-removed rows, including auto_hidden
+      // and completed items. Admins must be able to see flagged/hidden items
+      // to review and act on them — the public default ("active") would make
+      // auto_hidden items invisible to moderation.
+      params.set("status", "all");
       if (debouncedSearch) params.set("search", debouncedSearch);
       if (cursor) params.set("cursor", cursor);
       const res = await fetch(`/api/items?${params}`);

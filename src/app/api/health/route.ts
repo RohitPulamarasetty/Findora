@@ -82,15 +82,52 @@ async function checkUpstash(): Promise<CheckResult | null> {
   }
 }
 
+// ── Operational-config warnings ──────────────────────────────────────────────
+// These are not "hard down" checks but misconfigured-at-deploy warnings.
+// They surface in the health response so a monitoring alert can catch them
+// before they cause silent failures in production.
+function checkOperationalConfig(): {
+  warnings: string[];
+  rateLimitingEnabled: boolean;
+  cronSecretSet: boolean;
+} {
+  const warnings: string[] = [];
+
+  const rateLimitingEnabled = Boolean(
+    process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+  );
+  if (!rateLimitingEnabled) {
+    warnings.push(
+      "UPSTASH_REDIS_REST_URL/TOKEN not set — all rate limits are disabled (fail-open). Set Upstash env vars before receiving real traffic."
+    );
+  }
+
+  const cronSecretSet = Boolean(process.env.CRON_SECRET);
+  if (!cronSecretSet) {
+    warnings.push(
+      "CRON_SECRET not set — /api/cron/* endpoints will reject every request including Vercel's scheduler. Set CRON_SECRET or cron jobs will never run."
+    );
+  }
+
+  return { warnings, rateLimitingEnabled, cronSecretSet };
+}
+
 export async function GET() {
   const [supabase, upstash] = await Promise.all([checkSupabase(), checkUpstash()]);
+  const opConfig = checkOperationalConfig();
 
   const checks: Record<string, CheckResult | "skipped"> = {
     supabase,
     upstash: upstash ?? "skipped",
   };
 
-  const allOk = supabase.ok && (upstash === null || upstash.ok);
+  // Hard deps: Supabase up + Upstash up (if configured).
+  const depsOk = supabase.ok && (upstash === null || upstash.ok);
+  // Overall status is "degraded" when either hard deps fail OR critical
+  // operational config is missing. Warnings are surfaced in the response
+  // body but do NOT change the HTTP status code (503 is reserved for true
+  // dependency outages that require immediate paging).
+  const allOk = depsOk;
 
   return NextResponse.json(
     {
@@ -98,6 +135,12 @@ export async function GET() {
       version: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? "local",
       env: process.env.VERCEL_ENV ?? process.env.NODE_ENV ?? "unknown",
       checks,
+      // Operational warnings: non-zero = action required before launch.
+      config: {
+        rate_limiting: opConfig.rateLimitingEnabled ? "enabled" : "disabled",
+        cron_secret: opConfig.cronSecretSet ? "set" : "missing",
+      },
+      ...(opConfig.warnings.length > 0 && { warnings: opConfig.warnings }),
     },
     {
       status: allOk ? 200 : 503,

@@ -27,12 +27,42 @@ export async function GET(request: NextRequest) {
 
   const type = searchParams.get("type");
   const search = searchParams.get("search")?.trim() ?? "";
-  const category = searchParams.get("category");
   const status = searchParams.get("status") ?? "active";
-  const cursor = searchParams.get("cursor");
-  const dateFrom = searchParams.get("dateFrom");
-  const dateTo = searchParams.get("dateTo");
   const limit = Math.min(Number(searchParams.get("limit") ?? 20), 50);
+
+  // ── Validate category — only accept known category values (or empty)
+  const rawCategory = searchParams.get("category");
+  const VALID_CATEGORIES = [
+    "electronics",
+    "clothing",
+    "accessories",
+    "books",
+    "keys",
+    "bag",
+    "stationery",
+    "sports",
+    "wallet",
+    "id_card",
+    "other",
+  ];
+  const category = rawCategory
+    ? rawCategory
+        .split(",")
+        .map((c) => c.trim())
+        .filter((c) => VALID_CATEGORIES.includes(c))
+        .join(",") || null
+    : null;
+
+  // ── Validate ISO date strings (YYYY-MM-DD) — reject malformed values
+  const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+  const rawDateFrom = searchParams.get("dateFrom");
+  const rawDateTo = searchParams.get("dateTo");
+  const dateFrom = rawDateFrom && ISO_DATE_RE.test(rawDateFrom) ? rawDateFrom : null;
+  const dateTo = rawDateTo && ISO_DATE_RE.test(rawDateTo) ? rawDateTo : null;
+
+  // ── Validate cursor — must be a parseable ISO timestamp
+  const rawCursor = searchParams.get("cursor");
+  const cursor = rawCursor && !isNaN(Date.parse(rawCursor)) ? rawCursor : null;
 
   type FuzzyRow = { item_id: string; rank: number };
   let data: unknown[] | null = null;
@@ -55,6 +85,12 @@ export async function GET(request: NextRequest) {
     //                query the table directly when they need them)
     if (status === "active") {
       q = q.eq("status", "active");
+      // Exclude items auto-hidden by the flag-threshold trigger (≥3 distinct
+      // reporters). Auto-hidden items retain their "active" status (so the
+      // admin can review and un-hide them) but must never appear in the
+      // public feed. This filter is the application-layer enforcement; the
+      // trigger in 0015 sets the flag on the row.
+      q = q.eq("auto_hidden", false);
     } else if (status === "completed") {
       q = q.in("status", ["completed", "resolved", "closed"]);
     } else {

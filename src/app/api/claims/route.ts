@@ -36,8 +36,47 @@ export async function POST(request: Request) {
   const itemId = typeof body.item_id === "string" ? body.item_id : "";
   const rawAnswers: unknown = body.answers;
   const evidenceText = typeof body.evidence_text === "string" ? body.evidence_text.trim() : "";
-  const evidenceImageUrl =
+  const rawEvidenceImageUrl =
     typeof body.evidence_image_url === "string" ? body.evidence_image_url.trim() : "";
+
+  // Validate evidence_image_url: HTTPS only, from known safe image origins.
+  // This prevents tracking-pixel attacks (admin IP harvesting) and arbitrary
+  // URL injection. We only accept Supabase storage URLs for now — if users
+  // want to share a photo they should upload it via the item-images endpoint
+  // first. An empty string is always accepted (field is optional).
+  let evidenceImageUrl: string | null = null;
+  if (rawEvidenceImageUrl) {
+    let parsedUrl: URL;
+    try {
+      parsedUrl = new URL(rawEvidenceImageUrl);
+    } catch {
+      return NextResponse.json(
+        { error: "evidence_image_url must be a valid URL" },
+        { status: 400 }
+      );
+    }
+    if (parsedUrl.protocol !== "https:") {
+      return NextResponse.json({ error: "evidence_image_url must use HTTPS" }, { status: 400 });
+    }
+    // Allowlist: only Supabase storage hostnames are accepted.
+    // This ensures evidence images are hosted on a controlled CDN, not
+    // arbitrary third-party servers that could track the reviewer's IP.
+    const hostname = parsedUrl.hostname.toLowerCase();
+    const isAllowedHost = hostname.endsWith(".supabase.co") || hostname.endsWith(".supabase.in");
+    if (!isAllowedHost) {
+      return NextResponse.json(
+        {
+          error:
+            "evidence_image_url must be a Supabase storage URL. Upload your evidence photo via the item images endpoint first.",
+        },
+        { status: 400 }
+      );
+    }
+    if (rawEvidenceImageUrl.length > 2000) {
+      return NextResponse.json({ error: "evidence_image_url is too long" }, { status: 400 });
+    }
+    evidenceImageUrl = rawEvidenceImageUrl;
+  }
 
   if (!itemId) return NextResponse.json({ error: "item_id is required" }, { status: 400 });
   if (evidenceText.length > 1000)
