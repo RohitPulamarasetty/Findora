@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { SupportCTA } from "@/components/shared/support-cta";
 import { buildMetadata, JsonLd, breadcrumbSchema } from "@/lib/seo";
+import { SUPPORT_MIN_AMOUNT_PAISE, SUPPORT_MAX_AMOUNT_PAISE } from "@/lib/support";
 
 export const metadata: Metadata = buildMetadata({
   title: "About Findora — The Trusted Campus Lost & Found Platform",
@@ -81,7 +82,30 @@ const SOCIAL_LINKS = [
   },
 ];
 
-export default function AboutPage() {
+/**
+ * The about page receives an optional `?donate=<paise>` query param when the
+ * user was redirected to Google login from the donation modal. After a
+ * successful sign-in, the auth callback returns them here with that param so
+ * the modal can auto-reopen with their previously selected amount.
+ */
+export default async function AboutPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ donate?: string }>;
+}) {
+  const params = await searchParams;
+
+  // Parse and validate the donate param server-side. Only pass it through
+  // if it's a safe integer within the supported payment range so the client
+  // never receives an arbitrary string from a URL.
+  const rawDonate = params.donate ? parseInt(params.donate, 10) : NaN;
+  const donateAmount =
+    Number.isInteger(rawDonate) &&
+    rawDonate >= SUPPORT_MIN_AMOUNT_PAISE &&
+    rawDonate <= SUPPORT_MAX_AMOUNT_PAISE
+      ? rawDonate
+      : undefined;
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-bg-base text-text-base">
       <JsonLd
@@ -309,7 +333,11 @@ export default function AboutPage() {
         {/* ── Support Findora ─────────────────────────────────── */}
         <section className="relative px-4 pb-16 sm:px-6 sm:pb-20">
           <div className="mx-auto max-w-3xl">
-            <SupportCTA variant="app" />
+            <SupportCTA
+              variant="app"
+              initialAmount={donateAmount}
+              autoOpen={donateAmount !== undefined}
+            />
           </div>
         </section>
 

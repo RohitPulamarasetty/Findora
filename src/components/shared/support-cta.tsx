@@ -8,6 +8,16 @@ interface SupportCTAProps {
   heading?: string;
   description?: string;
   ctaLabel?: string;
+  /**
+   * Pre-selected donation amount in paise. Passed from the about page
+   * when a ?donate= query param is present (post-login restore flow).
+   */
+  initialAmount?: number;
+  /**
+   * Open the donation modal immediately on mount. Used with initialAmount
+   * after the Google login redirect returns the user to the about page.
+   */
+  autoOpen?: boolean;
 }
 
 /**
@@ -20,6 +30,8 @@ export function SupportCTA({
   heading = "Help shape the next generation of student tools.",
   description = SUPPORT_DESCRIPTION,
   ctaLabel = SUPPORT_CTA_LABEL,
+  initialAmount,
+  autoOpen,
 }: SupportCTAProps) {
   if (variant === "app") {
     return (
@@ -50,7 +62,7 @@ export function SupportCTA({
             </p>
           </div>
           <div className="flex justify-start sm:justify-end">
-            <SupportButton label={ctaLabel} />
+            <SupportButton label={ctaLabel} initialAmount={initialAmount} autoOpen={autoOpen} />
           </div>
         </div>
       </div>
