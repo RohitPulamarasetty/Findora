@@ -39,7 +39,7 @@ export function SearchBar({
         placeholder={placeholder}
         aria-label={placeholder}
         className={cn(
-          "h-10 w-full rounded-xl border bg-bg-subtle pl-10 pr-9",
+          "h-10 w-full rounded-xl border bg-bg-subtle pl-10 pr-9 [&::-webkit-search-cancel-button]:appearance-none",
           "text-[13.5px] font-medium text-text-base placeholder:font-normal placeholder:text-text-muted-fg",
           "transition-all duration-200",
           "hover:border-border-strong",

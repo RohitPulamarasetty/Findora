@@ -211,13 +211,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             strategy="afterInteractive"
             dangerouslySetInnerHTML={{
               __html: `
-                /* ── Step 0: mark entry for debugging ─────────────────── */
-                console.debug('[GA4] GA loader executed');
-
                 /* ── Step 1: dataLayer MUST exist before any gtag() call ─ */
                 window.dataLayer = window.dataLayer || [];
                 window.gtag = function gtag(){ window.dataLayer.push(arguments); };
-                console.debug('[GA4] GA init executed');
 
                 /* ── Step 2: queue the session timestamp ──────────────── */
                 window.gtag('js', new Date());
@@ -227,7 +223,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   page_path: window.location.pathname,
                   send_page_view: true
                 });
-                console.debug('[GA4] GA config fired — page_path: ' + window.location.pathname);
 
                 /* ── Step 4: inject gtag.js AFTER the queue is ready ───── *
                  * Doing this last guarantees gtag.js always finds a fully  *

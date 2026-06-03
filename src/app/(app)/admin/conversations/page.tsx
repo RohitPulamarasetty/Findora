@@ -14,6 +14,15 @@ export default async function AdminConversationsPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
+  // Defense-in-depth: the middleware already blocks non-admins at the edge,
+  // but we verify role here too so this page is safe if the matcher ever changes.
+  const { data: profile } = await supabase
+    .from("users")
+    .select("role")
+    .eq("id", user.id)
+    .maybeSingle();
+  if (profile?.role !== "admin") redirect("/home");
+
   const { data: convos } = await supabase
     .from("conversations")
     .select("id, item_id, owner_id, finder_id, is_locked, last_message_at, created_at")

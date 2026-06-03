@@ -146,7 +146,9 @@ export function ItemDetail({ item, currentUser, existingConversationId }: ItemDe
           <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.14em] text-text-muted-fg">
             Description
           </p>
-          <p className="text-[14px] leading-relaxed text-text-secondary">{item.description}</p>
+          <p className="break-words text-[14px] leading-relaxed text-text-secondary [overflow-wrap:anywhere]">
+            {item.description}
+          </p>
         </div>
       )}
 

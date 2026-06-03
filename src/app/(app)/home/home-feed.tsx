@@ -118,13 +118,20 @@ export function HomeFeed() {
         {/* Brand row */}
         <div className="relative flex items-center justify-between px-4 pb-3 pt-6">
           <div>
-            <p className="inline-flex items-center gap-1.5 rounded-full border border-brand-500/20 bg-brand-500/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-brand-600 dark:text-brand-400">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-brand-500" />
-              IITM Campus
+            {/* FINDORA wordmark */}
+            <div className="flex items-center gap-2.5">
+              <h1 className="text-[22px] font-black tracking-[-0.04em] text-text-base sm:text-[24px]">
+                FINDORA
+              </h1>
+              {/* Live badge */}
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-spark-500/25 bg-spark-500/10 px-2 py-[3px] text-[9px] font-bold uppercase tracking-[0.14em] text-spark-600 dark:text-spark-400">
+                <span className="h-[6px] w-[6px] animate-pulse rounded-full bg-spark-500" />
+                Live
+              </span>
+            </div>
+            <p className="mt-0.5 text-[12px] font-medium text-text-muted-fg">
+              Campus Lost &amp; Found · IITM
             </p>
-            <h1 className="mt-1.5 text-[26px] font-extrabold leading-tight tracking-[-0.03em] text-text-base">
-              Lost <span className="gradient-brand-text">&amp;</span> Found
-            </h1>
           </div>
           <div className="flex items-center gap-1">
             {/* Manual refresh — spins while a background fetch is in-flight.
@@ -174,10 +181,16 @@ export function HomeFeed() {
 
         {/* Segmented type control */}
         <div className="px-4 pb-3.5">
-          <div className="flex gap-1 rounded-xl bg-bg-muted-surface p-1">
+          <div
+            role="tablist"
+            aria-label="Filter by item type"
+            className="flex gap-1 rounded-xl bg-bg-muted-surface p-1"
+          >
             {TYPE_TABS.map(({ value, label }) => (
               <button
                 key={value}
+                role="tab"
+                aria-selected={filters.type === value}
                 onClick={() => updateFilters({ type: value })}
                 className={cn(
                   "flex-1 rounded-lg py-1.5 text-[12px] font-semibold transition-all duration-200",

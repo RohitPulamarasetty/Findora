@@ -24,6 +24,10 @@ export function EditNameForm({ initialName, userId, onSaveSuccess }: EditNameFor
       setIsEditing(false);
       return;
     }
+    if (trimmed.length > 100) {
+      toast.error("Name must be 100 characters or fewer.");
+      return;
+    }
     setIsPending(true);
     const supabase = createClient();
     const { error } = await supabase.from("users").update({ full_name: trimmed }).eq("id", userId);
@@ -59,6 +63,7 @@ export function EditNameForm({ initialName, userId, onSaveSuccess }: EditNameFor
         value={name}
         onChange={(e) => setName(e.target.value)}
         className="h-9 max-w-[220px] text-sm"
+        maxLength={100}
         autoFocus
         onKeyDown={(e) => {
           if (e.key === "Enter") void handleSave();

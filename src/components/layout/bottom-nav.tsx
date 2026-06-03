@@ -51,9 +51,9 @@ export function BottomNav() {
                   className="relative flex flex-col items-center gap-1"
                 >
                   {isReport ? (
-                    /* Floating action button for Report */
-                    <span className="relative flex h-[48px] w-[48px] items-center justify-center rounded-[18px] bg-gradient-to-br from-brand-400 via-brand-500 to-accentc-600 shadow-[0_8px_24px_rgb(var(--color-brand-500)/0.55),0_1px_0_rgba(255,255,255,0.2)_inset]">
-                      <span className="absolute inset-0 rounded-[18px] bg-gradient-to-t from-transparent to-white/10" />
+                    /* Floating action button for Report — orange-to-purple */
+                    <span className="relative flex h-[48px] w-[48px] items-center justify-center rounded-[18px] bg-gradient-to-br from-spark-500 via-brand-500 to-accentc-600 shadow-[0_8px_24px_rgb(var(--color-brand-500)/0.55),0_2px_0_rgba(255,255,255,0.18)_inset]">
+                      <span className="to-white/12 absolute inset-0 rounded-[18px] bg-gradient-to-t from-transparent" />
                       <Icon size={22} aria-hidden="true" className="relative text-white" />
                     </span>
                   ) : (

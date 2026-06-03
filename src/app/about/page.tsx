@@ -418,9 +418,16 @@ export default async function AboutPage({
                 &middot; &copy; {new Date().getFullYear()}
               </span>
             </div>
-            <p className="text-center text-[11.5px] text-text-secondary">
-              Designed &amp; Developed by{" "}
-              <span className="font-medium text-text-base">Rohit Pulamarasetty</span>
+            <p className="text-center text-[11px] text-text-muted-fg/70">
+              Designed &amp; Developed by <br className="sm:hidden" />
+              <a
+                href="https://www.linkedin.com/in/rohit-kumar-pulamarasetty/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-text-secondary underline-offset-2 transition-colors hover:text-text-base hover:underline"
+              >
+                Rohit Pulamarasetty
+              </a>
             </p>
           </div>
         </footer>

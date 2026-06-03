@@ -30,6 +30,7 @@ import { useRealtimeClaims } from "@/hooks/use-realtime-claims";
 import { Button } from "@/components/ui/button";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { TrustBadge } from "@/components/shared/trust-badge";
+import { ClaimSectionSkeleton } from "@/components/shared/loading-skeletons/claim-section-skeleton";
 import { queryKeys } from "@/lib/query-keys";
 
 interface ClaimRow {
@@ -185,14 +186,7 @@ export function ClaimReviewSection({ itemId }: ClaimReviewSectionProps) {
   }
 
   if (loading) {
-    return (
-      <div className="rounded-2xl border border-border-default bg-bg-subtle p-4 shadow-card">
-        <div className="flex items-center gap-2 text-[12px] text-text-muted-fg">
-          <Loader2 size={13} className="animate-spin" aria-hidden="true" />
-          Loading claims…
-        </div>
-      </div>
-    );
+    return <ClaimSectionSkeleton />;
   }
 
   if (claims.length === 0) return null;

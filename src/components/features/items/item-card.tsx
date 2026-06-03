@@ -44,6 +44,20 @@ const CATEGORY_ICON: Record<string, string> = {
   other: "📦",
 };
 
+const CATEGORY_LABEL: Record<string, string> = {
+  electronics: "Electronics",
+  clothing: "Clothing",
+  accessories: "Accessories",
+  books: "Books",
+  keys: "Keys",
+  bag: "Bag",
+  stationery: "Stationery",
+  sports: "Sports",
+  wallet: "Wallet",
+  id_card: "ID Card",
+  other: "Other",
+};
+
 function ItemCardImpl({
   item,
   variant = "grid",
@@ -55,11 +69,9 @@ function ItemCardImpl({
   const isLost = item.type === "lost";
   const isActive = item.status === "active";
   const emoji = CATEGORY_ICON[item.category] ?? "📦";
+  const categoryLabel = CATEGORY_LABEL[item.category] ?? item.category.replace(/_/g, " ");
   const href = `/items/${item.id}`;
   const { isPending, pendingHref, linkProps } = useNavTransition();
-  // Apply a subtle pending look while we're navigating *to this card*.
-  // Other cards on the same screen stay fully opaque so the user can still
-  // change their mind and tap a different one.
   const isOpening = isPending && pendingHref === href;
 
   /* ── List variant ────────────────────────────────────────────── */
@@ -71,20 +83,21 @@ function ItemCardImpl({
         aria-busy={isOpening || undefined}
         className={cn(
           "group flex gap-3.5 rounded-2xl border border-border-default bg-bg-subtle p-3.5 transition-all duration-200",
-          "hover:border-brand-500/20 hover:shadow-[0_4px_16px_rgba(0,0,0,0.08)]",
-          "dark:hover:shadow-[0_4px_16px_rgba(0,0,0,0.35)]",
+          "hover:border-brand-500/25 hover:shadow-[0_4px_16px_rgba(0,0,0,0.08)]",
+          "dark:hover:border-brand-500/20 dark:hover:shadow-[0_6px_20px_rgba(0,0,0,0.40)]",
           isOpening && "pointer-events-none opacity-70",
           className
         )}
       >
-        <div className="relative h-[68px] w-[68px] shrink-0 overflow-hidden rounded-xl bg-bg-muted-surface">
+        {/* Thumbnail — 80px */}
+        <div className="relative h-[80px] w-[80px] shrink-0 overflow-hidden rounded-xl bg-bg-muted-surface">
           {hasImage ? (
             <Image
               src={item.images[0].url}
               alt={item.title}
               fill
               className="object-cover transition-transform duration-300 group-hover:scale-105"
-              sizes="68px"
+              sizes="80px"
             />
           ) : (
             <div
@@ -97,25 +110,46 @@ function ItemCardImpl({
             </div>
           )}
         </div>
-        <div className="flex min-w-0 flex-1 flex-col justify-between gap-1">
-          <div>
-            <div className="mb-1 flex items-center gap-1.5">
-              <span
-                className={cn(
-                  "inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide",
-                  isLost
-                    ? "bg-red-500/10 text-red-500 dark:text-red-400"
-                    : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                )}
-              >
-                {isLost ? "Lost" : "Found"}
-              </span>
-              {!isActive && <StatusBadge status={item.status} size="sm" />}
-            </div>
-            <h3 className="line-clamp-1 text-[13.5px] font-bold text-text-base">
-              {searchQuery ? highlightTerms(item.title, searchQuery) : item.title}
-            </h3>
+
+        {/* Content */}
+        <div className="flex min-w-0 flex-1 flex-col justify-between gap-0.5">
+          {/* Type + category row */}
+          <div className="flex items-center gap-1.5">
+            <span
+              className={cn(
+                "inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide",
+                isLost
+                  ? "bg-red-500/10 text-red-600 dark:text-red-400"
+                  : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+              )}
+            >
+              {isLost ? "Lost" : "Found"}
+            </span>
+            {!isActive && <StatusBadge status={item.status} size="sm" />}
+            <span className="text-[10.5px] capitalize text-text-muted-fg">
+              {emoji} {categoryLabel}
+            </span>
           </div>
+
+          {/* Title */}
+          <h3 className="line-clamp-1 text-[14px] font-bold text-text-base">
+            {searchQuery ? highlightTerms(item.title, searchQuery) : item.title}
+          </h3>
+
+          {/* Description (always 1 line — category fallback if empty) */}
+          <p className="line-clamp-1 text-[11.5px] text-text-muted-fg">
+            {item.description ? (
+              searchQuery ? (
+                highlightTerms(item.description, searchQuery)
+              ) : (
+                item.description
+              )
+            ) : (
+              <span className="capitalize">{categoryLabel} item</span>
+            )}
+          </p>
+
+          {/* Meta */}
           <div className="flex items-center gap-2 text-[11px] text-text-muted-fg">
             {item.location && (
               <span className="flex min-w-0 items-center gap-0.5 truncate">
@@ -143,12 +177,12 @@ function ItemCardImpl({
       aria-busy={isOpening || undefined}
       className={cn(
         "group block overflow-hidden rounded-2xl border border-border-default bg-bg-subtle",
-        "shadow-[0_2px_8px_rgba(0,0,0,0.06),0_1px_2px_rgba(0,0,0,0.04)]",
-        "dark:shadow-[0_2px_8px_rgba(0,0,0,0.3),0_1px_2px_rgba(0,0,0,0.2)]",
+        "shadow-[0_2px_8px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)]",
+        "dark:shadow-[0_2px_10px_rgba(0,0,0,0.35),0_1px_3px_rgba(0,0,0,0.25)]",
         "ease-[cubic-bezier(0.16,1,0.3,1)] transition-all duration-300",
-        "hover:-translate-y-1.5 hover:border-brand-500/25",
-        "hover:shadow-[0_12px_28px_rgba(0,0,0,0.11),0_4px_10px_rgba(0,0,0,0.07)]",
-        "dark:hover:shadow-[0_12px_32px_rgba(0,0,0,0.55),0_4px_10px_rgba(0,0,0,0.35)]",
+        "hover:-translate-y-1.5 hover:border-brand-500/30",
+        "hover:shadow-[0_14px_32px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.06)]",
+        "dark:hover:shadow-[0_14px_36px_rgba(0,0,0,0.60),0_4px_12px_rgb(var(--color-brand-500)/0.12)]",
         isOpening && "pointer-events-none opacity-70",
         className
       )}
@@ -161,12 +195,13 @@ function ItemCardImpl({
               src={item.images[0].url}
               alt={item.title}
               fill
-              className="object-cover transition-transform duration-500 will-change-transform group-hover:scale-[1.06]"
+              className="object-cover transition-transform duration-500 will-change-transform group-hover:scale-[1.05]"
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
+            {/* Light gradient overlay — just bottom for readability */}
+            <div className="absolute inset-x-0 bottom-0 h-[40%] bg-gradient-to-t from-black/50 to-transparent" />
             {item.images.length > 1 && (
-              <div className="absolute bottom-2 right-2 flex items-center gap-0.5 rounded-lg bg-black/55 px-2 py-0.5 text-[9px] font-semibold text-white backdrop-blur-sm">
+              <div className="absolute bottom-2 right-2 flex items-center gap-0.5 rounded-lg bg-black/55 px-2 py-[3px] text-[9px] font-semibold text-white backdrop-blur-sm">
                 <Camera size={8} />
                 {item.images.length}
               </div>
@@ -177,14 +212,11 @@ function ItemCardImpl({
             className={cn(
               "flex h-full flex-col items-center justify-center gap-2",
               isLost
-                ? "bg-gradient-to-br from-red-500/10 to-red-500/5"
-                : "bg-gradient-to-br from-emerald-500/10 to-emerald-500/5"
+                ? "from-red-500/8 to-red-500/3 bg-gradient-to-br"
+                : "from-emerald-500/8 to-emerald-500/3 bg-gradient-to-br"
             )}
           >
             <span className="text-3xl">{emoji}</span>
-            <span className="text-[10px] capitalize tracking-wide text-text-muted-fg">
-              {item.category.replace(/_/g, " ")}
-            </span>
           </div>
         )}
 
@@ -192,10 +224,10 @@ function ItemCardImpl({
         <div className="absolute left-2.5 top-2.5">
           <span
             className={cn(
-              "inline-flex items-center rounded-full px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wide backdrop-blur-sm",
+              "inline-flex items-center rounded-full px-2.5 py-[3px] text-[9px] font-bold uppercase tracking-wider text-white backdrop-blur-md",
               isLost
-                ? "bg-red-500/30 text-white ring-1 ring-red-400/30"
-                : "bg-emerald-500/30 text-white ring-1 ring-emerald-400/30"
+                ? "bg-red-500/40 shadow-[0_1px_4px_rgba(0,0,0,0.3)] ring-1 ring-red-400/20"
+                : "bg-emerald-500/40 shadow-[0_1px_4px_rgba(0,0,0,0.3)] ring-1 ring-emerald-400/20"
             )}
           >
             {isLost ? "Lost" : "Found"}
@@ -211,10 +243,34 @@ function ItemCardImpl({
       </div>
 
       {/* ── Content ─────────────────────────────────────────────── */}
-      <div className="p-3.5">
-        <h3 className="mb-2 line-clamp-2 text-[13.5px] font-bold leading-snug text-text-base">
+      <div className="p-4">
+        {/* Category chip */}
+        <div className="mb-2">
+          <span className="inline-flex items-center gap-1 rounded-md bg-bg-muted-surface px-1.5 py-[3px] text-[10.5px] font-medium text-text-muted-fg">
+            <span aria-hidden>{emoji}</span>
+            <span>{categoryLabel}</span>
+          </span>
+        </div>
+
+        {/* Title */}
+        <h3 className="mb-1.5 line-clamp-2 text-[15px] font-bold leading-snug text-text-base">
           {searchQuery ? highlightTerms(item.title, searchQuery) : item.title}
         </h3>
+
+        {/* Description — always 1 line, category fallback if empty */}
+        <p className="mb-2.5 line-clamp-1 text-[12px] text-text-muted-fg">
+          {item.description ? (
+            searchQuery ? (
+              highlightTerms(item.description, searchQuery)
+            ) : (
+              item.description
+            )
+          ) : (
+            <span className="capitalize">{categoryLabel} item</span>
+          )}
+        </p>
+
+        {/* Meta row */}
         <div className="flex items-center justify-between gap-2 text-[11px] text-text-muted-fg">
           {item.location ? (
             <span className="flex min-w-0 items-center gap-0.5">
@@ -224,13 +280,14 @@ function ItemCardImpl({
               </span>
             </span>
           ) : (
-            <span className="capitalize">{item.category.replace(/_/g, " ")}</span>
+            <span />
           )}
           <span className="shrink-0 tabular-nums">{timeAgo(item.created_at)}</span>
         </div>
 
+        {/* Owner row */}
         {showOwner && item.user && (
-          <div className="mt-2.5 flex items-center gap-1.5 border-t border-border-default pt-2.5">
+          <div className="mt-3 flex items-center gap-1.5 border-t border-border-default pt-3">
             {item.user.avatar_url ? (
               <Image
                 src={item.user.avatar_url}
@@ -254,10 +311,6 @@ function ItemCardImpl({
   );
 }
 
-// Memoized — the item grid is the busiest list in the app and refetches on
-// scroll/pagination/filters. Without memo, every appended page re-renders
-// every previously-visible card (incl. all the Next/Image children).
-// We compare the small set of fields actually rendered.
 export const ItemCard = memo(ItemCardImpl, (prev, next) => {
   if (prev.variant !== next.variant) return false;
   if (prev.showOwner !== next.showOwner) return false;
@@ -272,6 +325,7 @@ export const ItemCard = memo(ItemCardImpl, (prev, next) => {
     a.type === b.type &&
     a.category === b.category &&
     a.location === b.location &&
+    a.description === b.description &&
     a.created_at === b.created_at &&
     (a.images?.length ?? 0) === (b.images?.length ?? 0) &&
     a.images?.[0]?.url === b.images?.[0]?.url &&

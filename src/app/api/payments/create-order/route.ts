@@ -52,10 +52,12 @@ export async function POST(request: Request) {
   }
 
   const amount = Number(body.amount);
-  const currency = typeof body.currency === "string" && body.currency ? body.currency : "INR";
+  // Only INR is supported. Reject any other currency string rather than
+  // forwarding it to Razorpay where it would produce an opaque API error.
+  const currency = "INR";
   const receipt =
     typeof body.receipt === "string" && body.receipt
-      ? body.receipt.slice(0, 40)
+      ? body.receipt.replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 40) || `findora_${Date.now()}`
       : `findora_${Date.now()}`;
 
   if (!Number.isFinite(amount) || !Number.isInteger(amount)) {

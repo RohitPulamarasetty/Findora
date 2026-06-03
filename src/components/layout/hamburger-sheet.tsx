@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CheckCircle2, Settings, Shield, LogOut, ChevronRight, Info, LifeBuoy } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { createClient } from "@/utils/supabase/client";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { UserAvatar } from "@/components/shared/user-avatar";
@@ -63,6 +63,7 @@ export function HamburgerSheet({ children }: HamburgerSheetProps) {
         side="right"
         className="w-[300px] border-l border-border-default bg-bg-base p-0"
       >
+        <SheetTitle className="sr-only">Navigation menu</SheetTitle>
         {/* ── Brand header with gradient ─────────────────────────── */}
         <div className="relative overflow-hidden border-b border-border-default">
           <div

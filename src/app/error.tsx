@@ -32,7 +32,9 @@ export default function Error({
       <div className="space-y-1.5">
         <h1 className="text-lg font-bold tracking-tight text-text-base">Something went wrong</h1>
         <p className="max-w-xs text-sm leading-relaxed text-text-muted-fg">
-          {error.message || "An unexpected error occurred. Please try again."}
+          {process.env.NODE_ENV === "development"
+            ? error.message || "An unexpected error occurred. Please try again."
+            : `An unexpected error occurred. Please try again.${error.digest ? ` (ref: ${error.digest})` : ""}`}
         </p>
       </div>
       <Button variant="outline" size="sm" onClick={reset}>

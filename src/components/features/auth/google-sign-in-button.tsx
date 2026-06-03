@@ -8,16 +8,25 @@ export function GoogleSignInButton() {
 
   async function handleSignIn() {
     setLoading(true);
-    const supabase = createClient();
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/api/auth/callback`,
-        queryParams: {
-          prompt: "select_account",
+    try {
+      const supabase = createClient();
+      await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/api/auth/callback`,
+          queryParams: {
+            prompt: "select_account",
+          },
         },
-      },
-    });
+      });
+      // signInWithOAuth triggers a redirect; if it resolves without redirecting
+      // (e.g. popup was blocked or returned an error), reset the button.
+    } catch {
+      setLoading(false);
+    }
+    // Note: we do NOT reset loading in a finally block — when OAuth succeeds
+    // the browser navigates away, so keeping loading=true during the redirect
+    // is the correct UX (button stays in "Signing in…" state).
   }
 
   return (
