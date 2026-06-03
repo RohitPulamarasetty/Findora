@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Search } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { AdminItemRow } from "@/components/features/admin/admin-item-row";
+import { AdminItemRowSkeleton } from "@/components/shared/loading-skeletons/admin-row-skeletons";
 import { useDebounce } from "@/hooks/use-debounce";
 import type { ItemStatus } from "@/types/database";
 
@@ -32,14 +33,12 @@ export default function AdminItemsPage() {
     queryKey: ["admin", "items", debouncedSearch, cursor],
     queryFn: async () => {
       const params = new URLSearchParams({ limit: "20" });
-      // "all" shows every item except hard-removed rows, including auto_hidden
-      // and completed items. Admins must be able to see flagged/hidden items
-      // to review and act on them — the public default ("active") would make
-      // auto_hidden items invisible to moderation.
-      params.set("status", "all");
       if (debouncedSearch) params.set("search", debouncedSearch);
       if (cursor) params.set("cursor", cursor);
-      const res = await fetch(`/api/items?${params}`);
+      // Use the admin-specific endpoint so soft-deleted (removed) items are
+      // included in the audit view. The public /api/items endpoint always
+      // excludes removed rows regardless of the status param.
+      const res = await fetch(`/api/admin/items?${params}`);
       if (!res.ok) throw new Error("Failed to fetch items");
       return res.json();
     },
@@ -65,7 +64,7 @@ export default function AdminItemsPage() {
       {isLoading ? (
         <div className="space-y-2">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="h-16 animate-pulse rounded-xl bg-bg-subtle" />
+            <AdminItemRowSkeleton key={i} />
           ))}
         </div>
       ) : (

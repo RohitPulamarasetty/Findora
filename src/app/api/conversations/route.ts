@@ -2,12 +2,15 @@ import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 import { rateLimit } from "@/lib/rate-limit";
 
-export async function GET() {
+export async function GET(request: Request) {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const rl = await rateLimit(request, "messaging", { userId: user.id });
+  if (!rl.allowed) return rl.response!;
 
   // ── PERF (mig. 0014) ─────────────────────────────────────────────────────
   // Single round-trip fetch via SQL function get_user_conversations(uuid).

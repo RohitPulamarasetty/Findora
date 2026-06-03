@@ -25,9 +25,20 @@ export async function GET(request: NextRequest) {
   if (!rl.allowed) return rl.response!;
   const { searchParams } = new URL(request.url);
 
-  const type = searchParams.get("type");
+  // ── Validate type — only "lost", "found", or "all" are meaningful
+  const rawType = searchParams.get("type");
+  const VALID_TYPES = ["lost", "found", "all"] as const;
+  const type = VALID_TYPES.includes(rawType as (typeof VALID_TYPES)[number]) ? rawType : null; // null → no type filter (same as "all")
+
   const search = searchParams.get("search")?.trim() ?? "";
-  const status = searchParams.get("status") ?? "active";
+
+  // ── Validate status — only known lifecycle values are accepted
+  const rawStatus = searchParams.get("status");
+  const VALID_STATUSES = ["active", "completed", "all"] as const;
+  const status = VALID_STATUSES.includes(rawStatus as (typeof VALID_STATUSES)[number])
+    ? rawStatus!
+    : "active"; // default to active feed
+
   const limit = Math.min(Number(searchParams.get("limit") ?? 20), 50);
 
   // ── Validate category — only accept known category values (or empty)

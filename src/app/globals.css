@@ -3,154 +3,156 @@
 @tailwind utilities;
 
 /* ════════════════════════════════════════════════════════════════
-   FINDORA DESIGN SYSTEM — AURORA EDITION
+   FINDORA DESIGN SYSTEM — V2
    ────────────────────────────────────────────────────────────────
-   Brand:    Electric Indigo (#4170FF)
-   Accent:   Plasma Violet   (#A855F7)
-   Spark:    Neo Cyan        (#06B6D4)
-   Light:    Warm Canvas + colored accents and aurora wash
-   Dark:     Deep Carbon with layered surfaces + brand glow
+   Primary:  Deep Purple    (#7C4DFF dark / #6D28D9 light)
+   Secondary: Soft Violet   (#A855F7 dark / #8B5CF6 light)
+   Accent:   Warm Orange    (#FF7A18)
+   Light:    Cool White     (#FAFAFF + white surfaces)
+   Dark:     Deep Cosmos    (#050816 base, #090D1F surface, #10162D card)
 ════════════════════════════════════════════════════════════════ */
 
 @layer base {
   :root {
-    /* ── shadcn/ui HSL tokens (light — Warm Canvas) ─────────────── */
-    --background: 45 25% 97%;
-    --foreground: 40 12% 5%;
+    /* ── shadcn/ui HSL tokens (light — Cool White) ────────────── */
+    --background: 240 33% 99%;
+    --foreground: 222 47% 11%;
 
     --card: 0 0% 100%;
-    --card-foreground: 40 12% 5%;
+    --card-foreground: 222 47% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 40 12% 5%;
+    --popover-foreground: 222 47% 11%;
 
-    --primary: 225 100% 63%;
+    --primary: 263 70% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 45 13% 94%;
-    --secondary-foreground: 40 12% 5%;
+    --secondary: 240 20% 96%;
+    --secondary-foreground: 222 47% 11%;
 
-    --muted: 45 13% 94%;
-    --muted-foreground: 42 6% 44%;
+    --muted: 240 20% 96%;
+    --muted-foreground: 220 9% 46%;
 
-    --accent: 45 13% 94%;
-    --accent-foreground: 40 12% 5%;
+    --accent: 240 20% 96%;
+    --accent-foreground: 222 47% 11%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 44 12% 87%;
-    --input: 44 12% 87%;
-    --ring: 225 100% 63%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 263 70% 50%;
 
     --radius: 0.75rem;
 
-    /* ── Brand palette ── */
-    --color-brand-50: 236 243 255;
-    --color-brand-100: 212 227 255;
-    --color-brand-200: 169 198 255;
-    --color-brand-300: 133 170 255;
-    --color-brand-400: 100 142 255;
-    --color-brand-500: 65 112 255;
-    --color-brand-600: 43 87 240;
-    --color-brand-700: 28 63 210;
-    --color-brand-800: 22 49 168;
-    --color-brand-900: 15 34 118;
+    /* ── Brand palette — Deep Purple (light: #6D28D9) ─────────── */
+    --color-brand-50: 245 243 255;
+    --color-brand-100: 237 233 254;
+    --color-brand-200: 221 214 254;
+    --color-brand-300: 196 181 253;
+    --color-brand-400: 167 139 250;
+    --color-brand-500: 109 40 217; /* #6D28D9 */
+    --color-brand-600: 91 33 182;
+    --color-brand-700: 76 24 155;
+    --color-brand-800: 58 16 122;
+    --color-brand-900: 42 10 90;
 
-    /* ── Accent palette (Plasma Violet) ── */
+    /* ── Accent palette — Soft Violet (#8B5CF6 light) ─────────── */
     --color-accent-300: 216 180 254;
     --color-accent-400: 192 132 252;
-    --color-accent-500: 168 85 247;
-    --color-accent-600: 147 51 234;
-    --color-accent-700: 126 34 206;
+    --color-accent-500: 139 92 246; /* #8B5CF6 */
+    --color-accent-600: 124 58 237;
+    --color-accent-700: 109 40 217;
 
-    /* ── Spark palette (Neo Cyan) ── */
-    --color-spark-400: 34 211 238;
-    --color-spark-500: 6 182 212;
-    --color-spark-600: 8 145 178;
+    /* ── Spark palette — Warm Orange (#FF7A18) ────────────────── */
+    --color-spark-400: 255 170 89;
+    --color-spark-500: 255 122 24; /* #FF7A18 */
+    --color-spark-600: 234 88 8;
 
-    /* ── Surfaces — light mode ── */
-    --color-bg: 249 248 245;
+    /* ── Surfaces — light ─────────────────────────────────────── */
+    --color-bg: 250 250 255; /* #FAFAFF */
     --color-bg-subtle: 255 255 255;
-    --color-bg-muted: 241 240 237;
-    /* Slightly darker borders so chip/badge outlines remain visible against
-       the warm canvas. The old 226/224/218 was only ~23 units away from
-       --color-bg and disappeared into the page on translucent surfaces. */
-    --color-border: 212 209 200;
-    --color-border-strong: 180 177 167;
+    --color-bg-muted: 240 242 255;
+    --color-border: 229 231 235; /* #E5E7EB */
+    --color-border-strong: 209 213 219;
 
-    /* ── Text — light mode ──
-       NOTE on contrast (WCAG AA = 4.5:1 for normal body text):
-         - primary   → 19:1 vs --color-bg (AAA)
-         - secondary → 9.7:1 vs --color-bg (AAA)
-         - muted     → previous 120/116/106 was ~3.6:1 (FAIL AA for body text).
-                       Darkened to 88/84/76 → ~5.8:1 (AA Large + AA normal).
-                       This is the global lever for uppercase metadata, dim
-                       labels, chip captions, tiny secondary text. */
-    --color-text-primary: 14 13 11;
-    --color-text-secondary: 60 57 50;
-    --color-text-muted: 88 84 76;
+    /* ── Text — light ──
+       Contrast vs #FAFAFF:
+         - primary   → 19:1 (AAA)
+         - secondary → 8.5:1 (AAA)
+         - muted     → 4.9:1 (AA) */
+    --color-text-primary: 17 24 39; /* #111827 */
+    --color-text-secondary: 55 65 81; /* #374151 */
+    --color-text-muted: 107 114 128; /* #6B7280 */
     --color-text-inverted: 255 255 255;
 
-    /* ── Semantic status ── */
+    /* ── Semantic status ─────────────────────────────────────── */
     --color-lost: #ef4444;
     --color-found: #22c55e;
     --color-pending: #f59e0b;
-    --color-verified: #4170ff;
+    --color-verified: #7c4dff;
     --color-completed: #10b981;
     --color-closed: #6b7280;
   }
 
   .dark {
-    /* ── shadcn/ui HSL tokens (dark — Layered Carbon) ── */
-    --background: 230 18% 6%;
-    --foreground: 0 0% 96%;
+    /* ── shadcn/ui HSL tokens (dark — Deep Cosmos) ────────────── */
+    --background: 230 63% 5%;
+    --foreground: 210 40% 96%;
 
-    --card: 228 16% 10%;
-    --card-foreground: 0 0% 96%;
+    --card: 228 50% 12%;
+    --card-foreground: 210 40% 96%;
 
-    --popover: 228 16% 10%;
-    --popover-foreground: 0 0% 96%;
+    --popover: 228 50% 12%;
+    --popover-foreground: 210 40% 96%;
 
-    --primary: 225 100% 65%;
+    --primary: 258 100% 65%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 228 14% 13%;
-    --secondary-foreground: 0 0% 96%;
+    --secondary: 232 45% 14%;
+    --secondary-foreground: 210 40% 96%;
 
-    --muted: 228 14% 13%;
-    --muted-foreground: 230 6% 56%;
+    --muted: 232 45% 14%;
+    --muted-foreground: 215 20% 65%;
 
-    --accent: 228 14% 13%;
-    --accent-foreground: 0 0% 96%;
+    --accent: 232 45% 14%;
+    --accent-foreground: 210 40% 96%;
 
     --destructive: 0 70% 55%;
-    --destructive-foreground: 0 0% 96%;
+    --destructive-foreground: 210 40% 96%;
 
-    --border: 228 12% 18%;
-    --input: 228 12% 18%;
-    --ring: 225 100% 70%;
+    --border: 232 38% 18%;
+    --input: 232 38% 18%;
+    --ring: 258 100% 65%;
 
-    /* ── Surfaces — dark (layered, hint of blue, not flat black) ── */
-    --color-bg: 12 14 22;
-    --color-bg-subtle: 20 22 32;
-    --color-bg-muted: 28 30 42;
-    --color-border: 42 45 60;
-    --color-border-strong: 64 68 88;
+    /* ── Brand palette — Deep Purple (dark: #7C4DFF) ──────────── */
+    --color-brand-50: 245 243 255;
+    --color-brand-100: 237 233 254;
+    --color-brand-200: 221 214 254;
+    --color-brand-300: 196 181 253;
+    --color-brand-400: 167 139 250;
+    --color-brand-500: 124 77 255; /* #7C4DFF */
+    --color-brand-600: 109 40 217;
+    --color-brand-700: 91 33 182;
+    --color-brand-800: 76 24 155;
+    --color-brand-900: 58 16 122;
+
+    /* ── Surfaces — dark (Deep Cosmos, blue-black layers) ──────── */
+    --color-bg: 5 8 22; /* #050816 */
+    --color-bg-subtle: 9 13 31; /* #090D1F */
+    --color-bg-muted: 16 22 45; /* #10162D */
+    --color-border: 30 38 75;
+    --color-border-strong: 50 62 115;
 
     /* ── Text — dark ──
-       NOTE on contrast vs --color-bg = rgb(12 14 22):
-         - primary   → ~17:1 (AAA)
-         - secondary → previous 178/180/195 (~10:1) — kept (AAA).
-         - muted     → previous 120/124/140 (~5.6:1) was on the AA edge, and
-                       perceived even lower on translucent surfaces / blur
-                       backdrops. Brightened to 148/152/170 → ~7.6:1 (AAA).
-                       Same global lever for uppercase metadata + chip text
-                       behind glass / gradient overlays in dark mode. */
-    --color-text-primary: 240 240 245;
-    --color-text-secondary: 188 190 205;
-    --color-text-muted: 148 152 170;
-    --color-text-inverted: 12 14 22;
+       Contrast vs #050816:
+         - primary   → ~18:1 (AAA)
+         - secondary → ~10:1 (AAA)
+         - muted     → ~7.5:1 (AAA) */
+    --color-text-primary: 255 255 255; /* #FFFFFF */
+    --color-text-secondary: 203 213 225; /* #CBD5E1 */
+    --color-text-muted: 148 163 184; /* #94A3B8 */
+    --color-text-inverted: 5 8 22;
   }
 }
 
@@ -176,7 +178,7 @@
     position: relative;
   }
 
-  /* ── Ambient aurora background (whole-app subtle wash) ── */
+  /* ── Ambient cosmos background (whole-app subtle wash) ────────── */
   body::before {
     content: "";
     position: fixed;
@@ -186,17 +188,17 @@
     background:
       radial-gradient(
         ellipse 70% 50% at 12% 0%,
-        rgb(var(--color-brand-500) / 0.1) 0%,
+        rgb(var(--color-brand-500) / 0.08) 0%,
         transparent 60%
       ),
       radial-gradient(
         ellipse 60% 45% at 92% 8%,
-        rgb(var(--color-accent-500) / 0.08) 0%,
+        rgb(var(--color-accent-500) / 0.06) 0%,
         transparent 65%
       ),
       radial-gradient(
         ellipse 80% 50% at 50% 110%,
-        rgb(var(--color-spark-500) / 0.05) 0%,
+        rgb(var(--color-spark-500) / 0.04) 0%,
         transparent 70%
       );
   }
@@ -204,17 +206,17 @@
     background:
       radial-gradient(
         ellipse 70% 55% at 10% 0%,
-        rgb(var(--color-brand-500) / 0.22) 0%,
+        rgb(var(--color-brand-500) / 0.2) 0%,
         transparent 60%
       ),
       radial-gradient(
         ellipse 60% 50% at 92% 8%,
-        rgb(var(--color-accent-500) / 0.18) 0%,
+        rgb(var(--color-accent-500) / 0.15) 0%,
         transparent 65%
       ),
       radial-gradient(
         ellipse 80% 50% at 50% 110%,
-        rgb(var(--color-spark-500) / 0.1) 0%,
+        rgb(var(--color-spark-500) / 0.08) 0%,
         transparent 70%
       );
   }
@@ -241,11 +243,11 @@
 
   /* ── Selection ── */
   ::selection {
-    background-color: rgb(var(--color-brand-500) / 0.25);
+    background-color: rgb(var(--color-brand-500) / 0.22);
     color: rgb(var(--color-brand-700));
   }
   .dark ::selection {
-    background-color: rgb(var(--color-brand-500) / 0.35);
+    background-color: rgb(var(--color-brand-500) / 0.3);
     color: rgb(var(--color-brand-100));
   }
 }
@@ -276,40 +278,40 @@
   /* Level 1 — default card */
   .shadow-card {
     box-shadow:
-      0 1px 2px rgb(var(--color-text-primary) / 0.06),
-      0 4px 14px rgb(var(--color-text-primary) / 0.05);
+      0 1px 2px rgb(var(--color-text-primary) / 0.05),
+      0 4px 14px rgb(var(--color-text-primary) / 0.04);
   }
   .dark .shadow-card {
     box-shadow:
-      0 1px 3px rgba(0, 0, 0, 0.5),
-      0 6px 20px rgba(0, 0, 0, 0.4),
+      0 1px 3px rgba(0, 0, 0, 0.55),
+      0 6px 20px rgba(0, 0, 0, 0.45),
       inset 0 1px 0 rgba(255, 255, 255, 0.03);
   }
 
   /* Level 2 — raised / hover */
   .shadow-card-hover {
     box-shadow:
-      0 6px 20px rgb(var(--color-brand-500) / 0.1),
-      0 14px 40px rgb(var(--color-text-primary) / 0.08),
+      0 6px 20px rgb(var(--color-brand-500) / 0.12),
+      0 14px 40px rgb(var(--color-text-primary) / 0.07),
       0 1px 3px rgb(var(--color-text-primary) / 0.04);
   }
   .dark .shadow-card-hover {
     box-shadow:
-      0 8px 30px rgba(0, 0, 0, 0.6),
-      0 16px 50px rgb(var(--color-brand-500) / 0.18),
+      0 8px 30px rgba(0, 0, 0, 0.65),
+      0 16px 50px rgb(var(--color-brand-500) / 0.2),
       inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
 
   /* Level 3 — high elevation */
   .shadow-high {
     box-shadow:
-      0 12px 40px rgb(var(--color-text-primary) / 0.14),
-      0 20px 60px rgb(var(--color-text-primary) / 0.08);
+      0 12px 40px rgb(var(--color-text-primary) / 0.12),
+      0 20px 60px rgb(var(--color-text-primary) / 0.07);
   }
   .dark .shadow-high {
     box-shadow:
-      0 12px 44px rgba(0, 0, 0, 0.75),
-      0 28px 72px rgba(0, 0, 0, 0.6),
+      0 12px 44px rgba(0, 0, 0, 0.8),
+      0 28px 72px rgba(0, 0, 0, 0.65),
       inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
 
@@ -330,9 +332,9 @@
 
   .shadow-glow-spark {
     box-shadow:
-      0 0 0 1px rgb(var(--color-spark-500) / 0.25),
-      0 6px 20px rgb(var(--color-spark-500) / 0.3),
-      0 12px 40px rgb(var(--color-spark-500) / 0.15);
+      0 0 0 1px rgb(var(--color-spark-500) / 0.3),
+      0 6px 20px rgb(var(--color-spark-500) / 0.4),
+      0 12px 40px rgb(var(--color-spark-500) / 0.2);
   }
 
   /* Inner highlight — premium top edge */
@@ -359,6 +361,7 @@
     );
   }
 
+  /* Purple → Violet → Orange — Findora signature */
   .gradient-aurora {
     background: linear-gradient(
       135deg,
@@ -379,7 +382,7 @@
     background: linear-gradient(
       135deg,
       rgb(var(--color-brand-400)) 0%,
-      rgb(var(--color-accent-400)) 50%,
+      rgb(var(--color-accent-400)) 55%,
       rgb(var(--color-spark-400)) 100%
     );
     -webkit-background-clip: text;
@@ -398,25 +401,22 @@
   .gradient-card-surface {
     background: linear-gradient(160deg, rgb(var(--color-bg-subtle)) 0%, rgb(var(--color-bg)) 100%);
   }
-  .dark .gradient-card-surface {
-    background: linear-gradient(160deg, rgb(var(--color-bg-subtle)) 0%, rgb(var(--color-bg)) 100%);
-  }
 
   /* Premium card surface — subtle brand tint sweep */
   .gradient-card-premium {
     background: linear-gradient(
       140deg,
       rgb(var(--color-brand-500) / 0.04) 0%,
-      rgb(var(--color-bg-subtle)) 35%,
+      rgb(var(--color-bg-subtle)) 40%,
       rgb(var(--color-accent-500) / 0.03) 100%
     );
   }
   .dark .gradient-card-premium {
     background: linear-gradient(
       140deg,
-      rgb(var(--color-brand-500) / 0.08) 0%,
-      rgb(var(--color-bg-subtle)) 40%,
-      rgb(var(--color-accent-500) / 0.06) 100%
+      rgb(var(--color-brand-500) / 0.1) 0%,
+      rgb(var(--color-bg-subtle)) 45%,
+      rgb(var(--color-accent-500) / 0.07) 100%
     );
   }
 
@@ -436,7 +436,7 @@
       135deg,
       rgb(var(--color-brand-500) / 0.5),
       rgb(var(--color-accent-500) / 0.4),
-      rgb(var(--color-spark-500) / 0.3)
+      rgb(var(--color-spark-500) / 0.35)
     );
     -webkit-mask:
       linear-gradient(#000 0 0) content-box,
@@ -453,27 +453,27 @@
 
 @layer utilities {
   .glass {
-    background: rgb(var(--color-bg-subtle) / 0.65);
+    background: rgb(var(--color-bg-subtle) / 0.7);
     backdrop-filter: blur(24px) saturate(180%);
     -webkit-backdrop-filter: blur(24px) saturate(180%);
     border: 1px solid rgb(var(--color-border) / 0.6);
   }
 
   .glass-subtle {
-    background: rgb(var(--color-bg-subtle) / 0.85);
+    background: rgb(var(--color-bg-subtle) / 0.88);
     backdrop-filter: blur(16px) saturate(160%);
     -webkit-backdrop-filter: blur(16px) saturate(160%);
   }
 
   .dark .glass {
-    background: rgb(var(--color-bg-subtle) / 0.55);
+    background: rgb(var(--color-bg-subtle) / 0.6);
     backdrop-filter: blur(24px) saturate(200%);
     -webkit-backdrop-filter: blur(24px) saturate(200%);
     border: 1px solid rgb(255 255 255 / 0.06);
   }
 
   .dark .glass-subtle {
-    background: rgb(var(--color-bg-subtle) / 0.78);
+    background: rgb(var(--color-bg-subtle) / 0.8);
     backdrop-filter: blur(18px) saturate(180%);
     -webkit-backdrop-filter: blur(18px) saturate(180%);
   }
@@ -482,26 +482,26 @@
   .glass-hero {
     background: linear-gradient(
       140deg,
-      rgb(var(--color-bg-subtle) / 0.85) 0%,
-      rgb(var(--color-bg-subtle) / 0.65) 100%
+      rgb(var(--color-bg-subtle) / 0.88) 0%,
+      rgb(var(--color-bg-subtle) / 0.68) 100%
     );
     backdrop-filter: blur(28px) saturate(200%);
     -webkit-backdrop-filter: blur(28px) saturate(200%);
     border: 1px solid rgb(var(--color-border) / 0.6);
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.5),
-      0 12px 40px rgb(var(--color-text-primary) / 0.06);
+      inset 0 1px 0 rgba(255, 255, 255, 0.55),
+      0 12px 40px rgb(var(--color-text-primary) / 0.05);
   }
   .dark .glass-hero {
     background: linear-gradient(
       140deg,
-      rgb(var(--color-bg-subtle) / 0.7) 0%,
-      rgb(var(--color-bg) / 0.4) 100%
+      rgb(var(--color-bg-subtle) / 0.72) 0%,
+      rgb(var(--color-bg) / 0.42) 100%
     );
     border: 1px solid rgb(255 255 255 / 0.07);
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.08),
-      0 16px 50px rgba(0, 0, 0, 0.5);
+      0 16px 50px rgba(0, 0, 0, 0.55);
   }
 }
 
@@ -516,13 +516,13 @@
     border: 1px solid rgb(var(--color-border));
     border-radius: 16px;
     box-shadow:
-      0 1px 2px rgb(var(--color-text-primary) / 0.06),
-      0 4px 14px rgb(var(--color-text-primary) / 0.05);
+      0 1px 2px rgb(var(--color-text-primary) / 0.05),
+      0 4px 14px rgb(var(--color-text-primary) / 0.04);
   }
   .dark .surface-card {
     box-shadow:
-      0 1px 3px rgba(0, 0, 0, 0.5),
-      0 6px 20px rgba(0, 0, 0, 0.4),
+      0 1px 3px rgba(0, 0, 0, 0.55),
+      0 6px 20px rgba(0, 0, 0, 0.45),
       inset 0 1px 0 rgba(255, 255, 255, 0.03);
   }
 
@@ -530,27 +530,27 @@
   .surface-feature {
     background: linear-gradient(
       140deg,
-      rgb(var(--color-brand-500) / 0.06) 0%,
+      rgb(var(--color-brand-500) / 0.05) 0%,
       rgb(var(--color-bg-subtle)) 50%,
-      rgb(var(--color-accent-500) / 0.04) 100%
+      rgb(var(--color-accent-500) / 0.03) 100%
     );
     border: 1px solid rgb(var(--color-border));
     border-radius: 18px;
     box-shadow:
-      0 1px 2px rgb(var(--color-text-primary) / 0.06),
-      0 6px 24px rgb(var(--color-brand-500) / 0.08);
+      0 1px 2px rgb(var(--color-text-primary) / 0.05),
+      0 6px 24px rgb(var(--color-brand-500) / 0.07);
   }
   .dark .surface-feature {
     background: linear-gradient(
       140deg,
-      rgb(var(--color-brand-500) / 0.12) 0%,
+      rgb(var(--color-brand-500) / 0.14) 0%,
       rgb(var(--color-bg-subtle)) 50%,
-      rgb(var(--color-accent-500) / 0.08) 100%
+      rgb(var(--color-accent-500) / 0.09) 100%
     );
     border: 1px solid rgb(var(--color-border));
     box-shadow:
-      0 8px 32px rgba(0, 0, 0, 0.45),
-      0 4px 16px rgb(var(--color-brand-500) / 0.15),
+      0 8px 32px rgba(0, 0, 0, 0.5),
+      0 4px 16px rgb(var(--color-brand-500) / 0.18),
       inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
 }
@@ -672,8 +672,8 @@
   }
   .hover-glow:hover {
     box-shadow:
-      0 0 0 1px rgb(var(--color-brand-500) / 0.35),
-      0 8px 28px rgb(var(--color-brand-500) / 0.25);
+      0 0 0 1px rgb(var(--color-brand-500) / 0.3),
+      0 8px 28px rgb(var(--color-brand-500) / 0.22);
   }
 }
 
@@ -764,5 +764,18 @@
   }
   .animate-float-slow {
     animation: float-slow 6s ease-in-out infinite;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════
+   PHONE MOCKUP 3D TILT
+   Responsive: subtle on mobile, premium product-shot tilt on desktop
+════════════════════════════════════════════════════════════════ */
+.phone-3d-tilt {
+  transform: perspective(900px) rotateY(-8deg) rotateX(2.5deg);
+}
+@media (min-width: 1024px) {
+  .phone-3d-tilt {
+    transform: perspective(1100px) rotateY(-14deg) rotateX(3.5deg);
   }
 }

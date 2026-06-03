@@ -1,7 +1,7 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
 import { MessageBubble } from "./message-bubble";
+import { MessageListSkeleton } from "@/components/shared/loading-skeletons/message-skeleton";
 import type { Message } from "@/types/conversations";
 
 interface MessageListProps {
@@ -13,8 +13,8 @@ interface MessageListProps {
 export function MessageList({ messages, currentUserId, isLoading }: MessageListProps) {
   if (isLoading) {
     return (
-      <div className="flex min-h-full items-center justify-center">
-        <Loader2 size={24} className="animate-spin text-text-muted-fg" />
+      <div className="min-h-full">
+        <MessageListSkeleton />
       </div>
     );
   }

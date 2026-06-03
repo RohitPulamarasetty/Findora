@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Search } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { AdminUserRow } from "@/components/features/admin/admin-user-row";
+import { AdminUserRowSkeleton } from "@/components/shared/loading-skeletons/admin-row-skeletons";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import type { Database } from "@/types/database";
@@ -56,7 +57,7 @@ export default function AdminUsersPage() {
       {isLoading ? (
         <div className="space-y-2">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="h-16 animate-pulse rounded-xl bg-bg-subtle" />
+            <AdminUserRowSkeleton key={i} />
           ))}
         </div>
       ) : (

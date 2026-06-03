@@ -99,6 +99,20 @@ export function MarketingShell({
               </Link>
             </nav>
           </div>
+          {/* Credit line */}
+          <div className="mx-auto mt-5 max-w-6xl text-center">
+            <p className="text-[11px] text-text-muted-fg/60">
+              Designed &amp; Developed by <br className="sm:hidden" />
+              <a
+                href="https://www.linkedin.com/in/rohit-kumar-pulamarasetty/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline-offset-2 transition-colors hover:text-text-base hover:underline"
+              >
+                Rohit Pulamarasetty
+              </a>
+            </p>
+          </div>
         </footer>
       </div>
     </div>

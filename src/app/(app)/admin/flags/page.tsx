@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/shared/empty-state";
+import { FlagRowSkeleton } from "@/components/shared/loading-skeletons/flag-row-skeleton";
 import type { FlagReason } from "@/types/database";
 
 interface FlagItem {
@@ -75,7 +76,7 @@ export default function AdminFlagsPage() {
       {isLoading ? (
         <div className="space-y-2">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-20 animate-pulse rounded-xl bg-bg-subtle" />
+            <FlagRowSkeleton key={i} />
           ))}
         </div>
       ) : !data?.flags.length ? (

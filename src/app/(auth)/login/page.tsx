@@ -29,12 +29,12 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
     <div className="relative min-h-screen overflow-hidden bg-bg-base">
       {/* ── Ambient backdrop ──────────────────────────────────────── */}
       <div className="pointer-events-none absolute inset-0">
-        {/* Top brand glow */}
-        <div className="absolute left-1/2 top-0 h-[520px] w-[640px] -translate-x-1/2 -translate-y-1/3 rounded-full bg-brand-500/20 blur-[110px] dark:bg-brand-500/15" />
-        {/* Bottom-right violet wash */}
-        <div className="bg-violet-500/12 dark:bg-violet-500/8 absolute -bottom-32 right-0 h-[360px] w-[440px] rounded-full blur-[90px]" />
-        {/* Bottom-left subtle */}
-        <div className="bg-brand-400/8 dark:bg-brand-400/6 absolute -bottom-24 left-0 h-[320px] w-[400px] rounded-full blur-[80px]" />
+        {/* Top brand glow — purple */}
+        <div className="bg-brand-500/18 dark:bg-brand-500/14 absolute left-1/2 top-0 h-[520px] w-[640px] -translate-x-1/2 -translate-y-1/3 rounded-full blur-[110px]" />
+        {/* Bottom-right accent wash — violet */}
+        <div className="dark:bg-violet-500/8 absolute -bottom-32 right-0 h-[360px] w-[440px] rounded-full bg-violet-500/10 blur-[90px]" />
+        {/* Bottom-left warm orange glow */}
+        <div className="bg-spark-500/6 absolute -bottom-24 left-0 h-[320px] w-[400px] rounded-full blur-[80px] dark:bg-spark-500/5" />
       </div>
 
       {/* ── Back link ─────────────────────────────────────────────── */}
@@ -51,7 +51,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         <div className="w-full max-w-sm">
           {/* Brand mark */}
           <div className="mb-8 flex flex-col items-center text-center">
-            <div className="mb-5 flex h-16 w-16 items-center justify-center overflow-hidden rounded-[20px] bg-bg-subtle shadow-[0_8px_28px_rgba(65,112,255,0.32)] ring-1 ring-border-default">
+            <div className="mb-5 flex h-16 w-16 items-center justify-center overflow-hidden rounded-[20px] bg-bg-subtle shadow-[0_8px_28px_rgb(var(--color-brand-500)/0.30)] ring-1 ring-border-default">
               <FindoraLogo size={56} />
             </div>
             <h1 className="text-[26px] font-bold tracking-[-0.025em] text-text-base">
@@ -74,10 +74,10 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           )}
 
           {/* Sign-in card */}
-          <div className="overflow-hidden rounded-3xl border border-border-default bg-bg-subtle shadow-[0_8px_32px_rgba(0,0,0,0.06),0_2px_6px_rgba(0,0,0,0.04)] backdrop-blur-2xl dark:shadow-[0_8px_36px_rgba(0,0,0,0.5),0_2px_10px_rgba(0,0,0,0.3)]">
-            {/* Inner gradient accent */}
+          <div className="overflow-hidden rounded-3xl border border-border-default bg-bg-subtle shadow-[0_8px_32px_rgba(0,0,0,0.06),0_2px_6px_rgba(0,0,0,0.04)] backdrop-blur-2xl dark:shadow-[0_8px_40px_rgba(0,0,0,0.55),0_2px_10px_rgba(0,0,0,0.35)]">
+            {/* Inner gradient accent — purple top line */}
             <div className="relative">
-              <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-500/40 to-transparent" />
+              <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-500/45 to-transparent" />
 
               <div className="p-6 sm:p-7">
                 <h2 className="mb-1 text-[15px] font-bold tracking-tight text-text-base">
@@ -117,7 +117,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             ].map(({ icon: Icon, label, sub }, i) => (
               <div
                 key={i}
-                className="flex flex-col items-center gap-1 rounded-2xl border border-border-default bg-bg-subtle py-3.5"
+                className="flex flex-col items-center gap-1 rounded-2xl border border-border-default bg-bg-subtle py-3.5 transition-colors hover:border-border-strong"
               >
                 <Icon size={14} className="text-brand-500 dark:text-brand-400" />
                 <span className="text-center text-[10.5px] font-semibold text-text-base">
@@ -128,7 +128,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             ))}
           </div>
 
-          {/* Feature badges below */}
+          {/* Feature badges */}
           <div className="mt-6 flex items-center justify-center gap-4 text-[11px] text-text-muted-fg">
             <span className="inline-flex items-center gap-1">
               <Search size={11} />

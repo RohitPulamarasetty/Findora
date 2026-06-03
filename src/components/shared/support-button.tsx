@@ -329,7 +329,7 @@ export function SupportButton({
         name: "Findora",
         description: "Support the development of Findora",
         image: "/favicon-96x96.png",
-        theme: { color: "#4170FF" },
+        theme: { color: "#7C4DFF" },
         notes: { source: "findora_support" },
         // Explicitly enable domestic payment methods. EMI/Pay-Later are
         // off — they sometimes route through international card rails.

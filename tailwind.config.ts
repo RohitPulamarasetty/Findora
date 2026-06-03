@@ -77,7 +77,7 @@ const config: Config = {
           700: "rgb(var(--color-accent-700) / <alpha-value>)",
         },
 
-        // Spark palette (Neo Cyan)
+        // Spark palette (Warm Orange)
         spark: {
           400: "rgb(var(--color-spark-400) / <alpha-value>)",
           500: "rgb(var(--color-spark-500) / <alpha-value>)",

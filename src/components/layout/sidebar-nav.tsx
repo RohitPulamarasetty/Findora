@@ -144,10 +144,10 @@ export function SidebarNav({ isAdmin, user }: SidebarNavProps) {
       {/* Ambient gradient wash inside the sidebar */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-90"
+        className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 80% 40% at 0% 0%, rgb(var(--color-brand-500) / 0.10), transparent 70%), radial-gradient(ellipse 70% 35% at 100% 100%, rgb(var(--color-accent-500) / 0.07), transparent 70%)",
+            "radial-gradient(ellipse 80% 40% at 0% 0%, rgb(var(--color-brand-500) / 0.12), transparent 70%), radial-gradient(ellipse 70% 35% at 100% 100%, rgb(var(--color-spark-500) / 0.06), transparent 70%)",
         }}
       />
 
