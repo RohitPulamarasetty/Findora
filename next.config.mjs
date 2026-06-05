@@ -109,7 +109,7 @@ const CSP_DIRECTIVES = {
 // Directives with no values emit as bare tokens (e.g. upgrade-insecure-requests).
 const ContentSecurityPolicy = Object.entries(CSP_DIRECTIVES)
   .map(([directive, sources]) =>
-    sources.length > 0 ? `${directive} ${sources.join(" ")}` : directive,
+    sources.length > 0 ? `${directive} ${sources.join(" ")}` : directive
   )
   .join("; ");
 

@@ -19,6 +19,7 @@ Instead of relying on scattered WhatsApp groups, Instagram stories, or manual an
 ## ✨ Features
 
 ### 🔍 Lost Item Reporting
+
 - Report lost items instantly
 - Upload item images
 - Add detailed descriptions
@@ -26,18 +27,22 @@ Instead of relying on scattered WhatsApp groups, Instagram stories, or manual an
 - Track report status
 
 ### 🤝 Found Item Reporting
+
 - Report found items
 - Upload photos
 - Add collection details
 - Help owners recover belongings
 
 ### 🎯 Smart Discovery
+
 - Browse similar reports
 - Search across lost and found listings
 - Improve recovery chances
 
 ### 🔎 Search & Filtering
+
 Filter reports by:
+
 - Category
 - Location
 - Date
@@ -45,17 +50,20 @@ Filter reports by:
 - Keywords
 
 ### 👤 Authentication
+
 - Secure user accounts
 - Protected dashboards
 - Student-friendly onboarding
 
 ### 🛡️ Admin Dashboard
+
 - Content moderation
 - Report management
 - User management
 - Analytics and insights
 
 ### ⚡ Real-Time Updates
+
 - Faster report visibility
 - Updated status tracking
 - Improved community engagement
@@ -65,20 +73,24 @@ Filter reports by:
 ## 🏗️ Tech Stack
 
 ### Frontend
+
 - Next.js
 - TypeScript
 - Tailwind CSS
 - shadcn/ui
 
 ### Backend
+
 - Supabase
 - PostgreSQL
 - Row Level Security (RLS)
 
 ### Deployment
+
 - Vercel
 
 ### Payments
+
 - Razorpay
 
 ---
