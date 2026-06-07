@@ -1,4 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
+import { createServiceRoleClient } from "@/utils/supabase/admin";
 import { NextResponse } from "next/server";
 import { sendMessageSchema } from "@/lib/validations";
 import { rateLimit } from "@/lib/rate-limit";
@@ -32,15 +33,28 @@ export async function GET(request: Request, { params }: RouteContext) {
     .single();
 
   if (!convo) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  if (convo.owner_id !== user.id && convo.finder_id !== user.id) {
+
+  const { data: callerProfile } = await supabase
+    .from("users")
+    .select("role")
+    .eq("id", user.id)
+    .maybeSingle();
+  const isAdmin = callerProfile?.role === "admin";
+
+  if (!isAdmin && convo.owner_id !== user.id && convo.finder_id !== user.id) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
+
+  // Admins are not conversation participants, so RLS on the messages table
+  // would silently return zero rows for them. Use the service-role client to
+  // bypass RLS for admin reads only — participant reads keep the regular client.
+  const db = isAdmin ? createServiceRoleClient() : supabase;
 
   // Fetch the most-recent MESSAGES_LOAD_LIMIT messages, then reverse so
   // the client receives them in ascending chronological order (oldest first).
   // Ordering DESC + limit is more index-efficient than ASC + limit when a
   // conversation has thousands of rows — it avoids a full sequential scan.
-  const { data: messages, error } = await supabase
+  const { data: messages, error } = await db
     .from("messages")
     .select("*")
     .eq("conversation_id", id)

@@ -67,7 +67,7 @@ export default async function AdminConversationsPage() {
           return (
             <Link
               key={c.id}
-              href={`/messages/${c.id}`}
+              href={`/admin/conversations/${c.id}`}
               className="flex items-center gap-3 rounded-xl border border-border-default bg-bg-base p-3 transition-colors hover:bg-bg-subtle"
             >
               <div className="min-w-0 flex-1">
